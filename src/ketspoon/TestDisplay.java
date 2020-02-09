@@ -16,6 +16,23 @@ import javax.swing.JFrame;
 
 public class TestDisplay {
 	
+	public void endGame() {
+		JFrame newFrame=new JFrame("End Game");
+		JButton endGame=new JButton("End Game");
+		
+		endGame.setBounds(0,0,100,50);
+	    endGame.addActionListener(new ActionListener(){  
+	    	public void actionPerformed(ActionEvent e) {
+	    		System.exit(0);
+	    	}  
+	    });
+	    
+	    newFrame.setSize(50,100);  
+	    newFrame.setLayout(null);  
+	    newFrame.setVisible(true);
+	    newFrame.add(endGame);
+	}
+	
 	public void displayFrame (Frame testFrame,Player player) {
 		ArrayList<Tile> tempRemove = new ArrayList<>();
 		JFrame newFrame=new JFrame("Frame");  
