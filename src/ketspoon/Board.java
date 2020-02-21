@@ -65,35 +65,31 @@ public class Board {
 		updatePlayableSquares();
 	}
 	
+	public void updateSquareChars() {
+		for (int i = 0; i < NUMBEROFSQUARES; i++) {
+			if(gameBoard.get(i).isPlayableSquare()&&gameBoard.get(i).getSquareType()==9&&!gameBoard.get(i).isPlayedSquare())
+				gameBoard.get(i).setSquaresChar(' ');
+			
+			if(!gameBoard.get(i).isPlayableSquare()&&gameBoard.get(i).getSquareType()==9&&!gameBoard.get(i).isPlayedSquare())
+				gameBoard.get(i).setSquaresChar('-');	
+		}
+	}
+	
 	public void updatePlayableSquares() {    /*makes squares in the four positions around a played square available */
 		for(Square currentSquare:gameBoard) {
-			
 			if(currentSquare.isPlayedSquare()) {
 				Square right = gameBoard.get(currentSquare.getSquareIndex()+1);
 				Square left = gameBoard.get(currentSquare.getSquareIndex()-1);
 				Square up = gameBoard.get(currentSquare.getSquareIndex()+15);
 				Square down = gameBoard.get(currentSquare.getSquareIndex()-15);
-				
-				if(!right.isPlayedSquare()) {
-					gameBoard.get(right.getSquareIndex()).setPlayableSquare(true);
-					gameBoard.get(right.getSquareIndex()).setSquaresChar(' ');
-				}
-				
-				if(!left.isPlayedSquare()) {
-					gameBoard.get(left.getSquareIndex()).setPlayableSquare(true);
-					gameBoard.get(left.getSquareIndex()).setSquaresChar(' ');
-				}
-					
-				if(!up.isPlayedSquare()) {
-					gameBoard.get(up.getSquareIndex()).setPlayableSquare(true);
-					gameBoard.get(up.getSquareIndex()).setSquaresChar(' ');
-				}
-				
-				if(!down.isPlayedSquare()) {
-					gameBoard.get(down.getSquareIndex()).setPlayableSquare(true);
-					gameBoard.get(down.getSquareIndex()).setSquaresChar(' ');
-				}
+
+				gameBoard.get(right.getSquareIndex()).setPlayableSquare(true);
+				gameBoard.get(left.getSquareIndex()).setPlayableSquare(true);
+				gameBoard.get(up.getSquareIndex()).setPlayableSquare(true);
+				gameBoard.get(down.getSquareIndex()).setPlayableSquare(true);
+			
 			}
 		}
+		updateSquareChars();
 	}
 }
