@@ -22,22 +22,22 @@ public class Board {
 		for (int i = 0; i < NUMBEROFSQUARES; i++) { /* cases for each square type */
 			switch (i) {
 			case 16:case 28:case 32:case 42:case 48:case 56:case 64:case 70:case 154:case 160:case 168:case 176:case 182:case 192:case 196:case 208:
-			{gameBoard.add(new Square(DOUBLEWORD,'0',false));break;}
+			{gameBoard.add(new Square(i,DOUBLEWORD,'0',false));break;}
 			
 			case 3:case 11:case 36:case 38:case 45:case 52:case 59:case 92:case 96:case 98:case 102:case 108:case 116:case 122:case 126:case 128:case 132:case 165:case 172:case 179:case 186:case 188:case 213:case 221:
-			{gameBoard.add(new Square(DOUBLELETTER,'1',false));break;}
+			{gameBoard.add(new Square(i,DOUBLELETTER,'1',false));break;}
 			
 			case 0:case 7:case 14:case 90:case 104:case 210:case 217:case 224:
-			{gameBoard.add(new Square(TRIPLEWORD,'2',false));break;}
+			{gameBoard.add(new Square(i,TRIPLEWORD,'2',false));break;}
 			
 			case 20:case 24:case 76:case 80:case 84:case 88:case 136:case 140:case 144:case 148:case 200:case 204:
-			{gameBoard.add(new Square(TRIPLELETTER,'3',false));break;}
+			{gameBoard.add(new Square(i,TRIPLELETTER,'3',false));break;}
 			
 			case 112:
-			{gameBoard.add(new Square(NORMAL,'*',true));break;}
+			{gameBoard.add(new Square(i,NORMAL,'*',true));break;}
 				
 			default:
-				gameBoard.add(new Square(NORMAL,'-',false));
+				gameBoard.add(new Square(i,NORMAL,'-',false));
 				break;
 			}
 		}
@@ -56,5 +56,44 @@ public class Board {
 	
 	public int coordinateToIndex(int x,int y) { /* converts a coordinate to array list index*/
 		return (15*x)+y;
+	}
+	
+	public void addTileToSquare(int x, int y, Tile t) {     /*method to add a tile to a coordinate*/
+		gameBoard.get(coordinateToIndex(x, y)).setSquaresTile(t); 
+		gameBoard.get(coordinateToIndex(x, y)).setSquaresChar(t.getTileLetter());
+		gameBoard.get(coordinateToIndex(x, y)).setPlayedSquare(true);
+		updatePlayableSquares();
+	}
+	
+	public void updatePlayableSquares() {    /*makes squares in the four positions around a played square available */
+		for(Square currentSquare:gameBoard) {
+			
+			if(currentSquare.isPlayedSquare()) {
+				Square right = gameBoard.get(currentSquare.getSquareIndex()+1);
+				Square left = gameBoard.get(currentSquare.getSquareIndex()-1);
+				Square up = gameBoard.get(currentSquare.getSquareIndex()+15);
+				Square down = gameBoard.get(currentSquare.getSquareIndex()-15);
+				
+				if(!right.isPlayedSquare()) {
+					gameBoard.get(right.getSquareIndex()).setPlayableSquare(true);
+					gameBoard.get(right.getSquareIndex()).setSquaresChar(' ');
+				}
+				
+				if(!left.isPlayedSquare()) {
+					gameBoard.get(left.getSquareIndex()).setPlayableSquare(true);
+					gameBoard.get(left.getSquareIndex()).setSquaresChar(' ');
+				}
+					
+				if(!up.isPlayedSquare()) {
+					gameBoard.get(up.getSquareIndex()).setPlayableSquare(true);
+					gameBoard.get(up.getSquareIndex()).setSquaresChar(' ');
+				}
+				
+				if(!down.isPlayedSquare()) {
+					gameBoard.get(down.getSquareIndex()).setPlayableSquare(true);
+					gameBoard.get(down.getSquareIndex()).setSquaresChar(' ');
+				}
+			}
+		}
 	}
 }

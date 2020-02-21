@@ -24,7 +24,7 @@ public class TestPlayer {
 		TestDisplay testFrame= new TestDisplay();
 		
 		testFrame.endGame();
-		testFrame.displayFrame(p1Frame,p1);
-		testFrame.displayFrame(p2Frame,p2);
+//		testFrame.displayFrame(p1Frame,p1,);
+//		testFrame.displayFrame(p2Frame,p2);
 	}
 }

@@ -3,6 +3,7 @@ package ketspoon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,6 +16,10 @@ import javax.swing.JFrame;
  * */
 
 public class TestDisplay {
+	int xAxis;
+	int yAxis;
+	
+	Scanner input = new Scanner(System.in);
 	
 	public void endGame() {
 		JFrame newFrame=new JFrame("End Game");
@@ -33,7 +38,8 @@ public class TestDisplay {
 	    newFrame.add(endGame);
 	}
 	
-	public void displayFrame (Frame testFrame,Player player) {
+	public void displayFrame (Frame testFrame,Player player,Board board) {
+		
 		ArrayList<Tile> tempRemove = new ArrayList<>();
 		JFrame newFrame=new JFrame("Frame");  
 	    JButton frameIndex0=new JButton(""+testFrame.getLettersInFrame().get(0).getTileLetter());
@@ -52,61 +58,96 @@ public class TestDisplay {
 	    frameIndex4.setBounds(204,0,50,50); 
 	    frameIndex5.setBounds(255,0,50,50); 
 	    frameIndex6.setBounds(306,0,50,50); 
-	    endTurn.setBounds(362,0,120,50); 
+	    endTurn.setBounds(362,0,120,50);
 	    
 	    frameIndex0.addActionListener(new ActionListener(){  
 	    	public void actionPerformed(ActionEvent e) {
+	    		Tile tileIndex0 = testFrame.getLettersInFrame().get(0);
 	    		frameIndex0.setText("");
 	    		frameIndex0.setEnabled(false);
-	    		tempRemove.add(testFrame.getLettersInFrame().get(0));
+	    		tempRemove.add(tileIndex0);
+	    		System.out.print("Enter x:");xAxis=input.nextInt();
+	    		System.out.print("Enter y:");yAxis=input.nextInt();
+	    		board.addTileToSquare(xAxis, yAxis, tileIndex0 );
+	    		board.displayBoard();
 	    	}  
 	    });
 	    
 	    frameIndex1.addActionListener(new ActionListener(){  
 	    	public void actionPerformed(ActionEvent e) {
+	    		Tile tileIndex1 = testFrame.getLettersInFrame().get(1);
 	    		frameIndex1.setText("");
 	    		frameIndex1.setEnabled(false);
-	    		tempRemove.add(testFrame.getLettersInFrame().get(1));
+	    		tempRemove.add(tileIndex1);
+	    		System.out.print("Enter x:");xAxis=input.nextInt();
+	    		System.out.print("Enter y:");yAxis=input.nextInt();
+	    		board.addTileToSquare(xAxis, yAxis, tileIndex1 );
+	    		board.displayBoard();
 	    	}  
 	    });
 	    
 	    frameIndex2.addActionListener(new ActionListener(){  
 	    	public void actionPerformed(ActionEvent e) {
+	    		Tile tileIndex2 = testFrame.getLettersInFrame().get(2);
 	    		frameIndex2.setText("");
 	    		frameIndex2.setEnabled(false);
-	    		tempRemove.add(testFrame.getLettersInFrame().get(2));
+	    		tempRemove.add(tileIndex2);
+	    		System.out.print("Enter x:");xAxis=input.nextInt();
+	    		System.out.print("Enter y:");yAxis=input.nextInt();
+	    		board.addTileToSquare(xAxis, yAxis, tileIndex2 );
+	    		board.displayBoard();
 	    	}  
 	    });
 	    
 	    frameIndex3.addActionListener(new ActionListener(){  
 	    	public void actionPerformed(ActionEvent e) {
+	    		Tile tileIndex3 = testFrame.getLettersInFrame().get(3);
 	    		frameIndex3.setText("");
 	    		frameIndex3.setEnabled(false);
-	    		tempRemove.add(testFrame.getLettersInFrame().get(3));
+	    		tempRemove.add(tileIndex3);
+	    		System.out.print("Enter x:");xAxis=input.nextInt();
+	    		System.out.print("Enter y:");yAxis=input.nextInt();
+	    		board.addTileToSquare(xAxis, yAxis, tileIndex3 );
+	    		board.displayBoard();
 	    	}  
 	    });
 	    
 	    frameIndex4.addActionListener(new ActionListener(){  
 	    	public void actionPerformed(ActionEvent e) {
+	    		Tile tileIndex4 = testFrame.getLettersInFrame().get(4);
 	    		frameIndex4.setText("");
 	    		frameIndex4.setEnabled(false);
-	    		tempRemove.add(testFrame.getLettersInFrame().get(4));
+	    		tempRemove.add(tileIndex4);
+	    		System.out.print("Enter x:");xAxis=input.nextInt();
+	    		System.out.print("Enter y:");yAxis=input.nextInt();
+	    		board.addTileToSquare(xAxis, yAxis, tileIndex4 );
+	    		board.displayBoard();
 	    	}  
 	    });
 	    
 	    frameIndex5.addActionListener(new ActionListener(){  
 	    	public void actionPerformed(ActionEvent e) {
+	    		Tile tileIndex5 = testFrame.getLettersInFrame().get(5);
 	    		frameIndex5.setText("");
 	    		frameIndex5.setEnabled(false);
-	    		tempRemove.add(testFrame.getLettersInFrame().get(5));
-	    	}  
+	    		tempRemove.add(tileIndex5);
+	    		System.out.print("Enter x:");xAxis=input.nextInt();
+	    		System.out.print("Enter y:");yAxis=input.nextInt();
+	    		board.addTileToSquare(xAxis, yAxis, tileIndex5 );
+	    		board.displayBoard();
+	    	}
 	    });
 	    
 	    frameIndex6.addActionListener(new ActionListener(){  
 	    	public void actionPerformed(ActionEvent e) {
+	    		Tile tileIndex6 = testFrame.getLettersInFrame().get(6);
 	    		frameIndex6.setText("");
 	    		frameIndex6.setEnabled(false);
-	    		tempRemove.add(testFrame.getLettersInFrame().get(6));
+	    		tempRemove.add(tileIndex6);
+	    		System.out.print("Enter x:");xAxis=input.nextInt();
+	    		System.out.print("Enter y:");yAxis=input.nextInt();
+	    		board.addTileToSquare(xAxis, yAxis, tileIndex6 );
+	    		board.displayBoard();
 	    	}  
 	    });
 	    
