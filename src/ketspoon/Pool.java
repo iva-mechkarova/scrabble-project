@@ -40,7 +40,7 @@ public class Pool {
 		Tile X = new Tile('X',8);   /**/   tileTable.add(X);
 		Tile Y = new Tile('Y',4);   /**/   tileTable.add(Y);
 		Tile Z = new Tile('Z',10);  /**/   tileTable.add(Z);
-		Tile blank = new Tile('-',0);   /**/ tileTable.add(blank);
+		Tile blank = new Tile('+',0);   /**/ tileTable.add(blank);
 		
 		defaultPool();
 	}
