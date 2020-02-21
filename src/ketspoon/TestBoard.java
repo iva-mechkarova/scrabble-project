@@ -2,7 +2,7 @@
 package ketspoon;
 
 
-public class testBoard {
+public class TestBoard {
 
 	public static void main(String[] args) {
 		Board testBoard = new Board();

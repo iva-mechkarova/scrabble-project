@@ -59,6 +59,19 @@ public class Board {
 	}
 	
 	public void addTileToSquare(int x, int y, Tile t) {     /*method to add a tile to a coordinate*/
+		
+		/*If tile is out of bounds then need to exit method*/
+		if(isOutOfBounds(x,y))
+		{
+			return;
+		}
+		
+		/*If invalid placement is attempted then need to exit method*/
+		if(!isValidPlacement(x,y))
+		{
+			return;
+		}	
+
 		gameBoard.get(coordinateToIndex(x, y)).setSquaresTile(t); 
 		gameBoard.get(coordinateToIndex(x, y)).setSquaresChar(t.getTileLetter());
 		gameBoard.get(coordinateToIndex(x, y)).setPlayedSquare(true);
@@ -95,5 +108,31 @@ public class Board {
 				}
 			}
 		}
+	}
+	
+	/*Method to check if coordinates are out of bounds*/
+	public boolean isOutOfBounds(int x, int y)
+	{
+		if(x > 14 || x < 0 || y > 14 || y < 0)
+		{
+			System.out.println("Coordinates (" + x + ", " + y + ") are out of bounds. Please select coordinates which are in bounds of the board.");
+			return true;
+		}	
+		
+		return false;
+	}
+	
+	/*Method to check if the tile is a playable square.*/
+	/*I.e. first tile must be placed in middle, all other tiles must be placed connecting to existing words on board*/
+	public boolean isValidPlacement(int x, int y)
+	{
+		if(!gameBoard.get(coordinateToIndex(x, y)).isPlayableSquare())
+		{
+			System.out.println("Cannot place tile here.");
+			System.out.println("First tile must be placed in middle of board and all other tiles must connect to already existing words on board.");
+			return false;
+		}
+		
+		return true;
 	}
 }
