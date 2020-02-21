@@ -13,7 +13,7 @@ public class Square {
 		squareIndex=index;
 		setSquaresTile(null);
 		squaresChar=c;
-		squareType=type;
+		setSquareType(type);
 		setPlayableSquare(playeable);
 		setPlayedSquare(false);
 	}
@@ -57,6 +57,14 @@ public class Square {
 
 	public void setSquareIndex(int squareIndex) {
 		this.squareIndex = squareIndex;
+	}
+
+	public int getSquareType() {
+		return squareType;
+	}
+
+	public void setSquareType(int squareType) {
+		this.squareType = squareType;
 	}
 	
 }
