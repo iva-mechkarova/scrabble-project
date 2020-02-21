@@ -69,14 +69,6 @@ public class TestDisplay {
 	    		System.out.print("Enter x:");xAxis=input.nextInt();
 	    		System.out.print("Enter y:");yAxis=input.nextInt();
 	    		
-	    		/*If coordinates are out of bounds the user will keep being prompted for correct input*/
-	    		while(board.isOutOfBounds(xAxis, yAxis))
-	    		{
-		    		System.out.print("Enter x:");xAxis=input.nextInt();
-		    		System.out.print("Enter y:");yAxis=input.nextInt();
-	    			
-	    		}
-	    		
 	    		/*If invalid placement of tile is attempted keep prompting for correct input*/
 	    		while(!board.isValidPlacement(xAxis, yAxis))
 	    		{
@@ -85,7 +77,9 @@ public class TestDisplay {
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex0 );
+	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame);
 	    		board.displayBoard();
+	    		
 	    	}  
 	    });
 	    
@@ -98,14 +92,6 @@ public class TestDisplay {
 	    		System.out.print("Enter x:");xAxis=input.nextInt();
 	    		System.out.print("Enter y:");yAxis=input.nextInt();
 	    		
-	    		/*If coordinates are out of bounds the user will keep being prompted for correct input*/
-	    		while(board.isOutOfBounds(xAxis, yAxis))
-	    		{
-		    		System.out.print("Enter x:");xAxis=input.nextInt();
-		    		System.out.print("Enter y:");yAxis=input.nextInt();
-	    			
-	    		}
-	    		
 	    		/*If invalid placement of tile is attempted keep prompting for correct input*/
 	    		while(!board.isValidPlacement(xAxis, yAxis))
 	    		{
@@ -114,6 +100,7 @@ public class TestDisplay {
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex1 );
+	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame);
 	    		board.displayBoard();
 	    	}  
 	    });
@@ -127,14 +114,6 @@ public class TestDisplay {
 	    		System.out.print("Enter x:");xAxis=input.nextInt();
 	    		System.out.print("Enter y:");yAxis=input.nextInt();
 	    		
-	    		/*If coordinates are out of bounds the user will keep being prompted for correct input*/
-	    		while(board.isOutOfBounds(xAxis, yAxis))
-	    		{
-		    		System.out.print("Enter x:");xAxis=input.nextInt();
-		    		System.out.print("Enter y:");yAxis=input.nextInt();
-	    			
-	    		}
-	    		
 	    		/*If invalid placement of tile is attempted keep prompting for correct input*/
 	    		while(!board.isValidPlacement(xAxis, yAxis))
 	    		{
@@ -143,7 +122,9 @@ public class TestDisplay {
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex2 );
+	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame);
 	    		board.displayBoard();
+	    		
 	    	}  
 	    });
 	    
@@ -156,14 +137,6 @@ public class TestDisplay {
 	    		System.out.print("Enter x:");xAxis=input.nextInt();
 	    		System.out.print("Enter y:");yAxis=input.nextInt();
 	    		
-	    		/*If coordinates are out of bounds the user will keep being prompted for correct input*/
-	    		while(board.isOutOfBounds(xAxis, yAxis))
-	    		{
-		    		System.out.print("Enter x:");xAxis=input.nextInt();
-		    		System.out.print("Enter y:");yAxis=input.nextInt();
-	    			
-	    		}
-	    		
 	    		/*If invalid placement of tile is attempted keep prompting for correct input*/
 	    		while(!board.isValidPlacement(xAxis, yAxis))
 	    		{
@@ -172,6 +145,7 @@ public class TestDisplay {
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex3 );
+	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame);
 	    		board.displayBoard();
 	    	}  
 	    });
@@ -185,14 +159,6 @@ public class TestDisplay {
 	    		System.out.print("Enter x:");xAxis=input.nextInt();
 	    		System.out.print("Enter y:");yAxis=input.nextInt();
 	    		
-	    		/*If coordinates are out of bounds the user will keep being prompted for correct input*/
-	    		while(board.isOutOfBounds(xAxis, yAxis))
-	    		{
-		    		System.out.print("Enter x:");xAxis=input.nextInt();
-		    		System.out.print("Enter y:");yAxis=input.nextInt();
-	    			
-	    		}
-	    		
 	    		/*If invalid placement of tile is attempted keep prompting for correct input*/
 	    		while(!board.isValidPlacement(xAxis, yAxis))
 	    		{
@@ -201,6 +167,7 @@ public class TestDisplay {
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex4 );
+	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame);
 	    		board.displayBoard();
 	    	}  
 	    });
@@ -214,14 +181,6 @@ public class TestDisplay {
 	    		System.out.print("Enter x:");xAxis=input.nextInt();
 	    		System.out.print("Enter y:");yAxis=input.nextInt();
 	    		
-	    		/*If coordinates are out of bounds the user will keep being prompted for correct input*/
-	    		while(board.isOutOfBounds(xAxis, yAxis))
-	    		{
-		    		System.out.print("Enter x:");xAxis=input.nextInt();
-		    		System.out.print("Enter y:");yAxis=input.nextInt();
-	    			
-	    		}
-	    		
 	    		/*If invalid placement of tile is attempted keep prompting for correct input*/
 	    		while(!board.isValidPlacement(xAxis, yAxis))
 	    		{
@@ -230,6 +189,7 @@ public class TestDisplay {
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex5 );
+	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame);
 	    		board.displayBoard();
 	    	}
 	    });
@@ -243,14 +203,6 @@ public class TestDisplay {
 	    		System.out.print("Enter x:");xAxis=input.nextInt();
 	    		System.out.print("Enter y:");yAxis=input.nextInt();
 	    		
-	    		/*If coordinates are out of bounds the user will keep being prompted for correct input*/
-	    		while(board.isOutOfBounds(xAxis, yAxis))
-	    		{
-		    		System.out.print("Enter x:");xAxis=input.nextInt();
-		    		System.out.print("Enter y:");yAxis=input.nextInt();
-	    			
-	    		}
-	    		
 	    		/*If invalid placement of tile is attempted keep prompting for correct input*/
 	    		while(!board.isValidPlacement(xAxis, yAxis))
 	    		{
@@ -259,6 +211,7 @@ public class TestDisplay {
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex6 );
+	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame);
 	    		board.displayBoard();
 	    	}  
 	    });

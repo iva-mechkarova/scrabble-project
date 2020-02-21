@@ -10,6 +10,7 @@ public class Board {
 	public static final int TRIPLEWORD=2;
 	public static final int TRIPLELETTER=3;
 	public static final int NORMAL=9;
+	private Square previousSquare;
 	
 	public ArrayList<Square> gameBoard;
 
@@ -123,15 +124,113 @@ public class Board {
 	/*I.e. first tile must be placed in middle, all other tiles must be placed connecting to existing words on board*/
 	public boolean isValidPlacement(int x, int y)
 	{
-		if(!gameBoard.get(coordinateToIndex(x, y)).isPlayableSquare())
+		if(isOutOfBounds(x,y))
 		{
-			System.out.println("Cannot place tile here.");
-			System.out.println("First tile must be placed in middle of board and all other tiles must connect to already existing words on board.");
 			return false;
 		}
 		
+		if(gameBoard.get(coordinateToIndex(x, y)).isPlayedSquare())
+		{
+			System.out.println("Cannot place tiles on top of eachother");
+			return false;
+		}
+		
+		if(!gameBoard.get(coordinateToIndex(x, y)).isPlayableSquare())
+		{
+			System.out.println("Cannot place tile here");
+			System.out.println("First tile must be placed in middle of board and all other tiles must connect to already existing words on board");
+			return false;
+		}
+		
+		
 		return true;
 	}
+	
+	public void possiblePlays(int index, Frame playersFrame)
+	{
+		for(Square currentSquare:gameBoard)
+		{
+			currentSquare.setPlayableSquare(false);
+			
+		}
+		
+		Square playedSquare = gameBoard.get(index);
+		
+		Square right;
+		Square left;
+		Square up;
+		Square down;
+
+		if(playersFrame.getRemainingTurns()==7 || Math.abs(index - getPreviousSquare().getSquareIndex())<15)
+		{
+			
+			right = gameBoard.get(playedSquare.getSquareIndex());
+			left = gameBoard.get(playedSquare.getSquareIndex());
+			
+			int i = 0;
+			while(right.isPlayedSquare() && i<=15)
+			{
+				i++;
+				right = gameBoard.get(playedSquare.getSquareIndex()+i);
+			}
+			
+			if(i>0 && i<15) 
+				right.setPlayableSquare(true);
+			
+			i = 0;
+			while(left.isPlayedSquare()  && i<=15)
+			{
+				i++;
+				left = gameBoard.get(playedSquare.getSquareIndex()-i);
+			}
+			
+			if(i>0 && i<15) 	
+				left.setPlayableSquare(true);	
+		}
+		
+		if(playersFrame.getRemainingTurns()==7 || Math.abs(index - getPreviousSquare().getSquareIndex())>=15)
+		{
+			up = gameBoard.get(playedSquare.getSquareIndex());
+			down = gameBoard.get(playedSquare.getSquareIndex());
+			
+			int i = 15;
+			while(up.isPlayedSquare() && i<=15*15)
+			{
+				up = gameBoard.get(playedSquare.getSquareIndex()+i);
+				i+=15;
+			}
+			
+			if(i>15 && i<15*15) 
+				up.setPlayableSquare(true);
+			
+			i = 15;
+			while(down.isPlayedSquare()  && i<=15*15)
+			{
+				down = gameBoard.get(playedSquare.getSquareIndex()-i);
+				i+=15;
+			}
+			
+			if(i>15 && i<15*15) 
+				down.setPlayableSquare(true);
+				
+		}
+
+
+		updateSquareChars();
+		setPreviousSquare(gameBoard.get(index));
+		playersFrame.decrementTurn();
+	}
+	
+	public void setPreviousSquare(Square prev)
+	{
+		previousSquare = prev;
+	}
+	
+	public Square getPreviousSquare()
+	{
+		return previousSquare;
+	}
+
 }
 
 

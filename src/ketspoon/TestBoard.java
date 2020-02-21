@@ -13,7 +13,7 @@ public class TestBoard {
 		
 		
 		Frame p1Frame = new Frame(testPool);
-		Player p1= new Player(p1Frame, "PLAYER1");
+		Player p1= new Player(p1Frame, "PLAYER1"); 
 		
 		TestDisplay testFrame= new TestDisplay();
 		testFrame.endGame();
