@@ -62,23 +62,23 @@ public class TestDisplay {
 	    
 	    frameIndex0.addActionListener(new ActionListener(){  
 	    	public void actionPerformed(ActionEvent e) {
-	    		Tile tileIndex0 = testFrame.getLettersInFrame().get(0);
+	    		Tile tileIndex0 = testFrame.getLettersInFrame().get(0); 
 	    		frameIndex0.setText("");
 	    		frameIndex0.setEnabled(false);
-	    		tempRemove.add(tileIndex0);
-	    		System.out.print("Enter x:");xAxis=input.nextInt();
-	    		System.out.print("Enter y:");yAxis=input.nextInt();
+	    		tempRemove.add(tileIndex0); 
+	    		System.out.print("Enter row:");xAxis=input.nextInt();
+	    		System.out.print("Enter column:");yAxis=input.nextInt();
 	    		
 	    		/*If invalid placement of tile is attempted keep prompting for correct input*/
 	    		while(!board.isValidPlacement(xAxis, yAxis))
 	    		{
-		    		System.out.print("Enter x:");xAxis=input.nextInt();
-		    		System.out.print("Enter y:");yAxis=input.nextInt();
+		    		System.out.print("Enter row:");xAxis=input.nextInt();
+		    		System.out.print("Enter column:");yAxis=input.nextInt();
 	    		}
 	    		
-	    		board.addTileToSquare(xAxis, yAxis, tileIndex0 );
-	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame);
-	    		board.displayBoard();
+	    		board.addTileToSquare(xAxis, yAxis, tileIndex0 ); 
+	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame); 
+	    		board.displayBoard(); 
 	    		
 	    	}  
 	    });
@@ -89,14 +89,14 @@ public class TestDisplay {
 	    		frameIndex1.setText("");
 	    		frameIndex1.setEnabled(false);
 	    		tempRemove.add(tileIndex1);
-	    		System.out.print("Enter x:");xAxis=input.nextInt();
-	    		System.out.print("Enter y:");yAxis=input.nextInt();
+	    		System.out.print("Enter row:");xAxis=input.nextInt();
+	    		System.out.print("Enter column:");yAxis=input.nextInt();
 	    		
 	    		/*If invalid placement of tile is attempted keep prompting for correct input*/
 	    		while(!board.isValidPlacement(xAxis, yAxis))
 	    		{
-		    		System.out.print("Enter x:");xAxis=input.nextInt();
-		    		System.out.print("Enter y:");yAxis=input.nextInt();
+		    		System.out.print("Enter row:");xAxis=input.nextInt();
+		    		System.out.print("Enter column:");yAxis=input.nextInt();
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex1 );
@@ -111,14 +111,14 @@ public class TestDisplay {
 	    		frameIndex2.setText("");
 	    		frameIndex2.setEnabled(false);
 	    		tempRemove.add(tileIndex2);
-	    		System.out.print("Enter x:");xAxis=input.nextInt();
-	    		System.out.print("Enter y:");yAxis=input.nextInt();
+	    		System.out.print("Enter row:");xAxis=input.nextInt();
+	    		System.out.print("Enter column:");yAxis=input.nextInt();
 	    		
 	    		/*If invalid placement of tile is attempted keep prompting for correct input*/
 	    		while(!board.isValidPlacement(xAxis, yAxis))
 	    		{
-		    		System.out.print("Enter x:");xAxis=input.nextInt();
-		    		System.out.print("Enter y:");yAxis=input.nextInt();
+		    		System.out.print("Enter row:");xAxis=input.nextInt();
+		    		System.out.print("Enter column:");yAxis=input.nextInt();
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex2 );
@@ -134,14 +134,14 @@ public class TestDisplay {
 	    		frameIndex3.setText("");
 	    		frameIndex3.setEnabled(false);
 	    		tempRemove.add(tileIndex3);
-	    		System.out.print("Enter x:");xAxis=input.nextInt();
-	    		System.out.print("Enter y:");yAxis=input.nextInt();
+	    		System.out.print("Enter row:");xAxis=input.nextInt();
+	    		System.out.print("Enter column:");yAxis=input.nextInt();
 	    		
 	    		/*If invalid placement of tile is attempted keep prompting for correct input*/
 	    		while(!board.isValidPlacement(xAxis, yAxis))
 	    		{
-		    		System.out.print("Enter x:");xAxis=input.nextInt();
-		    		System.out.print("Enter y:");yAxis=input.nextInt();
+		    		System.out.print("Enter row:");xAxis=input.nextInt();
+		    		System.out.print("Enter column:");yAxis=input.nextInt();
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex3 );
@@ -156,14 +156,14 @@ public class TestDisplay {
 	    		frameIndex4.setText("");
 	    		frameIndex4.setEnabled(false);
 	    		tempRemove.add(tileIndex4);
-	    		System.out.print("Enter x:");xAxis=input.nextInt();
-	    		System.out.print("Enter y:");yAxis=input.nextInt();
+	    		System.out.print("Enter row:");xAxis=input.nextInt();
+	    		System.out.print("Enter column:");yAxis=input.nextInt();
 	    		
 	    		/*If invalid placement of tile is attempted keep prompting for correct input*/
 	    		while(!board.isValidPlacement(xAxis, yAxis))
 	    		{
-		    		System.out.print("Enter x:");xAxis=input.nextInt();
-		    		System.out.print("Enter y:");yAxis=input.nextInt();
+		    		System.out.print("Enter row:");xAxis=input.nextInt();
+		    		System.out.print("Enter column:");yAxis=input.nextInt();
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex4 );
@@ -178,14 +178,14 @@ public class TestDisplay {
 	    		frameIndex5.setText("");
 	    		frameIndex5.setEnabled(false);
 	    		tempRemove.add(tileIndex5);
-	    		System.out.print("Enter x:");xAxis=input.nextInt();
-	    		System.out.print("Enter y:");yAxis=input.nextInt();
+	    		System.out.print("Enter row:");xAxis=input.nextInt();
+	    		System.out.print("Enter column:");yAxis=input.nextInt();
 	    		
 	    		/*If invalid placement of tile is attempted keep prompting for correct input*/
 	    		while(!board.isValidPlacement(xAxis, yAxis))
 	    		{
-		    		System.out.print("Enter x:");xAxis=input.nextInt();
-		    		System.out.print("Enter y:");yAxis=input.nextInt();
+		    		System.out.print("Enter row:");xAxis=input.nextInt();
+		    		System.out.print("Enter column:");yAxis=input.nextInt();
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex5 );
@@ -200,14 +200,14 @@ public class TestDisplay {
 	    		frameIndex6.setText("");
 	    		frameIndex6.setEnabled(false);
 	    		tempRemove.add(tileIndex6);
-	    		System.out.print("Enter x:");xAxis=input.nextInt();
-	    		System.out.print("Enter y:");yAxis=input.nextInt();
+	    		System.out.print("Enter row:");xAxis=input.nextInt();
+	    		System.out.print("Enter column:");yAxis=input.nextInt();
 	    		
 	    		/*If invalid placement of tile is attempted keep prompting for correct input*/
 	    		while(!board.isValidPlacement(xAxis, yAxis))
 	    		{
-		    		System.out.print("Enter x:");xAxis=input.nextInt();
-		    		System.out.print("Enter y:");yAxis=input.nextInt();
+		    		System.out.print("Enter row:");xAxis=input.nextInt();
+		    		System.out.print("Enter column:");yAxis=input.nextInt();
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex6 );
@@ -229,7 +229,14 @@ public class TestDisplay {
 	    		player.calculateScore(turnScore);
 	    		System.out.println(player.toString());
 	    		newFrame.setVisible(false);
-	    	}  
+	    		
+	    		board.updatePlayableSquares();
+	    		board.displayBoard();
+	    	}
+	    	
+	    	
+	    	
+	    	
 	    });
 	    
 	    newFrame.add(frameIndex0);
