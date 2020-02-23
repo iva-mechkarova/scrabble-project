@@ -6,7 +6,6 @@ public class Frame
 {
 	private ArrayList<Tile> lettersInFrame; //Stores the letters that each player has in their frame
 	private final int FRAME_SIZE = 7; //Final int to store the size of the frame
-	private int remainingTurns = FRAME_SIZE;
 	
 	//Constructor for Frame
 	public Frame(Pool pool) 
@@ -55,13 +54,4 @@ public class Frame
 		return lettersInFrame.toString();
 	}	
 	
-	public int getRemainingTurns()
-	{
-		return remainingTurns;
-	}
-	
-	public void decrementTurn()
-	{
-		remainingTurns--;
-	}
 }

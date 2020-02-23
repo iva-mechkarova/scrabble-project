@@ -60,19 +60,6 @@ public class Board {
 	}
 	
 	public void addTileToSquare(int x, int y, Tile t) {     /*method to add a tile to a coordinate*/
-		
-		/*If tile is out of bounds then need to exit method*/
-		if(isOutOfBounds(x,y))
-		{
-			return;
-		}
-		
-		/*If invalid placement is attempted then need to exit method*/
-		if(!isValidPlacement(x,y))
-		{
-			return;
-		}	
-
 		gameBoard.get(coordinateToIndex(x, y)).setSquaresTile(t); 
 		gameBoard.get(coordinateToIndex(x, y)).setSquaresChar(t.getTileLetter());
 		gameBoard.get(coordinateToIndex(x, y)).setPlayedSquare(true);
@@ -150,7 +137,7 @@ public class Board {
 	/*i.e. after first letter is placed only squares around this are playable and after second letter
 	 is placed the direction of the word is decided*/
 	/*The index of the played square is passed in and the player's frame*/
-	public void possiblePlays(int index, Frame playersFrame)
+	public void possiblePlays(int index, Frame playersFrame, ArrayList<Tile> placedTiles)
 	{
 		/*Sets all squares on board to not playable*/
 		for(Square currentSquare:gameBoard)
@@ -169,9 +156,9 @@ public class Board {
 		Square up;
 		Square down;
 
-		/*If there are 7 remaining turns then we have only placed one tile so we will have 4 squares to pick from*/
+		/*If exactly one tile has been placed, we'll have 4 squares to pick from for the next placement so we need right & left options*/
 		/*If the index is less than absolute 15 then we must be going in a horizontal direction so we have right & left plays*/
-		if(playersFrame.getRemainingTurns()==7 || Math.abs(index - getPreviousSquare().getSquareIndex())<15)
+		if(placedTiles.size()==1 || Math.abs(index - getPreviousSquare().getSquareIndex())<15)
 		{
 			//Initialize right & left variables as the squares to the right and left of the played square
 			right = gameBoard.get(playedSquare.getSquareIndex()); 
@@ -204,9 +191,9 @@ public class Board {
 				left.setPlayableSquare(true);	
 		}
 		
-		/*If there are 7 remaining turns then we have only placed one tile so we will have 4 squares to pick from*/
+		/*If exactly one tile has been placed, we'll have 4 squares to pick from for the next placement so we need up & down options*/
 		/*If the index is greater than absolute 15 then we must be going in a vertical direction so we have up & down plays*/
-		if(playersFrame.getRemainingTurns()==7 || Math.abs(index - getPreviousSquare().getSquareIndex())>=15)
+		if(placedTiles.size()==1 || Math.abs(index - getPreviousSquare().getSquareIndex())>=15)
 		{
 			//Initialize up & down variables as the squares above and below the played square
 			up = gameBoard.get(playedSquare.getSquareIndex());
@@ -236,14 +223,11 @@ public class Board {
 			
 			//If we have found a playable square, set it to playable
 			if(i>15 && i<15*15) 
-				down.setPlayableSquare(true);
-				
+				down.setPlayableSquare(true);	
 		}
-
 
 		updateSquareChars(); //Call method to update squares i.e. if square is playable it'll appear blank 
 		setPreviousSquare(gameBoard.get(index)); //Set previous square to the played square
-		playersFrame.decrementTurn(); //Decrement number of turns left
 	}
 	
 	/*Mutator method for previousSquare*/

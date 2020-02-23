@@ -77,7 +77,7 @@ public class TestDisplay {
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex0 ); 
-	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame); 
+	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame, tempRemove); 
 	    		board.displayBoard(); 
 	    		
 	    	}  
@@ -100,7 +100,7 @@ public class TestDisplay {
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex1 );
-	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame);
+	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame, tempRemove);
 	    		board.displayBoard();
 	    	}  
 	    });
@@ -122,7 +122,7 @@ public class TestDisplay {
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex2 );
-	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame);
+	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame, tempRemove);
 	    		board.displayBoard();
 	    		
 	    	}  
@@ -145,7 +145,7 @@ public class TestDisplay {
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex3 );
-	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame);
+	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame, tempRemove);
 	    		board.displayBoard();
 	    	}  
 	    });
@@ -167,7 +167,7 @@ public class TestDisplay {
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex4 );
-	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame);
+	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame, tempRemove);
 	    		board.displayBoard();
 	    	}  
 	    });
@@ -189,7 +189,7 @@ public class TestDisplay {
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex5 );
-	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame);
+	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame, tempRemove);
 	    		board.displayBoard();
 	    	}
 	    });
@@ -211,7 +211,7 @@ public class TestDisplay {
 	    		}
 	    		
 	    		board.addTileToSquare(xAxis, yAxis, tileIndex6 );
-	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame);
+	    		board.possiblePlays(board.coordinateToIndex(xAxis, yAxis), testFrame, tempRemove);
 	    		board.displayBoard();
 	    	}  
 	    });
