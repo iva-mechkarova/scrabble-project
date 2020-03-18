@@ -2,14 +2,26 @@ package ketspoon;
 
 import java.util.ArrayList;
 
+import javafx.scene.image.Image;
+
 public class Board {
 	public static final int NUMBEROFSQUARES=225;
+	
+	public final Image plainSquare = new Image(getClass().getResourceAsStream("/resources/plainSquare.png"));
+	public final Image doubleLetter = new Image(getClass().getResourceAsStream("/resources/doubleLetter.png"));
+	public final Image doubleWord = new Image(getClass().getResourceAsStream("/resources/doubleWord.png"));
+	public final Image tripleLetter = new Image(getClass().getResourceAsStream("/resources/tripleLetter.png"));
+	public final Image tripleWord= new Image(getClass().getResourceAsStream("/resources/tripleWord.png"));
+	public final Image centerSquare= new Image(getClass().getResourceAsStream("/resources/centerSquare.png"));
 	
 	public static final int DOUBLEWORD=0;	
 	public static final int DOUBLELETTER=1;
 	public static final int TRIPLEWORD=2;
 	public static final int TRIPLELETTER=3;
 	public static final int NORMAL=9;
+	public static final int CENTER=8;
+	
+	
 	private Square previousSquare; //Stores previously played square during turn
 	
 	public ArrayList<Square> gameBoard;
@@ -23,22 +35,22 @@ public class Board {
 		for (int i = 0; i < NUMBEROFSQUARES; i++) { /* cases for each square type */
 			switch (i) {
 			case 16:case 28:case 32:case 42:case 48:case 56:case 64:case 70:case 154:case 160:case 168:case 176:case 182:case 192:case 196:case 208:
-			{gameBoard.add(new Square(i,DOUBLEWORD,'0',false));break;}
+			{gameBoard.add(new Square(i,DOUBLEWORD,doubleWord,false));break;}
 			
 			case 3:case 11:case 36:case 38:case 45:case 52:case 59:case 92:case 96:case 98:case 102:case 108:case 116:case 122:case 126:case 128:case 132:case 165:case 172:case 179:case 186:case 188:case 213:case 221:
-			{gameBoard.add(new Square(i,DOUBLELETTER,'1',false));break;}
+			{gameBoard.add(new Square(i,DOUBLELETTER,doubleLetter,false));break;}
 			
-			case 0:case 7:case 14:case 90:case 104:case 210:case 217:case 224:
-			{gameBoard.add(new Square(i,TRIPLEWORD,'2',false));break;}
+			case 0:case 7:case 14:case 105:case 119:case 210:case 217:case 224:
+			{gameBoard.add(new Square(i,TRIPLEWORD,tripleWord,false));break;}
 			
 			case 20:case 24:case 76:case 80:case 84:case 88:case 136:case 140:case 144:case 148:case 200:case 204:
-			{gameBoard.add(new Square(i,TRIPLELETTER,'3',false));break;}
+			{gameBoard.add(new Square(i,TRIPLELETTER,tripleLetter,false));break;}
 			
 			case 112:
-			{gameBoard.add(new Square(i,NORMAL,'*',true));break;}
+			{gameBoard.add(new Square(i,CENTER,centerSquare,true));break;}
 				
 			default:
-				gameBoard.add(new Square(i,NORMAL,'-',false));
+				gameBoard.add(new Square(i,NORMAL,plainSquare,false));
 				break;
 			}
 		}

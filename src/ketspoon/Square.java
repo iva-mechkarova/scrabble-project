@@ -1,4 +1,7 @@
-package ketspoon;
+ package ketspoon;
+
+import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 
 public class Square {
 	
@@ -8,14 +11,16 @@ public class Square {
 	private int squareType;
 	private boolean playableSquare;
 	private boolean playedSquare;
+	private Button squareButton;
+	private Image squareImage;
 	
-	public Square(int index,int type,char c,boolean playeable) {
+	public Square(int index,int type,Image i,boolean playeable) {
 		squareIndex=index;
-		setSquaresTile(null);
-		squaresChar=c;
-		setSquareType(type);
-		setPlayableSquare(playeable);
-		setPlayedSquare(false);
+		squaresTile=null;
+		squareImage=i;
+		squareType=type;
+		playableSquare=playeable;
+		playedSquare=false;
 	}
 
 	public char getSquaresChar() {
@@ -65,6 +70,22 @@ public class Square {
 
 	public void setSquareType(int squareType) {
 		this.squareType = squareType;
+	}
+
+	public Button getSquareButton() {
+		return squareButton;
+	}
+
+	public void setSquareButton(Button squareButton) {
+		this.squareButton = squareButton;
+	}
+
+	public Image getSquareImage() {
+		return squareImage;
+	}
+
+	public void setSquareImage(Image squareImage) {
+		this.squareImage = squareImage;
 	}
 	
 }
