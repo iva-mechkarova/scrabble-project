@@ -11,6 +11,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -24,6 +28,12 @@ public class UI extends Application {
 	public static final int WIDTH=15;
 	public static final int HEIGHT=15;
 	
+	Pool pool = new Pool();
+	Frame frame1 = new Frame(pool);
+	Frame frame2 = new Frame(pool);
+	Player player1 = new Player(frame1, "");
+	Player player2 = new Player(frame2, "");
+	
 	GridPane grid = new GridPane();
 	
 	Button endTurn = new Button("END TURN");
@@ -32,8 +42,9 @@ public class UI extends Application {
 	Button passButton = new Button("PASS");
 	Button quitButton = new Button("QUIT");
 	VBox buttonBox = new VBox(20, endTurn, helpButton, exchangeButton, passButton, quitButton);
+	HBox playerInfoBox = new HBox(10);
 	
-	HBox root = new HBox(grid, buttonBox);
+	HBox root = new HBox(grid, buttonBox, playerInfoBox);
 	Scene scene = new Scene(root,1000,820);
 		
 	public void initBoard() {	
@@ -163,6 +174,7 @@ public class UI extends Application {
 		Stage helpWindow = new Stage();	      
 		helpWindow.initModality(Modality.APPLICATION_MODAL);
 		helpWindow.setTitle("Help");  
+		
 		Button closeHelpButton = new Button("CLOSE");
 		closeHelpButton.setMaxSize(200, 20);
 		closeHelpButton.setMinSize(200, 40);
@@ -184,27 +196,192 @@ public class UI extends Application {
 		
 		closeHelpButton.setOnAction(e -> helpWindow.close());
 		
-		Text helpText = new Text(10,50, "Help:");
+		Text helpTextTitle = new Text("Placing a word:");
+		helpTextTitle.setStyle("-fx-font-size: 15pt;"
+				+ "-fx-font-weight: bold;");
+		
+		Text helpTextBody = new Text("1. Select a tile from your rack.\n"
+				+ "2. Click on any of the playable squares on the board to place it there i.e. first tile must be placed in the middle "
+				+ "of the board and all other words must be connected to already existing tiles on the board.\n"
+				+ "3. Select the next letter of the word you are placing from your rack.\n"
+				+ "4. Select one of the playable squares on the board to place it there and keep doing this with the rest "
+				+ "of the letters of the word you wish to place.\n");
+		helpTextBody.setStyle("-fx-font-size: 10pt;");
+		
+		Text helpTextPass = new Text("Passing your turn:");
+		helpTextPass.setStyle("-fx-font-size: 15pt;"
+				+ "-fx-font-weight: bold;");
+		
+		Text helpTextPassBody = new Text("Rather than exchange tiles, you can also pass your turn and take a zero score. "
+				+ "This is your only option if there are six or fewer tiles remaining in the pool. "
+				+ "If all of the players pass twice in succession, the game ends.");
+		helpTextPassBody.setStyle("-fx-font-size: 10pt;");
+		
+		Text helpTextExchange = new Text("Exchanging tiles:");
+		helpTextExchange.setStyle("-fx-font-size: 15pt;"
+				+ "-fx-font-weight: bold;");
+		
+		Text helpTextExchangeBody = new Text("You may swap one to seven tiles instead of playing a word on your turn. "
+				+ "You can only do this if at least seven tiles are still in the pool. "
+				+ "To do this first click on the exchange button and then click on the tiles that you wish to exchange one by one.");
+		helpTextExchangeBody.setStyle("-fx-font-size: 10pt;");
+		
+		Text helpEndTurn = new Text("Ending turn:");
+		helpEndTurn.setStyle("-fx-font-size: 15pt;"
+				+ "-fx-font-weight: bold;");
+		
+		Text helpEndTurnBody = new Text("Once you are finished placing a word OR selecting tiles to exchange, click"
+				+ " on the end turn button.");
+		helpEndTurnBody.setStyle("-fx-font-size: 10pt;");
+		
 		VBox layout = new VBox(10);
-		     
+		ScrollPane scrollPane = new ScrollPane(layout);
+		scrollPane.setFitToHeight(true);
+		scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		scrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
+
 		      
-		layout.getChildren().addAll(helpText, closeHelpButton);
+		layout.getChildren().addAll(helpTextTitle, helpTextBody, helpTextPass, helpTextPassBody, helpTextExchange, 
+				helpTextExchangeBody, helpEndTurn, helpEndTurnBody, closeHelpButton);
 		      
 		layout.setAlignment(Pos.CENTER);
 		      
-		Scene scene1 = new Scene(layout, 300, 250);
+		Scene scene1 = new Scene(scrollPane, 600, 450);
 		      
 		helpWindow.setScene(scene1);
-		      
+		
+		helpTextBody.wrappingWidthProperty().bind(scene1.widthProperty().subtract(15));
+		helpTextPassBody.wrappingWidthProperty().bind(scene1.widthProperty().subtract(15));
+		helpTextExchangeBody.wrappingWidthProperty().bind(scene1.widthProperty().subtract(15));
+		helpEndTurnBody.wrappingWidthProperty().bind(scene1.widthProperty().subtract(15));
+		
 		helpWindow.showAndWait();
 	       
+	}
+	
+	public void initPlayerOne()
+	{
+		Stage playerNameWindow = new Stage();	      
+		playerNameWindow.initModality(Modality.APPLICATION_MODAL);
+		playerNameWindow.setTitle("Player 1");  
+		
+		Label playerNameLabel = new Label("Enter player 1's name:");
+		playerNameLabel.setStyle("-fx-font-size: 10pt;"
+				+ "-fx-font-weight: bold;");
+		TextField playerName = new TextField();
+		
+		Button doneButton = new Button("DONE");
+		doneButton.setMaxSize(150, 20);
+		doneButton.setMinSize(200, 40);
+		
+		doneButton.setStyle("-fx-font-size: 15pt;"
+				+ "-fx-font-weight: bold;"
+				+ "-fx-border-color: #177a76;"
+				+ "-fx-background-color: #23B2AC;");
+		
+		doneButton.setOnMouseEntered(e -> doneButton.setStyle("-fx-font-size: 15pt;"
+				+ "-fx-font-weight: bold;"
+				+ "-fx-border-color: #177a76;"
+				+ "-fx-background-color: #c9fffd;"));
+		
+		doneButton.setOnMouseExited(e -> doneButton.setStyle("-fx-font-size: 15pt;"
+				+ "-fx-font-weight: bold;"
+				+ "-fx-border-color: #177a76;"
+				+ "-fx-background-color: #23B2AC;"));
+		
+		doneButton.setOnAction(e -> {
+			player1.setName(playerName.getText());
+			playerNameWindow.close();
+		});
+		
+		VBox layout = new VBox(10);
+		ScrollPane scrollPane = new ScrollPane(layout);
+		scrollPane.setFitToHeight(true);
+		scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+
+		      
+		layout.getChildren().addAll(playerNameLabel, playerName, doneButton);
+		      
+		layout.setAlignment(Pos.CENTER);
+		      
+		Scene scene1 = new Scene(scrollPane, 240, 110);
+		      
+		playerNameWindow.setScene(scene1);
+
+		playerNameWindow.showAndWait();
+	       
+	}
+	
+	public void initPlayerTwo()
+	{
+		Stage playerNameWindow = new Stage();	      
+		playerNameWindow.initModality(Modality.APPLICATION_MODAL);
+		playerNameWindow.setTitle("Player 2");  
+		
+		Label playerNameLabel = new Label("Enter player 2's name:");
+		playerNameLabel.setStyle("-fx-font-size: 10pt;"
+				+ "-fx-font-weight: bold;");
+		TextField playerName = new TextField();
+		
+		Button doneButton = new Button("DONE");
+		doneButton.setMaxSize(150, 20);
+		doneButton.setMinSize(200, 40);
+		
+		doneButton.setStyle("-fx-font-size: 15pt;"
+				+ "-fx-font-weight: bold;"
+				+ "-fx-border-color: #177a76;"
+				+ "-fx-background-color: #23B2AC;");
+		
+		doneButton.setOnMouseEntered(e -> doneButton.setStyle("-fx-font-size: 15pt;"
+				+ "-fx-font-weight: bold;"
+				+ "-fx-border-color: #177a76;"
+				+ "-fx-background-color: #c9fffd;"));
+		
+		doneButton.setOnMouseExited(e -> doneButton.setStyle("-fx-font-size: 15pt;"
+				+ "-fx-font-weight: bold;"
+				+ "-fx-border-color: #177a76;"
+				+ "-fx-background-color: #23B2AC;"));
+		
+		doneButton.setOnAction(e -> {
+			player2.setName(playerName.getText());
+			playerNameWindow.close();
+		});
+		
+		VBox layout = new VBox(10);
+		ScrollPane scrollPane = new ScrollPane(layout);
+		scrollPane.setFitToHeight(true);
+		scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+
+		      
+		layout.getChildren().addAll(playerNameLabel, playerName, doneButton);
+		      
+		layout.setAlignment(Pos.CENTER);
+		      
+		Scene scene1 = new Scene(scrollPane, 240, 110);
+		      
+		playerNameWindow.setScene(scene1);
+
+		playerNameWindow.showAndWait();
+	       
+	}
+	
+	public void displayPlayerInfo()
+	{
+		Label playerOneName = new Label(player1.getName());
+		Label playerTwoName = new Label(player2.getName());
+		playerInfoBox.getChildren().addAll(playerOneName, playerTwoName);
 	}
 	
 	@Override
 	public void start(Stage stage) {
 		try {
+			initPlayerOne();
+			initPlayerTwo();
 			initBoard();
 			initButtons();
+			displayPlayerInfo();
 			
 			stage.setTitle("Scrabble by Iva Mechkarova, Morgan Collins and Evan Willis");
 			stage.setScene(scene);
