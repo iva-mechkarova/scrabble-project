@@ -3,6 +3,7 @@ package ketspoon;
 import java.util.ArrayList;
 
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class Board {
 	public static final int NUMBEROFSQUARES=225;
@@ -56,35 +57,36 @@ public class Board {
 		}
 	}
 	
-	public void displayBoard() {
-		System.out.println("-------------------------------------------------------------");
-		for (int i = 0; i < NUMBEROFSQUARES; i++) {
-			System.out.print("| "+gameBoard.get(i).getSquaresChar()+" ");
-			if((i+1)%15==0) /* prints a line every 15 squares */
-				System.out.println("| "+i
-						/15+"\n-------------------------------------------------------------");
-		}
-		System.out.println("  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14 ");
-	}
+//	public void displayBoard() {
+//		System.out.println("-------------------------------------------------------------");
+//		for (int i = 0; i < NUMBEROFSQUARES; i++) {
+//			System.out.print("| "+gameBoard.get(i).getSquaresChar()+" ");
+//			if((i+1)%15==0) /* prints a line every 15 squares */
+//				System.out.println("| "+i
+//						/15+"\n-------------------------------------------------------------");
+//		}
+//		System.out.println("  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14 ");
+//	}
 	
 	public int coordinateToIndex(int x,int y) { /* converts a coordinate to array list index*/
 		return (15*x)+y;
 	}
 	
-	public void addTileToSquare(int x, int y, Tile t) {     /*method to add a tile to a coordinate*/
-		gameBoard.get(coordinateToIndex(x, y)).setSquaresTile(t); 
-		gameBoard.get(coordinateToIndex(x, y)).setSquaresChar(t.getTileLetter());
-		gameBoard.get(coordinateToIndex(x, y)).setPlayedSquare(true);
+	public void addTileToSquare(int x, Tile t) {     /*method to add a tile to a coordinate*/
+		gameBoard.get(x).setSquaresTile(t); 
+		gameBoard.get(x).setSquaresChar(t.getTileLetter());
+		gameBoard.get(x).getSquareButton().setGraphic(new ImageView(t.getTileImage()));
+		gameBoard.get(x).setPlayedSquare(true);
 		updatePlayableSquares();
 	}
 	
-	public void updateSquareChars() {
+	public void updateSquareDisabled() {
 		for (int i = 0; i < NUMBEROFSQUARES; i++) {
-			if(gameBoard.get(i).isPlayableSquare()&&gameBoard.get(i).getSquareType()==9&&!gameBoard.get(i).isPlayedSquare())
-				gameBoard.get(i).setSquaresChar(' ');
+			if(gameBoard.get(i).isPlayableSquare()&&!gameBoard.get(i).isPlayedSquare())
+				gameBoard.get(i).getSquareButton().setDisable(false);
 			
-			if(!gameBoard.get(i).isPlayableSquare()&&gameBoard.get(i).getSquareType()==9&&!gameBoard.get(i).isPlayedSquare())
-				gameBoard.get(i).setSquaresChar('-');	
+			if(!gameBoard.get(i).isPlayableSquare()&&!gameBoard.get(i).isPlayedSquare())
+				gameBoard.get(i).getSquareButton().setDisable(true);	
 		}
 	}
 	
@@ -97,13 +99,20 @@ public class Board {
 				Square down = gameBoard.get(currentSquare.getSquareIndex()+15);
 
 				gameBoard.get(right.getSquareIndex()).setPlayableSquare(true);
+				gameBoard.get(right.getSquareIndex()).getSquareButton().setDisable(false);
+				
 				gameBoard.get(left.getSquareIndex()).setPlayableSquare(true);
+				gameBoard.get(left.getSquareIndex()).getSquareButton().setDisable(false);
+				
 				gameBoard.get(up.getSquareIndex()).setPlayableSquare(true);
+				gameBoard.get(up.getSquareIndex()).getSquareButton().setDisable(false);
+				
 				gameBoard.get(down.getSquareIndex()).setPlayableSquare(true);
+				gameBoard.get(down.getSquareIndex()).getSquareButton().setDisable(false);
 			
 			}
 		}
-		updateSquareChars();
+		updateSquareDisabled();
 	}
 
 	
@@ -238,7 +247,7 @@ public class Board {
 				down.setPlayableSquare(true);	
 		}
 
-		updateSquareChars(); //Call method to update squares i.e. if square is playable it'll appear blank 
+		updateSquareDisabled(); //Call method to update squares i.e. if square is playable it'll appear blank 
 		setPreviousSquare(gameBoard.get(index)); //Set previous square to the played square
 	}
 	
