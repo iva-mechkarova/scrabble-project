@@ -72,4 +72,10 @@ public class Pool {
 		Random rnd = new Random();
 		return gamePool.remove(rnd.nextInt(poolSize()));
 	}
+	
+	/* this method adds tiles which are being exchanged back into the pool */
+	public void addTileToPool(Tile exchangedTile) 
+	{
+		gamePool.add(exchangedTile);
+	}
 }
