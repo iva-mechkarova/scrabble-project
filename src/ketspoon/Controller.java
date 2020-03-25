@@ -193,7 +193,7 @@ public class Controller {
 		
 		frameButton4.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override public void handle(ActionEvent e) {
-		    	if(gameState==CAN_SELECT_FROM_RACK || gameState==EXCHANGING) {
+		    	if(gameState==CAN_SELECT_FROM_RACK || gameState==EXCHANGING || gameState==START_TURN ) {
 		    		currentSelectedTile=currentPlayer.playerFrame.getLettersInFrame().get(4);
 			    	frameButton4.setVisible(false);
 			    	currentLetters.add(currentSelectedTile);
@@ -211,7 +211,7 @@ public class Controller {
 		
 		frameButton5.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override public void handle(ActionEvent e) {
-		    	if(gameState==CAN_SELECT_FROM_RACK || gameState==EXCHANGING) {
+		    	if(gameState==CAN_SELECT_FROM_RACK || gameState==EXCHANGING || gameState==START_TURN) {
 		    		currentSelectedTile=currentPlayer.playerFrame.getLettersInFrame().get(5);
 			    	frameButton5.setVisible(false);
 			    	currentLetters.add(currentSelectedTile);
