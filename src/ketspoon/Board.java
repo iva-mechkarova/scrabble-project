@@ -14,6 +14,9 @@ public class Board {
 	public final Image tripleLetter = new Image(getClass().getResourceAsStream("/resources/tripleLetter.png"));
 	public final Image tripleWord= new Image(getClass().getResourceAsStream("/resources/tripleWord.png"));
 	public final Image centerSquare= new Image(getClass().getResourceAsStream("/resources/centerSquare.png"));
+	private int direction;
+	private static final int HORIZONTAL=0;
+	private static final int VERTICAL=1;
 	
 	public static final int DOUBLEWORD=0;	
 	public static final int DOUBLELETTER=1;
@@ -181,6 +184,8 @@ public class Board {
 		/*If the index is less than absolute 15 then we must be going in a horizontal direction so we have right & left plays*/
 		if(placedTiles.size()==1 || Math.abs(index - getPreviousSquare().getSquareIndex())<15)
 		{
+			direction = HORIZONTAL;
+			
 			//Initialize right & left variables as the squares to the right and left of the played square
 			right = gameBoard.get(playedSquare.getSquareIndex()); 
 			left = gameBoard.get(playedSquare.getSquareIndex());
@@ -188,27 +193,27 @@ public class Board {
 			/*Check if the right square is a played square, if it is we need to check if the square to the right of that one is
 			a playable square as we cannot place a tile on a played square*/
 			int i = 0; 
-			while(right.isPlayedSquare() && i<=15)
+			while(right.isPlayedSquare() && (right.getSquareIndex()-1)%15!=0)
 			{
 				i++;
 				right = gameBoard.get(playedSquare.getSquareIndex()+i);
 			}
 			
 			//If we have found a playable square, set it to playable
-			if(i>0 && i<15) 
+			if((right.getSquareIndex()-1)%15!=0) 
 				right.setPlayableSquare(true);
 			
 			/*Check if the left square is a played square, if it is we need to check if the square to the left of that one is
 			a playable square as we cannot place a tile on a played square*/
 			i = 0;
-			while(left.isPlayedSquare()  && i<=15)
+			while(left.isPlayedSquare()  && (left.getSquareIndex()+1)%15!=0)
 			{
 				i++;
 				left = gameBoard.get(playedSquare.getSquareIndex()-i);
 			}
 			
 			//If we have found a playable square, set it to playable
-			if(i>0 && i<15) 	
+			if((left.getSquareIndex()+1)%15!=0) 	
 				left.setPlayableSquare(true);	
 		}
 		
@@ -216,6 +221,8 @@ public class Board {
 		/*If the index is greater than absolute 15 then we must be going in a vertical direction so we have up & down plays*/
 		if(placedTiles.size()==1 || Math.abs(index - getPreviousSquare().getSquareIndex())>=15)
 		{
+			direction = VERTICAL;
+			
 			//Initialize up & down variables as the squares above and below the played square
 			up = gameBoard.get(playedSquare.getSquareIndex());
 			down = gameBoard.get(playedSquare.getSquareIndex());

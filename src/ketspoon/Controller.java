@@ -61,6 +61,7 @@ public class Controller {
 	Button passButton;
 	@FXML
 	Button quitButton;
+	
 
 
 

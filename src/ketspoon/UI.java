@@ -26,6 +26,7 @@ public class UI extends Application {
 
 	        primaryStage.setTitle("Scrabble");
 	        primaryStage.setScene(new Scene(root, 1000, 830));
+	        //root.getStylesheets().add("application.css");
 	        primaryStage.show();
 	        
 	        Controller controller = loader.getController();
