@@ -10,8 +10,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -70,9 +72,12 @@ public class Controller {
 	Button passButton;
 	@FXML
 	Button quitButton;
-	
-
-
+	@FXML
+	Label currentPlayerName;
+	@FXML
+	Label playerOneInfo;
+	@FXML
+	Label playerTwoInfo;
 
 	private EventHandler<ActionEvent> createHandler(Square s ) {
 	    return event -> handler(s);
@@ -102,6 +107,9 @@ public class Controller {
 		initSquares();
 		updateFrameVisual();
 		initButtons();
+		initPlayerOne();
+		initPlayerTwo();
+		displayPlayerInfo();
 	}
 
 	public void initSquares() {
@@ -299,6 +307,7 @@ public class Controller {
 		else 
 			currentPlayer=player1;
 		updateFrameVisual();
+		displayPlayerInfo();
 	}
 	
 	public void getFullWord(){
@@ -482,7 +491,105 @@ public class Controller {
 		
 		passWindow.setScene(scene);
 		passText.wrappingWidthProperty().bind(scene.widthProperty().subtract(15));
-		passWindow.showAndWait();
-		
+		passWindow.showAndWait();	
+	}
+	
+	public void initPlayerOne()
+	{
+		Stage playerNameWindow = new Stage();	      
+		playerNameWindow.setTitle("Player 1");  
+
+		Label playerNameLabel = new Label("Enter player 1's name:");
+		playerNameLabel.setStyle("-fx-font-size: 10pt;"
+				+ "-fx-font-weight: bold;");
+		TextField playerName = new TextField();
+
+		Button doneButton = new Button("DONE");
+		doneButton.setMaxSize(150, 20);
+		doneButton.setMinSize(200, 40);
+
+		doneButton.setOnAction(e -> {
+			player1.setName(playerName.getText());
+			playerNameWindow.close();
+		});
+
+		VBox layout = new VBox(10);
+		ScrollPane scrollPane = new ScrollPane(layout);
+		scrollPane.setFitToHeight(true);
+		scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+
+
+		layout.getChildren().addAll(playerNameLabel, playerName, doneButton);
+
+		layout.setAlignment(Pos.CENTER);
+
+		Scene scene = new Scene(scrollPane, 240, 110);
+		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+
+		playerNameWindow.setScene(scene);
+
+		playerNameWindow.showAndWait();
+
+	}
+
+	public void initPlayerTwo()
+	{
+		Stage playerNameWindow = new Stage();	      
+		playerNameWindow.setTitle("Player 2");  
+
+		Label playerNameLabel = new Label("Enter player 2's name:");
+		playerNameLabel.setStyle("-fx-font-size: 10pt;"
+				+ "-fx-font-weight: bold;");
+		TextField playerName = new TextField();
+
+		Button doneButton = new Button("DONE");
+		doneButton.setMaxSize(150, 20);
+		doneButton.setMinSize(200, 40);
+
+		doneButton.setStyle("-fx-font-size: 15pt;"
+				+ "-fx-font-weight: bold;"
+				+ "-fx-border-color: #177a76;"
+				+ "-fx-background-color: #23B2AC;");
+
+		doneButton.setOnMouseEntered(e -> doneButton.setStyle("-fx-font-size: 15pt;"
+				+ "-fx-font-weight: bold;"
+				+ "-fx-border-color: #177a76;"
+				+ "-fx-background-color: #c9fffd;"));
+
+		doneButton.setOnMouseExited(e -> doneButton.setStyle("-fx-font-size: 15pt;"
+				+ "-fx-font-weight: bold;"
+				+ "-fx-border-color: #177a76;"
+				+ "-fx-background-color: #23B2AC;"));
+
+		doneButton.setOnAction(e -> {
+			player2.setName(playerName.getText());
+			playerNameWindow.close();
+		});
+
+		VBox layout = new VBox(10);
+		ScrollPane scrollPane = new ScrollPane(layout);
+		scrollPane.setFitToHeight(true);
+		scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+
+
+		layout.getChildren().addAll(playerNameLabel, playerName, doneButton);
+
+		layout.setAlignment(Pos.CENTER);
+
+		Scene scene = new Scene(scrollPane, 240, 110);
+		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+
+		playerNameWindow.setScene(scene);
+		playerNameWindow.showAndWait();
+
+	}
+
+	public void displayPlayerInfo()
+	{
+		currentPlayerName.setText(currentPlayer.getName() +  " it is your turn!");
+		playerOneInfo.setText(player1.getName() + ": " + player1.getScore());
+		playerTwoInfo.setText(player2.getName() + ": " + player2.getScore());
 	}
 }

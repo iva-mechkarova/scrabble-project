@@ -192,28 +192,30 @@ public class Board {
 			
 			/*Check if the right square is a played square, if it is we need to check if the square to the right of that one is
 			a playable square as we cannot place a tile on a played square*/
-			int i = 0; 
-			while(right.isPlayedSquare() && (right.getSquareIndex()-1)%15!=0)
+			int i =0;
+			int differenceRight = 15-playedSquare.getSquareIndex()%15;
+			while(right.isPlayedSquare() && i<differenceRight)
 			{
 				i++;
 				right = gameBoard.get(playedSquare.getSquareIndex()+i);
 			}
 			
 			//If we have found a playable square, set it to playable
-			if((right.getSquareIndex()-1)%15!=0) 
+			if(i>=0 && i<differenceRight) 
 				right.setPlayableSquare(true);
 			
 			/*Check if the left square is a played square, if it is we need to check if the square to the left of that one is
 			a playable square as we cannot place a tile on a played square*/
 			i = 0;
-			while(left.isPlayedSquare()  && (left.getSquareIndex()+1)%15!=0)
+			int differenceLeft = playedSquare.getSquareIndex()%15;
+			while(left.isPlayedSquare()  && i<=differenceLeft)
 			{
 				i++;
 				left = gameBoard.get(playedSquare.getSquareIndex()-i);
 			}
 			
 			//If we have found a playable square, set it to playable
-			if((left.getSquareIndex()+1)%15!=0) 	
+			if(i>=0 && i<=differenceLeft) 	
 				left.setPlayableSquare(true);	
 		}
 		
