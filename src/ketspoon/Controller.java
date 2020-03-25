@@ -286,6 +286,7 @@ public class Controller {
 			 @Override public void handle(ActionEvent e) {
 				 placingWord=false;
 				 gameState=START_TURN;
+				 currentLetters.clear();
 				 switchPlayer();
 				 updateButtons();
 			 }
