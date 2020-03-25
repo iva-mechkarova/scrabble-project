@@ -7,11 +7,12 @@ public class Tile {
 	private char tileLetter;
 	private int tileValue;
 	private Image tileImage;
+	private int TileSquareIndex;
 	
 	public Tile(char letter, int value, Image i) {
 		this.tileLetter=letter;
 		this.tileValue=value;
-		tileImage=i;
+		tileImage=i;	
 		
 	}
 
@@ -29,5 +30,14 @@ public class Tile {
 
 	public Image getTileImage() {
 		return tileImage;
-	} 
+	}
+
+	public int getTileSquareIndex() {
+		return TileSquareIndex;
+	}
+
+	public void setTileSquareIndex(int tileSquareIndex) {
+		TileSquareIndex = tileSquareIndex;
+	}
+
 }
