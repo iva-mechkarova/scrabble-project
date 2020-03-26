@@ -307,6 +307,7 @@ public class Controller {
 		else 
 			currentPlayer=player1;
 		updateFrameVisual();
+		scrabbleBoard.updatePlayableSquares();
 		displayPlayerInfo();
 	}
 	

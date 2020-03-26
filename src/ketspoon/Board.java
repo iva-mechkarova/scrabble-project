@@ -101,18 +101,23 @@ public class Board {
 				Square up = gameBoard.get(currentSquare.getSquareIndex()-15);
 				Square down = gameBoard.get(currentSquare.getSquareIndex()+15);
 
-				gameBoard.get(right.getSquareIndex()).setPlayableSquare(true);
-				gameBoard.get(right.getSquareIndex()).getSquareButton().setDisable(false);
+				if(right.getSquareIndex()%15!=0)
+				{
+					gameBoard.get(right.getSquareIndex()).setPlayableSquare(true);
+					gameBoard.get(right.getSquareIndex()).getSquareButton().setDisable(false);	
+				}
 				
-				gameBoard.get(left.getSquareIndex()).setPlayableSquare(true);
-				gameBoard.get(left.getSquareIndex()).getSquareButton().setDisable(false);
+				if(left.getSquareIndex()%15!=14)
+				{
+					gameBoard.get(left.getSquareIndex()).setPlayableSquare(true);
+					gameBoard.get(left.getSquareIndex()).getSquareButton().setDisable(false);
+				}
 				
 				gameBoard.get(up.getSquareIndex()).setPlayableSquare(true);
 				gameBoard.get(up.getSquareIndex()).getSquareButton().setDisable(false);
 				
 				gameBoard.get(down.getSquareIndex()).setPlayableSquare(true);
 				gameBoard.get(down.getSquareIndex()).getSquareButton().setDisable(false);
-			
 			}
 		}
 		updateSquareDisabled();
