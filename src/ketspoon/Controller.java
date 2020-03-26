@@ -91,6 +91,7 @@ public class Controller {
 		}
 	}
 	
+	/*Initialize the game*/
 	public void initGame() {	
 		scrabbleBoard = new Board();
 		pool = new Pool();
@@ -112,12 +113,13 @@ public class Controller {
 		displayPlayerInfo();
 	}
 
+	/*The following initializes the squares of the board*/
 	public void initSquares() {
 		Square currentBoardSquare;
 		for (int i = 0; i < 15; i++) {
 			for (int j = 0; j < 15; j++) {
 				currentBoardSquare = scrabbleBoard.gameBoard.get(scrabbleBoard.coordinateToIndex(i, j));
-				currentBoardSquare.getSquareButton().setGraphic(new ImageView(currentBoardSquare.getSquareImage()));
+				currentBoardSquare.getSquareButton().setGraphic(new ImageView(currentBoardSquare.getSquareImage())); //Adds the image of each square
 				currentBoardSquare.getSquareButton().setPadding(new Insets(0,0,0,0));
 				grid.add(currentBoardSquare.getSquareButton(),j,i);
 				currentBoardSquare.getSquareButton().setOnAction(createHandler(currentBoardSquare));
@@ -126,7 +128,9 @@ public class Controller {
 		scrabbleBoard.updatePlayableSquares();
 	}
 
+	/*The following initializes the current player's frame*/
 	public void initFrame() {
+		/*Each of the following 7 event listeners are the same but need to be applied to each tile of the frame*/
 		frameButton0.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override public void handle(ActionEvent e) {
 		    	if(gameState==CAN_SELECT_FROM_RACK || gameState==EXCHANGING || gameState==START_TURN) {
@@ -254,23 +258,26 @@ public class Controller {
 		});;
 	}
 	
-	
+	/*This method initializes the buttons*/
 	public void initButtons() {	
+		/*This action ensures that the game state changes to exchanging when exchange is clicked*/
+		/*It checks to see if game state is already in exchanging state - if it is then remove the tiles and add them back to the pool*/
 		exchangeButton.setOnAction(new EventHandler<ActionEvent>() {
 			 @Override public void handle(ActionEvent e) {
 				 if(gameState==EXCHANGING) {
 					 for(int i=0; i<currentLetters.size(); i++) {
-						 currentPlayer.playerFrame.removeTile(currentLetters.get(i));
+						 currentPlayer.playerFrame.removeTile(currentLetters.get(i)); //Removes tiles from player's frame
+						 pool.addTileToPool(currentLetters.get(i)); //Adds the tiles back to the pool
 					 }
-					 currentLetters.clear();
-					 gameState=MUST_END_TURN;
-					 currentPlayer.playerFrame.fillFrame(pool);
-					 exchangeButton.setText("EXCHANGE");
-					 updateFrameVisual();
-					 updateButtons();
+					 currentLetters.clear(); //Removes all elements from the currentLetters list
+					 gameState=MUST_END_TURN; //Change game state as player must now end their turn
+					 currentPlayer.playerFrame.fillFrame(pool); //Fill player's frame again
+					 exchangeButton.setText("EXCHANGE"); 
+					 updateFrameVisual(); //Display the frame with the new tiles which have been added
+					 updateButtons(); //Update which buttons should be disabled/enabled
 				 }
 				 else {
-					 exchangeButton.setText("CONFIRM");
+					 exchangeButton.setText("CONFIRM"); //If exchanging is clicked for the first time then change game state to EXCHANGING
 					 gameState = EXCHANGING;
 					 updateButtons();
 				 }
@@ -301,16 +308,18 @@ public class Controller {
 		});;
 	}
 	
+	/*This method switches which player's turn it is*/
 	public void switchPlayer() {
 		if(currentPlayer==player1)
 			currentPlayer=player2;
 		else 
 			currentPlayer=player1;
-		updateFrameVisual();
-		scrabbleBoard.updatePlayableSquares();
-		displayPlayerInfo();
+		updateFrameVisual(); //Calling this method ensures the current player's frame is displayed
+		scrabbleBoard.updatePlayableSquares(); //This updates the playable squares on the board
+		displayPlayerInfo(); //This updates the visual of the players' current scores
 	}
 	
+	/*This method gets the word that was just placed by the user*/
 	public void getFullWord(){
 		int startIndex=currentSelectedTile.getTileSquareIndex();
 		int endIndex=currentSelectedTile.getTileSquareIndex();
@@ -326,15 +335,19 @@ public class Controller {
 			currentWord.add(scrabbleBoard.gameBoard.get(i).getSquaresTile());
 			currentWordString+=scrabbleBoard.gameBoard.get(i).getSquaresTile().getTileLetter();
 		}
+		
 		System.out.println(currentWordString);
 	}
 	
+	/*This method updates which buttons should be disabled in each game state*/
+	/*It makes it easier for the user to know which buttons can be clicked at that time*/
 	public void updateButtons() 
 	{
 		if(placingWord)
 		{
 			exchangeButton.setDisable(true);
 			passButton.setDisable(true);
+			endTurnButton.setDisable(true);
 		}
 		else if(gameState==MUST_END_TURN)
 		{
@@ -358,7 +371,9 @@ public class Controller {
 		}
 	}
 
+	/*Method to update the frame that is displayed*/
 	public void updateFrameVisual() {
+		/*The following displays the current user's frame*/
 		frameButton0.setGraphic(new ImageView(currentPlayer.playerFrame.getLettersInFrame().get(0).getTileImage()));
 		frameButton1.setGraphic(new ImageView(currentPlayer.playerFrame.getLettersInFrame().get(1).getTileImage()));
 		frameButton2.setGraphic(new ImageView(currentPlayer.playerFrame.getLettersInFrame().get(2).getTileImage()));
@@ -376,6 +391,7 @@ public class Controller {
 		frameButton6.setVisible(true);
 	}
 	
+	/*Method to display window when help is clicked*/
 	public void displayHelp()
 	{
 		Stage helpWindow = new Stage();	      
@@ -385,8 +401,10 @@ public class Controller {
 		closeHelpButton.setMaxSize(200, 20);
 		closeHelpButton.setMinSize(200, 40);
 		
+		/*Close window when button is clicked*/
 		closeHelpButton.setOnAction(e -> helpWindow.close());
 		
+		/*The following is all of the text for help*/
 		Text helpTextTitle = new Text("Placing a word:");
 		helpTextTitle.setStyle("-fx-font-size: 15pt;"
 				+ "-fx-font-weight: bold;");
@@ -426,6 +444,7 @@ public class Controller {
 				+ " on the end turn button.");
 		helpEndTurnBody.setStyle("-fx-font-size: 10pt;");
 		
+		/*Add scrollbar just in case the text doesn't fit or if user makes window smaller*/
 		VBox layout = new VBox(10);
 		ScrollPane scrollPane = new ScrollPane(layout);
 		scrollPane.setFitToHeight(true);
@@ -442,7 +461,7 @@ public class Controller {
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		      
 		helpWindow.setScene(scene);
-		
+		/*Wrap text so that resizing the window moves the text as well so that you can always see it*/
 		helpTextBody.wrappingWidthProperty().bind(scene.widthProperty().subtract(15));
 		helpTextPassBody.wrappingWidthProperty().bind(scene.widthProperty().subtract(15));
 		helpTextExchangeBody.wrappingWidthProperty().bind(scene.widthProperty().subtract(15));
@@ -452,6 +471,7 @@ public class Controller {
 	       
 	}
 	
+	/*Method to display window when pass is clicked to ask user if they are sure*/
 	public void displayPassWindow()
 	{
 		Stage passWindow = new Stage();	      
@@ -461,6 +481,7 @@ public class Controller {
 		yesButton.setMaxSize(80, 40);
 		yesButton.setMinSize(80, 40);
 		
+		/*If user clicks yes switch player and close window*/
 		yesButton.setOnAction(new EventHandler<ActionEvent>() 
 		{
 			 @Override public void handle(ActionEvent e) 
@@ -474,7 +495,7 @@ public class Controller {
 		noButton.setMaxSize(80, 40);
 		noButton.setMinSize(80, 40);
 		
-		noButton.setOnAction(e -> passWindow.close());
+		noButton.setOnAction(e -> passWindow.close()); //If user selects no then just close the window
 		
 		HBox buttonsHbox = new HBox(10);
 		buttonsHbox.getChildren().addAll(yesButton, noButton);
@@ -488,32 +509,37 @@ public class Controller {
 		layout.setAlignment(Pos.CENTER);
 		      
 		Scene scene = new Scene(layout, 220, 200);  
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm()); //Import css style sheet
 		
 		passWindow.setScene(scene);
 		passText.wrappingWidthProperty().bind(scene.widthProperty().subtract(15));
 		passWindow.showAndWait();	
 	}
 	
+	/*Method to initialize player one's name*/
 	public void initPlayerOne()
 	{
 		Stage playerNameWindow = new Stage();	      
 		playerNameWindow.setTitle("Player 1");  
 
+		/*Prompt user to enter name*/
 		Label playerNameLabel = new Label("Enter player 1's name:");
 		playerNameLabel.setStyle("-fx-font-size: 10pt;"
 				+ "-fx-font-weight: bold;");
 		TextField playerName = new TextField();
 
+		/*Submit name using this button*/
 		Button doneButton = new Button("DONE");
 		doneButton.setMaxSize(150, 20);
 		doneButton.setMinSize(200, 40);
 
+		/*When done button is clicked, parse input from user and set it as player 2's name*/
 		doneButton.setOnAction(e -> {
 			player1.setName(playerName.getText());
 			playerNameWindow.close();
 		});
 
+		/*Add scroll box just in case user makes window smaller*/
 		VBox layout = new VBox(10);
 		ScrollPane scrollPane = new ScrollPane(layout);
 		scrollPane.setFitToHeight(true);
@@ -526,7 +552,7 @@ public class Controller {
 		layout.setAlignment(Pos.CENTER);
 
 		Scene scene = new Scene(scrollPane, 240, 110);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm()); //Import css style sheet
 
 		playerNameWindow.setScene(scene);
 
@@ -534,40 +560,30 @@ public class Controller {
 
 	}
 
+	/*Method to initialize player two's name*/
 	public void initPlayerTwo()
 	{
-		Stage playerNameWindow = new Stage();	      
+		Stage playerNameWindow = new Stage(); 	      
 		playerNameWindow.setTitle("Player 2");  
 
+		/*Prompt user to enter name*/
 		Label playerNameLabel = new Label("Enter player 2's name:");
 		playerNameLabel.setStyle("-fx-font-size: 10pt;"
 				+ "-fx-font-weight: bold;");
 		TextField playerName = new TextField();
 
+		/*Submit name using this button*/
 		Button doneButton = new Button("DONE");
 		doneButton.setMaxSize(150, 20);
 		doneButton.setMinSize(200, 40);
 
-		doneButton.setStyle("-fx-font-size: 15pt;"
-				+ "-fx-font-weight: bold;"
-				+ "-fx-border-color: #177a76;"
-				+ "-fx-background-color: #23B2AC;");
-
-		doneButton.setOnMouseEntered(e -> doneButton.setStyle("-fx-font-size: 15pt;"
-				+ "-fx-font-weight: bold;"
-				+ "-fx-border-color: #177a76;"
-				+ "-fx-background-color: #c9fffd;"));
-
-		doneButton.setOnMouseExited(e -> doneButton.setStyle("-fx-font-size: 15pt;"
-				+ "-fx-font-weight: bold;"
-				+ "-fx-border-color: #177a76;"
-				+ "-fx-background-color: #23B2AC;"));
-
+		/*When done button is clicked, parse input from user and set it as player 2's name*/
 		doneButton.setOnAction(e -> {
 			player2.setName(playerName.getText());
 			playerNameWindow.close();
 		});
 
+		/*Add scroll box just in case user makes window smaller*/
 		VBox layout = new VBox(10);
 		ScrollPane scrollPane = new ScrollPane(layout);
 		scrollPane.setFitToHeight(true);
@@ -580,13 +596,14 @@ public class Controller {
 		layout.setAlignment(Pos.CENTER);
 
 		Scene scene = new Scene(scrollPane, 240, 110);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm()); //Import css style sheet
 
 		playerNameWindow.setScene(scene);
-		playerNameWindow.showAndWait();
+		playerNameWindow.showAndWait(); 
 
 	}
 
+	/*Method to display player name and score and prompt the user who's turn it is*/
 	public void displayPlayerInfo()
 	{
 		currentPlayerName.setText(currentPlayer.getName() +  " it is your turn!");
