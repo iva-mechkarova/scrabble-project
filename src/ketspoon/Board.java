@@ -97,7 +97,7 @@ public class Board {
 		for(Square currentSquare:gameBoard) {
 			if(currentSquare.isPlayedSquare()) {
 				
-				if(currentSquare.getSquareIndex()+1<=0 && currentSquare.getSquareIndex()+1 > 225) {
+				if(currentSquare.getSquareIndex()+1>=0 && currentSquare.getSquareIndex()+1 < 225) {
 					Square right = gameBoard.get(currentSquare.getSquareIndex()+1);
 					if(right.getSquareIndex()%15!=0)
 					{
@@ -106,7 +106,7 @@ public class Board {
 					}	
 				}
 				
-				if(currentSquare.getSquareIndex()+15<=0 && currentSquare.getSquareIndex()+15 > 225) {
+				if(currentSquare.getSquareIndex()+15>=0 && currentSquare.getSquareIndex()+15 < 225) {
 					System.out.println(currentSquare.getSquareIndex()+15);
 					Square down = gameBoard.get(currentSquare.getSquareIndex()+15);
 					gameBoard.get(down.getSquareIndex()).setPlayableSquare(true);
@@ -115,7 +115,7 @@ public class Board {
 					
 				}
 				
-				if(currentSquare.getSquareIndex()-1<=0 && currentSquare.getSquareIndex()-1 > 225) {
+				if(currentSquare.getSquareIndex()-1>=0 && currentSquare.getSquareIndex()-1 < 225) {
 					Square left = gameBoard.get(currentSquare.getSquareIndex()-1);
 					if(left.getSquareIndex()%15!=14)
 					{
@@ -125,7 +125,7 @@ public class Board {
 					
 				}
 				
-				if(currentSquare.getSquareIndex()-151<=0 && currentSquare.getSquareIndex()-15 > 225) {
+				if(currentSquare.getSquareIndex()-15>=0 && currentSquare.getSquareIndex()-15 < 225) {
 					Square up = gameBoard.get(currentSquare.getSquareIndex()-15);
 					gameBoard.get(up.getSquareIndex()).setPlayableSquare(true);
 					gameBoard.get(up.getSquareIndex()).getSquareButton().setDisable(false);
@@ -175,7 +175,7 @@ public class Board {
 			a playable square as we cannot place a tile on a played square*/
 			int i =0;
 			int differenceRight = 15-playedSquare.getSquareIndex()%15;
-			while(right.isPlayedSquare() && i<differenceRight)
+			while(right.isPlayedSquare() && i<=differenceRight)
 			{
 				if(playedSquare.getSquareIndex()+i <225) {
 					right = gameBoard.get(playedSquare.getSquareIndex()+i);
@@ -185,13 +185,13 @@ public class Board {
 					break;
 			}
 			//If we have found a playable square, set it to playable
-			if(i>=0 && i<differenceRight) 
+			if(i>=0 && i<=differenceRight) 
 				right.setPlayableSquare(true);
 			
 			/*Check if the left square is a played square, if it is we need to check if the square to the left of that one is
 			a playable square as we cannot place a tile on a played square*/
 			i = 0;
-			int differenceLeft = playedSquare.getSquareIndex()%15;
+			int differenceLeft = playedSquare.getSquareIndex()%15+1;
 			while(left.isPlayedSquare()  && i<=differenceLeft)
 			{
 				if(playedSquare.getSquareIndex()-i >=0) {
