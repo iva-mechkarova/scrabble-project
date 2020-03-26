@@ -31,8 +31,14 @@ public class Controller {
     private Board scrabbleBoard;
     private Pool pool;
     ArrayList<Tile> currentLetters;
-    ArrayList<Tile> currentWord;
-    String currentWordString="";
+    
+    private int turnScore;
+    
+    
+    ArrayList<Tile> playedWord;
+    String playedWordString;
+    
+    
     Tile currentSelectedTile;
     private int gameState;
     private boolean placingWord=false;
@@ -98,7 +104,7 @@ public class Controller {
 		frame1 = new Frame(pool);
 		frame2 = new Frame(pool);
 		currentLetters = new ArrayList<>(); 
-		currentWord = new ArrayList<Tile>();
+		playedWord = new ArrayList<Tile>();
 		player1=new Player(frame1, "test");
 		player2=new Player(frame2, "test1");
 		currentPlayer=player1;
@@ -130,6 +136,7 @@ public class Controller {
 
 	/*The following initializes the current player's frame*/
 	public void initFrame() {
+		
 		/*Each of the following 7 event listeners are the same but need to be applied to each tile of the frame*/
 		frameButton0.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override public void handle(ActionEvent e) {
@@ -137,10 +144,7 @@ public class Controller {
 		    		currentSelectedTile=currentPlayer.playerFrame.getLettersInFrame().get(0);
 			    	frameButton0.setVisible(false);
 			    	currentLetters.add(currentSelectedTile);
-			    	if(gameState==EXCHANGING)
-			    		pool.addTileToPool(currentSelectedTile);
-			    	else
-			    	{
+			    	if(gameState!=EXCHANGING) {
 			    		gameState=CAN_PLACE_ON_BOARD;
 			    		placingWord=true;
 			    		updateButtons();
@@ -155,10 +159,7 @@ public class Controller {
 		    		currentSelectedTile=currentPlayer.playerFrame.getLettersInFrame().get(1);
 			    	frameButton1.setVisible(false);
 			    	currentLetters.add(currentSelectedTile);
-			    	if(gameState==EXCHANGING)
-			    		pool.addTileToPool(currentSelectedTile);
-			    	else
-			    	{
+			    	if(gameState!=EXCHANGING) {
 			    		gameState=CAN_PLACE_ON_BOARD;
 			    		placingWord=true;
 			    		updateButtons();
@@ -173,10 +174,7 @@ public class Controller {
 		    		currentSelectedTile=currentPlayer.playerFrame.getLettersInFrame().get(2);
 			    	frameButton2.setVisible(false);
 			    	currentLetters.add(currentSelectedTile);
-			    	if(gameState==EXCHANGING)
-			    		pool.addTileToPool(currentSelectedTile);
-			    	else
-			    	{
+			    	if(gameState!=EXCHANGING) {
 			    		gameState=CAN_PLACE_ON_BOARD;
 			    		placingWord=true;
 			    		updateButtons();
@@ -191,10 +189,7 @@ public class Controller {
 		    		currentSelectedTile=currentPlayer.playerFrame.getLettersInFrame().get(3);
 			    	frameButton3.setVisible(false);
 			    	currentLetters.add(currentSelectedTile);
-			    	if(gameState==EXCHANGING)
-			    		pool.addTileToPool(currentSelectedTile);
-			    	else
-			    	{
+			    	if(gameState!=EXCHANGING) {
 			    		gameState=CAN_PLACE_ON_BOARD;
 			    		placingWord=true;
 			    		updateButtons();
@@ -209,10 +204,7 @@ public class Controller {
 		    		currentSelectedTile=currentPlayer.playerFrame.getLettersInFrame().get(4);
 			    	frameButton4.setVisible(false);
 			    	currentLetters.add(currentSelectedTile);
-			    	if(gameState==EXCHANGING)
-			    		pool.addTileToPool(currentSelectedTile);
-			    	else
-			    	{
+			    	if(gameState!=EXCHANGING) {
 			    		gameState=CAN_PLACE_ON_BOARD;
 			    		placingWord=true;
 			    		updateButtons();
@@ -227,10 +219,7 @@ public class Controller {
 		    		currentSelectedTile=currentPlayer.playerFrame.getLettersInFrame().get(5);
 			    	frameButton5.setVisible(false);
 			    	currentLetters.add(currentSelectedTile);
-			    	if(gameState==EXCHANGING)
-			    		pool.addTileToPool(currentSelectedTile);
-			    	else
-			    	{
+			    	if(gameState!=EXCHANGING) {
 			    		gameState=CAN_PLACE_ON_BOARD;
 			    		placingWord=true;
 			    		updateButtons();
@@ -245,10 +234,7 @@ public class Controller {
 		    		currentSelectedTile=currentPlayer.playerFrame.getLettersInFrame().get(6);
 			    	frameButton6.setVisible(false);
 			    	currentLetters.add(currentSelectedTile);
-			    	if(gameState==EXCHANGING)
-			    		pool.addTileToPool(currentSelectedTile);
-			    	else
-			    	{
+			    	if(gameState!=EXCHANGING) {
 			    		gameState=CAN_PLACE_ON_BOARD;
 			    		placingWord=true;
 			    		updateButtons();
@@ -269,9 +255,9 @@ public class Controller {
 						 currentPlayer.playerFrame.removeTile(currentLetters.get(i)); //Removes tiles from player's frame
 						 pool.addTileToPool(currentLetters.get(i)); //Adds the tiles back to the pool
 					 }
+					 currentPlayer.playerFrame.fillFrame(pool);
 					 currentLetters.clear(); //Removes all elements from the currentLetters list
 					 gameState=MUST_END_TURN; //Change game state as player must now end their turn
-					 currentPlayer.playerFrame.fillFrame(pool); //Fill player's frame again
 					 exchangeButton.setText("EXCHANGE"); 
 					 updateFrameVisual(); //Display the frame with the new tiles which have been added
 					 updateButtons(); //Update which buttons should be disabled/enabled
@@ -284,10 +270,19 @@ public class Controller {
 			 }
 		});;
 		
+		
+		
 		playWordButton.setOnAction(new EventHandler<ActionEvent>() {
 			 @Override public void handle(ActionEvent e) {
 				 getFullWord();
 				 placingWord=false;
+				 for (int i = 0; i < currentLetters.size(); i++) {
+					 currentPlayer.playerFrame.removeTile(currentLetters.get(i));
+				 }
+				 currentPlayer.playerFrame.fillFrame(pool);
+				 calculateScore();
+				 updateFrameVisual();
+				 currentLetters.clear();
 				 gameState=MUST_END_TURN;
 				 updateButtons();
 			 }
@@ -300,8 +295,8 @@ public class Controller {
 		endTurnButton.setOnAction(new EventHandler<ActionEvent>() {
 			 @Override public void handle(ActionEvent e) {
 				 placingWord=false;
+				 playedWord.clear();
 				 gameState=START_TURN;
-				 currentLetters.clear();
 				 switchPlayer();
 				 updateButtons();
 			 }
@@ -323,20 +318,38 @@ public class Controller {
 	public void getFullWord(){
 		int startIndex=currentSelectedTile.getTileSquareIndex();
 		int endIndex=currentSelectedTile.getTileSquareIndex();
+		playedWordString="";
+
 		
-		while(scrabbleBoard.gameBoard.get(startIndex).getSquareIndex()%15!=0 && scrabbleBoard.gameBoard.get(startIndex-1).isPlayedSquare()) {
-			startIndex--;
-		}
-		while((scrabbleBoard.gameBoard.get(endIndex).getSquareIndex()+1)%15!=0 && scrabbleBoard.gameBoard.get(endIndex+1).isPlayedSquare()) {
-			endIndex++;
+		if (scrabbleBoard.getDirection()==Board.HORIZONTAL) {
+			while(scrabbleBoard.gameBoard.get(startIndex).getSquareIndex()%15!=0 && scrabbleBoard.gameBoard.get(startIndex-1).isPlayedSquare()) {
+				startIndex--;
+			}
+			while((scrabbleBoard.gameBoard.get(endIndex).getSquareIndex()+1)%15!=0 && scrabbleBoard.gameBoard.get(endIndex+1).isPlayedSquare()) {
+				endIndex++;
+			}
+			
+			for (int i = startIndex; i <= endIndex; i++) {
+				playedWord.add(scrabbleBoard.gameBoard.get(i).getSquaresTile());
+				playedWordString+=scrabbleBoard.gameBoard.get(i).getSquaresTile().getTileLetter();
+			}
 		}
 		
-		for (int i = startIndex; i <= endIndex; i++) {
-			currentWord.add(scrabbleBoard.gameBoard.get(i).getSquaresTile());
-			currentWordString+=scrabbleBoard.gameBoard.get(i).getSquaresTile().getTileLetter();
+		if (scrabbleBoard.getDirection()==Board.VERTICAL) {
+			while(scrabbleBoard.gameBoard.get(startIndex).getSquareIndex()-15>=0 && scrabbleBoard.gameBoard.get(startIndex-15).isPlayedSquare()) {
+				startIndex-=15;
+			}
+			while((scrabbleBoard.gameBoard.get(endIndex).getSquareIndex())+15<225 && scrabbleBoard.gameBoard.get(endIndex+15).isPlayedSquare()) {
+				endIndex+=15;
+			}
+			
+			for (int i = startIndex; i <= endIndex; i+=15) {
+				playedWord.add(scrabbleBoard.gameBoard.get(i).getSquaresTile());
+				playedWordString+=scrabbleBoard.gameBoard.get(i).getSquaresTile().getTileLetter();
+			}
 		}
 		
-		System.out.println(currentWordString);
+		System.out.println(playedWordString);
 	}
 	
 	/*This method updates which buttons should be disabled in each game state*/
@@ -370,27 +383,86 @@ public class Controller {
 			playWordButton.setDisable(false);
 		}
 	}
+	
+	public void calculateScore(){
+		boolean tripleWord=false;
+		boolean doubleWord=false;
+		turnScore=0;
+		
+		for (int i = 0; i < playedWord.size(); i++) {
+			turnScore+=playedWord.get(i).getTileValue();
+		}
+		for (int i = 0; i < currentLetters.size(); i++) {
+			tripleWord=scrabbleBoard.gameBoard.get(currentLetters.get(i).getTileSquareIndex()).getSquareType()==Board.TRIPLEWORD;
+			doubleWord=scrabbleBoard.gameBoard.get(currentLetters.get(i).getTileSquareIndex()).getSquareType()==Board.DOUBLEWORD;
+			
+			if(scrabbleBoard.gameBoard.get(currentLetters.get(i).getTileSquareIndex()).getSquareType()==Board.TRIPLELETTER) 
+				turnScore+=(currentLetters.get(i).getTileValue()*2);
+			
+			if(scrabbleBoard.gameBoard.get(currentLetters.get(i).getTileSquareIndex()).getSquareType()==Board.DOUBLELETTER) 
+				turnScore+=currentLetters.get(i).getTileValue();
+		}
+		if(tripleWord) 
+			turnScore=turnScore*3;
+		if(doubleWord)
+			turnScore=turnScore*2;
+		
+		currentPlayer.updateScore(turnScore);
+	}
 
 	/*Method to update the frame that is displayed*/
 	public void updateFrameVisual() {
 		/*The following displays the current user's frame*/
-		frameButton0.setGraphic(new ImageView(currentPlayer.playerFrame.getLettersInFrame().get(0).getTileImage()));
-		frameButton1.setGraphic(new ImageView(currentPlayer.playerFrame.getLettersInFrame().get(1).getTileImage()));
-		frameButton2.setGraphic(new ImageView(currentPlayer.playerFrame.getLettersInFrame().get(2).getTileImage()));
-		frameButton3.setGraphic(new ImageView(currentPlayer.playerFrame.getLettersInFrame().get(3).getTileImage()));
-		frameButton4.setGraphic(new ImageView(currentPlayer.playerFrame.getLettersInFrame().get(4).getTileImage()));
-		frameButton5.setGraphic(new ImageView(currentPlayer.playerFrame.getLettersInFrame().get(5).getTileImage()));
-		frameButton6.setGraphic(new ImageView(currentPlayer.playerFrame.getLettersInFrame().get(6).getTileImage()));
-
-		frameButton0.setVisible(true);
-		frameButton1.setVisible(true);
-		frameButton2.setVisible(true);
-		frameButton3.setVisible(true);
-		frameButton4.setVisible(true);
-		frameButton5.setVisible(true);
-		frameButton6.setVisible(true);
+		if(currentPlayer.playerFrame.getLettersInFrame().size()>0) {
+			frameButton0.setGraphic(new ImageView(currentPlayer.playerFrame.getLettersInFrame().get(0).getTileImage()));
+			frameButton0.setVisible(true);
+		}
+		else
+			frameButton0.setVisible(false);
+		
+		if(currentPlayer.playerFrame.getLettersInFrame().size()>1) {
+			frameButton1.setGraphic(new ImageView(currentPlayer.playerFrame.getLettersInFrame().get(1).getTileImage()));
+			frameButton1.setVisible(true);
+		}
+		else
+			frameButton1.setVisible(false);
+		
+		if(currentPlayer.playerFrame.getLettersInFrame().size()>2) {
+			frameButton2.setGraphic(new ImageView(currentPlayer.playerFrame.getLettersInFrame().get(2).getTileImage()));
+			frameButton2.setVisible(true);
+		}
+		else
+			frameButton2.setVisible(false);
+		
+		if(currentPlayer.playerFrame.getLettersInFrame().size()>3) {
+			frameButton3.setVisible(true);
+			frameButton3.setGraphic(new ImageView(currentPlayer.playerFrame.getLettersInFrame().get(3).getTileImage()));
+		}
+		else
+			frameButton3.setVisible(false);
+		
+		if(currentPlayer.playerFrame.getLettersInFrame().size()>4) {
+			frameButton4.setGraphic(new ImageView(currentPlayer.playerFrame.getLettersInFrame().get(4).getTileImage()));
+			frameButton4.setVisible(true);
+		}
+		else
+			frameButton4.setVisible(false);
+		
+		if(currentPlayer.playerFrame.getLettersInFrame().size()>5) {
+			frameButton5.setGraphic(new ImageView(currentPlayer.playerFrame.getLettersInFrame().get(5).getTileImage()));
+			frameButton5.setVisible(true);
+		}
+		else
+			frameButton5.setVisible(false);
+		
+		if(currentPlayer.playerFrame.getLettersInFrame().size()>6) {
+			frameButton6.setGraphic(new ImageView(currentPlayer.playerFrame.getLettersInFrame().get(6).getTileImage()));
+			frameButton6.setVisible(true);
+		}
+		else
+			frameButton6.setVisible(false);
 	}
-	
+
 	/*Method to display window when help is clicked*/
 	public void displayHelp()
 	{

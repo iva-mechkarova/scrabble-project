@@ -15,7 +15,7 @@ public class Player
 		this.playerName = name;
 	}
 	
-	public void calculateScore(int score)
+	public void updateScore(int score)
 	{
 		playerScore+=score;
 	}

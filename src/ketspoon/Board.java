@@ -15,8 +15,9 @@ public class Board {
 	public final Image tripleWord= new Image(getClass().getResourceAsStream("/resources/tripleWord.png"));
 	public final Image centerSquare= new Image(getClass().getResourceAsStream("/resources/centerSquare.png"));
 	private int direction;
-	private static final int HORIZONTAL=0;
-	private static final int VERTICAL=1;
+	
+	public static final int HORIZONTAL=0;
+	public static final int VERTICAL=1;
 	
 	public static final int DOUBLEWORD=0;	
 	public static final int DOUBLELETTER=1;
@@ -260,6 +261,10 @@ public class Board {
 	public Square getPreviousSquare()
 	{
 		return previousSquare;
+	}
+
+	public int getDirection() {
+		return direction;
 	}
 
 }
