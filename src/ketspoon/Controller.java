@@ -79,6 +79,8 @@ public class Controller {
 	@FXML
 	Button quitButton;
 	@FXML
+	Button challengeButton;
+	@FXML
 	Label currentPlayerName;
 	@FXML
 	Label playerOneInfo;
@@ -94,6 +96,7 @@ public class Controller {
 			scrabbleBoard.possiblePlays(s.getSquareIndex(), currentPlayer.playerFrame, currentLetters);
 			currentSelectedTile.setTileSquareIndex(s.getSquareIndex());
 			gameState=CAN_SELECT_FROM_RACK;
+			updateButtons();
 		}
 	}
 	
@@ -114,6 +117,7 @@ public class Controller {
 		initSquares();
 		updateFrameVisual();
 		initButtons();
+		updateButtons();
 		initPlayerOne();
 		initPlayerTwo();
 		displayPlayerInfo();
@@ -285,12 +289,14 @@ public class Controller {
 				 currentLetters.clear();
 				 gameState=MUST_END_TURN;
 				 updateButtons();
+				 displayPlayerInfo();
 			 }
 		});;
 				
 		helpButton.setOnAction(e -> displayHelp());
 		passButton.setOnAction(e -> displayPassWindow());
-		quitButton.setOnAction(e -> Platform.exit());
+		quitButton.setOnAction(e -> displayQuitWindow());
+		challengeButton.setOnAction(e -> displayChallengeWindow());
 		
 		endTurnButton.setOnAction(new EventHandler<ActionEvent>() {
 			 @Override public void handle(ActionEvent e) {
@@ -356,31 +362,55 @@ public class Controller {
 	/*It makes it easier for the user to know which buttons can be clicked at that time*/
 	public void updateButtons() 
 	{
+		/*If player is in the middle of placing a word, gameState changes from
+		CAN_PLACE_ON_BOARD to CAN_SELECT_FROM_RACK so we need to deal with this separately*/
 		if(placingWord)
 		{
+			/*If you are placing a word, you can't exchange, pass or end turn*/
 			exchangeButton.setDisable(true);
 			passButton.setDisable(true);
 			endTurnButton.setDisable(true);
-		}
-		else if(gameState==MUST_END_TURN)
-		{
-			exchangeButton.setDisable(true);
-			passButton.setDisable(true);
-			playWordButton.setDisable(true);
-			endTurnButton.setDisable(false);
-		}
-		else if(gameState==EXCHANGING)
-		{
-			passButton.setDisable(true);
-			endTurnButton.setDisable(true);
-			playWordButton.setDisable(true);
+			//If you have selected a tile to place then you must place it before playing word
+			if(gameState==CAN_PLACE_ON_BOARD)
+			{
+				playWordButton.setDisable(true);
+			}
+			else
+			{
+				playWordButton.setDisable(false); 
+			}
 		}
 		else
 		{
-			exchangeButton.setDisable(false);
-			passButton.setDisable(false);
-			endTurnButton.setDisable(false);
-			playWordButton.setDisable(false);
+			switch(gameState)
+			{
+			//At start of turn you can't end turn or play word
+			case START_TURN:
+				endTurnButton.setDisable(true);
+				playWordButton.setDisable(true);
+				passButton.setDisable(false);
+				exchangeButton.setDisable(false);
+				break;
+			//At the end of turn your only move is to end turn
+			case MUST_END_TURN:
+				exchangeButton.setDisable(true);
+				passButton.setDisable(true);
+				playWordButton.setDisable(true);
+				endTurnButton.setDisable(false);
+				break;
+			//If choosing tiles to exchange you cannot pass, end turn or play word
+			case EXCHANGING:
+				passButton.setDisable(true);
+				endTurnButton.setDisable(true);
+				playWordButton.setDisable(true);
+				break;
+			default:
+				exchangeButton.setDisable(false);
+				passButton.setDisable(false);
+				endTurnButton.setDisable(false);
+				playWordButton.setDisable(false);
+				break;
+			}
 		}
 	}
 	
@@ -672,7 +702,89 @@ public class Controller {
 
 		playerNameWindow.setScene(scene);
 		playerNameWindow.showAndWait(); 
-
+	}
+	
+	/*Method to display window to ask user if they are sure they wish to challenge*/
+	public void displayChallengeWindow()
+	{
+		Stage challengeWindow = new Stage();	      
+		challengeWindow.setTitle("Challenge");  
+		
+		Button yesButton = new Button("YES");
+		yesButton.setMaxSize(80, 40);
+		yesButton.setMinSize(80, 40);
+		
+		/*If user clicks yes then challenge word and close window*/
+		yesButton.setOnAction(new EventHandler<ActionEvent>() 
+		{
+			 @Override public void handle(ActionEvent e) 
+			 {
+				 challengeWindow.close();
+			 }
+		});;
+		
+		Button noButton = new Button("NO");
+		noButton.setMaxSize(80, 40);
+		noButton.setMinSize(80, 40);
+		
+		noButton.setOnAction(e -> challengeWindow.close()); //If user selects no then just close the window
+		
+		HBox buttonsHbox = new HBox(10);
+		buttonsHbox.getChildren().addAll(yesButton, noButton);
+		
+		Text challengeText = new Text("Are you sure you want to challenge? If you are wrong"
+				+ " you will lose your turn.");
+		challengeText.setStyle("-fx-font-size: 15pt;"
+				+ "-fx-font-weight: bold;");
+		
+		VBox layout = new VBox(10);	      
+		layout.getChildren().addAll(challengeText, buttonsHbox);		      
+		layout.setAlignment(Pos.CENTER);
+		      
+		Scene scene = new Scene(layout, 220, 200);  
+		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm()); //Import css style sheet
+		
+		challengeWindow.setScene(scene);
+		challengeText.wrappingWidthProperty().bind(scene.widthProperty().subtract(15));
+		challengeWindow.showAndWait();		
+	}
+	
+	/*Method to display window to ask user if they are sure they wish to quit the game*/
+	public void displayQuitWindow()
+	{
+		Stage quitWindow = new Stage();	      
+		quitWindow.setTitle("Quit");  
+		
+		Button yesButton = new Button("YES");
+		yesButton.setMaxSize(80, 40);
+		yesButton.setMinSize(80, 40);
+		
+		/*If user clicks yes then close window and terminate the program*/
+		yesButton.setOnAction(e -> {quitWindow.close();Platform.exit();});
+		
+		Button noButton = new Button("NO");
+		noButton.setMaxSize(80, 40);
+		noButton.setMinSize(80, 40);
+		
+		noButton.setOnAction(e -> quitWindow.close()); //If user selects no then just close the window
+		
+		HBox buttonsHbox = new HBox(10);
+		buttonsHbox.getChildren().addAll(yesButton, noButton);
+		
+		Text challengeText = new Text("Are you sure you want to quit the game?");
+		challengeText.setStyle("-fx-font-size: 15pt;"
+				+ "-fx-font-weight: bold;");
+		
+		VBox layout = new VBox(10);	      
+		layout.getChildren().addAll(challengeText, buttonsHbox);		      
+		layout.setAlignment(Pos.CENTER);
+		      
+		Scene scene = new Scene(layout, 260, 200);  
+		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm()); //Import css style sheet
+		
+		quitWindow.setScene(scene);
+		challengeText.wrappingWidthProperty().bind(scene.widthProperty().subtract(15));
+		quitWindow.showAndWait();		
 	}
 
 	/*Method to display player name and score and prompt the user who's turn it is*/

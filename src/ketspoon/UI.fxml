@@ -70,6 +70,7 @@
          	<Button fx:id="endTurnButton" maxHeight="50.0" maxWidth="210.0" minHeight="50.0" minWidth="210.0" prefHeight="50.0" prefWidth="210.0" mnemonicParsing="false" text="END TURN" translateX="20.0" translateY="10.0" />
             <Button fx:id="helpButton" maxHeight="50.0" maxWidth="210.0" minHeight="50.0" minWidth="210.0" prefHeight="50.0" prefWidth="210.0" mnemonicParsing="false" text="HELP" translateX="20.0" translateY="10.0" />
             <Button fx:id="passButton" maxHeight="50.0" maxWidth="210.0" minHeight="50.0" minWidth="210.0" prefHeight="50.0" prefWidth="210.0" mnemonicParsing="false" text="PASS" translateX="20.0" translateY="10.0" />
+            <Button fx:id="challengeButton" maxHeight="50.0" maxWidth="210.0" minHeight="50.0" minWidth="210.0" prefHeight="50.0" prefWidth="210.0" mnemonicParsing="false" text="CHALLENGE" translateX="20.0" translateY="10.0"/> 
             <Button fx:id="quitButton" maxHeight="50.0" maxWidth="210.0" minHeight="50.0" minWidth="210.0" prefHeight="50.0" prefWidth="210.0" mnemonicParsing="false" text="QUIT" translateX="20.0" translateY="10.0" />
          	<Label fx:id="currentPlayerName" translateX="20.0" translateY="10.0"/>
          	<Label fx:id="playerOneInfo" translateX="20.0" translateY="10.0"/>
