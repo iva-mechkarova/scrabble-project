@@ -96,71 +96,47 @@ public class Board {
 	public void updatePlayableSquares() {    /*makes squares in the four positions around a played square available */
 		for(Square currentSquare:gameBoard) {
 			if(currentSquare.isPlayedSquare()) {
-				Square right = gameBoard.get(currentSquare.getSquareIndex()+1);
-				Square left = gameBoard.get(currentSquare.getSquareIndex()-1);
-				Square up = gameBoard.get(currentSquare.getSquareIndex()-15);
-				Square down = gameBoard.get(currentSquare.getSquareIndex()+15);
+				
+				if(currentSquare.getSquareIndex()+1<=0 && currentSquare.getSquareIndex()+1 > 225) {
+					Square right = gameBoard.get(currentSquare.getSquareIndex()+1);
+					if(right.getSquareIndex()%15!=0)
+					{
+						gameBoard.get(right.getSquareIndex()).setPlayableSquare(true);
+						gameBoard.get(right.getSquareIndex()).getSquareButton().setDisable(false);	
+					}	
+				}
+				
+				if(currentSquare.getSquareIndex()+15<=0 && currentSquare.getSquareIndex()+15 > 225) {
+					System.out.println(currentSquare.getSquareIndex()+15);
+					Square down = gameBoard.get(currentSquare.getSquareIndex()+15);
+					gameBoard.get(down.getSquareIndex()).setPlayableSquare(true);
+					gameBoard.get(down.getSquareIndex()).getSquareButton().setDisable(false);
+					System.out.println("11");
+					
+				}
+				
+				if(currentSquare.getSquareIndex()-1<=0 && currentSquare.getSquareIndex()-1 > 225) {
+					Square left = gameBoard.get(currentSquare.getSquareIndex()-1);
+					if(left.getSquareIndex()%15!=14)
+					{
+						gameBoard.get(left.getSquareIndex()).setPlayableSquare(true);
+						gameBoard.get(left.getSquareIndex()).getSquareButton().setDisable(false);
+					}
+					
+				}
+				
+				if(currentSquare.getSquareIndex()-151<=0 && currentSquare.getSquareIndex()-15 > 225) {
+					Square up = gameBoard.get(currentSquare.getSquareIndex()-15);
+					gameBoard.get(up.getSquareIndex()).setPlayableSquare(true);
+					gameBoard.get(up.getSquareIndex()).getSquareButton().setDisable(false);
+					
+				}
 
-				if(right.getSquareIndex()%15!=0)
-				{
-					gameBoard.get(right.getSquareIndex()).setPlayableSquare(true);
-					gameBoard.get(right.getSquareIndex()).getSquareButton().setDisable(false);	
-				}
-				
-				if(left.getSquareIndex()%15!=14)
-				{
-					gameBoard.get(left.getSquareIndex()).setPlayableSquare(true);
-					gameBoard.get(left.getSquareIndex()).getSquareButton().setDisable(false);
-				}
-				
-				gameBoard.get(up.getSquareIndex()).setPlayableSquare(true);
-				gameBoard.get(up.getSquareIndex()).getSquareButton().setDisable(false);
-				
-				gameBoard.get(down.getSquareIndex()).setPlayableSquare(true);
-				gameBoard.get(down.getSquareIndex()).getSquareButton().setDisable(false);
 			}
 		}
 		updateSquareDisabled();
 	}
 
-	
-	/*Method to check if coordinates are out of bounds*/
-	public boolean isOutOfBounds(int x, int y)
-	{
-		if(x > 14 || x < 0 || y > 14 || y < 0)
-		{
-			System.out.println("Coordinates (" + x + ", " + y + ") are out of bounds. Please select coordinates which are in bounds of the board.");
-			return true;
-		}	
-		
-		return false;
-	}
-	
-	/*Method to check if the selected square is playable*/
-	/*i.e. not out of bounds, not a letter and connecting to existing words*/
-	public boolean isValidPlacement(int x, int y)
-	{
-		if(isOutOfBounds(x,y))
-		{
-			return false;
-		}
-		
-		if(gameBoard.get(coordinateToIndex(x, y)).isPlayedSquare())
-		{
-			System.out.println("Cannot place tiles on top of eachother");
-			return false;
-		}
-		
-		if(!gameBoard.get(coordinateToIndex(x, y)).isPlayableSquare())
-		{
-			System.out.println("Cannot place tile here");
-			System.out.println("First tile must be placed in middle of board and all other tiles must connect to already existing words on board");
-			return false;
-		}
-		
-		
-		return true;
-	}
 	
 	/*Method to change playable squares once player starts placing letters*/
 	/*i.e. after first letter is placed only squares around this are playable and after second letter
@@ -201,10 +177,13 @@ public class Board {
 			int differenceRight = 15-playedSquare.getSquareIndex()%15;
 			while(right.isPlayedSquare() && i<differenceRight)
 			{
-				i++;
-				right = gameBoard.get(playedSquare.getSquareIndex()+i);
+				if(playedSquare.getSquareIndex()+i <225) {
+					right = gameBoard.get(playedSquare.getSquareIndex()+i);
+					i++;
+				}
+				else
+					break;
 			}
-			
 			//If we have found a playable square, set it to playable
 			if(i>=0 && i<differenceRight) 
 				right.setPlayableSquare(true);
@@ -215,8 +194,12 @@ public class Board {
 			int differenceLeft = playedSquare.getSquareIndex()%15;
 			while(left.isPlayedSquare()  && i<=differenceLeft)
 			{
-				i++;
-				left = gameBoard.get(playedSquare.getSquareIndex()-i);
+				if(playedSquare.getSquareIndex()-i >=0) {
+					left = gameBoard.get(playedSquare.getSquareIndex()-i);
+					i++;
+				}
+				else
+					break;
 			}
 			
 			//If we have found a playable square, set it to playable
@@ -229,33 +212,37 @@ public class Board {
 		if(placedTiles.size()==1 || Math.abs(index - getPreviousSquare().getSquareIndex())>=15)
 		{
 			direction = VERTICAL;
-			
 			//Initialize up & down variables as the squares above and below the played square
 			up = gameBoard.get(playedSquare.getSquareIndex());
 			down = gameBoard.get(playedSquare.getSquareIndex());
-			
 			/*Check if the above square is a played square, if it is we need to check if the square above that one is
 			a playable square as we cannot place a tile on a played square*/
-			int i = 15;
-			while(up.isPlayedSquare() && i<=15*15)
+			int i = 0;
+			while(up.isPlayedSquare())
 			{
-				up = gameBoard.get(playedSquare.getSquareIndex()-i);
-				i+=15;
+				if(playedSquare.getSquareIndex()-i >=0) {
+					up = gameBoard.get(playedSquare.getSquareIndex()-i);
+					i+=15;	
+				}
+				else
+					break;
 			}
-			
 			//If we have found a playable square, set it to playable
 			if(i>15 && i<15*15) 
 				up.setPlayableSquare(true);
 			
 			/*Check if the below square is a played square, if it is we need to check if the square below that one is
 			a playable square as we cannot place a tile on a played square*/
-			i = 15;
-			while(down.isPlayedSquare()  && i<=15*15)
+			i = 0;
+			while(down.isPlayedSquare())
 			{
-				down = gameBoard.get(playedSquare.getSquareIndex()+i);
-				i+=15;
+				if(playedSquare.getSquareIndex()+i <225) {
+					down = gameBoard.get(playedSquare.getSquareIndex()+i);
+					i+=15;
+				}
+				else
+					break;
 			}
-			
 			//If we have found a playable square, set it to playable
 			if(i>15 && i<15*15) 
 				down.setPlayableSquare(true);	
