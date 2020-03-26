@@ -259,7 +259,7 @@ public class Controller {
 						 currentPlayer.playerFrame.removeTile(currentLetters.get(i)); //Removes tiles from player's frame
 						 pool.addTileToPool(currentLetters.get(i)); //Adds the tiles back to the pool
 					 }
-					 currentPlayer.playerFrame.fillFrame(pool);
+					 currentPlayer.playerFrame.fillFrame(pool); //Refills the player frame
 					 currentLetters.clear(); //Removes all elements from the currentLetters list
 					 gameState=MUST_END_TURN; //Change game state as player must now end their turn
 					 exchangeButton.setText("EXCHANGE"); 
@@ -269,42 +269,43 @@ public class Controller {
 				 else {
 					 exchangeButton.setText("CONFIRM"); //If exchanging is clicked for the first time then change game state to EXCHANGING
 					 gameState = EXCHANGING;
-					 updateButtons();
+					 updateButtons(); //Updates which buttons should be disabled
 				 }
 			 }
 		});;
 		
 		
-		
+		/*This action ensures that the word to be played by the player is finalized when play word is clicked*/
 		playWordButton.setOnAction(new EventHandler<ActionEvent>() {
 			 @Override public void handle(ActionEvent e) {
-				 getFullWord();
-				 placingWord=false;
+				 getFullWord(); //gets the word that was just placed by the user
+				 placingWord=false; //player is no longer placing a word
 				 for (int i = 0; i < currentLetters.size(); i++) {
-					 currentPlayer.playerFrame.removeTile(currentLetters.get(i));
+					 currentPlayer.playerFrame.removeTile(currentLetters.get(i)); //Removes the tiles from the players frame
 				 }
-				 currentPlayer.playerFrame.fillFrame(pool);
-				 calculateScore();
-				 updateFrameVisual();
-				 currentLetters.clear();
-				 gameState=MUST_END_TURN;
-				 updateButtons();
-				 displayPlayerInfo();
+				 currentPlayer.playerFrame.fillFrame(pool); //Refills the player frame
+				 calculateScore(); //calculates the score of the word played
+				 updateFrameVisual();  //Display the frame with the new tiles which have been added 
+				 currentLetters.clear(); //Removes all elements from currentLetters list
+				 gameState=MUST_END_TURN; //Change game state as player must now end their turn
+				 updateButtons(); //Update which buttons should be disabled/enabled
+				 displayPlayerInfo(); //Displays player name and score and prompts the next player to take a turn
 			 }
 		});;
 				
-		helpButton.setOnAction(e -> displayHelp());
-		passButton.setOnAction(e -> displayPassWindow());
-		quitButton.setOnAction(e -> displayQuitWindow());
-		challengeButton.setOnAction(e -> displayChallengeWindow());
+		helpButton.setOnAction(e -> displayHelp()); //Action to display the help window when a player requires assistance
+		passButton.setOnAction(e -> displayPassWindow()); //Action to check whether a player is happy to pass a turn
+		quitButton.setOnAction(e -> displayQuitWindow()); //Action to check whether a player is happy to quit the game
+		challengeButton.setOnAction(e -> displayChallengeWindow()); //Action to check whether a player is happy to challenge the word played
 		
+		/*This action ensures that a player has ended their turn when End Turn is clicked*/
 		endTurnButton.setOnAction(new EventHandler<ActionEvent>() {
 			 @Override public void handle(ActionEvent e) {
-				 placingWord=false;
-				 playedWord.clear();
-				 gameState=START_TURN;
-				 switchPlayer();
-				 updateButtons();
+				 placingWord=false; //Player is no longer placing a word
+				 playedWord.clear(); //Removes all elements from the playedWord list
+				 gameState=START_TURN; //Change game state to the start of a turn
+				 switchPlayer(); //Switch which player's turn it is
+				 updateButtons(); //Updates which buttons should be disabled
 			 }
 		});;
 	}
@@ -414,6 +415,7 @@ public class Controller {
 		}
 	}
 	
+	/*This method calculates the score of a placed word and updates the player score*/
 	public void calculateScore(){
 		boolean tripleWord=false;
 		boolean doubleWord=false;
@@ -427,17 +429,17 @@ public class Controller {
 			doubleWord=scrabbleBoard.gameBoard.get(currentLetters.get(i).getTileSquareIndex()).getSquareType()==Board.DOUBLEWORD;
 			
 			if(scrabbleBoard.gameBoard.get(currentLetters.get(i).getTileSquareIndex()).getSquareType()==Board.TRIPLELETTER) 
-				turnScore+=(currentLetters.get(i).getTileValue()*2);
+				turnScore+=(currentLetters.get(i).getTileValue()*2); 
 			
 			if(scrabbleBoard.gameBoard.get(currentLetters.get(i).getTileSquareIndex()).getSquareType()==Board.DOUBLELETTER) 
 				turnScore+=currentLetters.get(i).getTileValue();
 		}
-		if(tripleWord) 
+		if(tripleWord) //triples the score of the word
 			turnScore=turnScore*3;
-		if(doubleWord)
+		if(doubleWord) //doubles the score of the word
 			turnScore=turnScore*2;
 		
-		currentPlayer.updateScore(turnScore);
+		currentPlayer.updateScore(turnScore); //updates the player's total score
 	}
 
 	/*Method to update the frame that is displayed*/
@@ -546,7 +548,7 @@ public class Controller {
 				+ " on the end turn button.");
 		helpEndTurnBody.setStyle("-fx-font-size: 10pt;");
 		
-		/*Add scrollbar just in case the text doesn't fit or if user makes window smaller*/
+		/*Add scroll bar just in case the text doesn't fit or if user makes window smaller*/
 		VBox layout = new VBox(10);
 		ScrollPane scrollPane = new ScrollPane(layout);
 		scrollPane.setFitToHeight(true);
@@ -579,7 +581,7 @@ public class Controller {
 		Stage passWindow = new Stage();	      
 		passWindow.setTitle("Passing turn");  
 		
-		Button yesButton = new Button("YES");
+		Button yesButton = new Button("YES"); //Button for player to confirm they wish to pass a turn
 		yesButton.setMaxSize(80, 40);
 		yesButton.setMinSize(80, 40);
 		
@@ -593,7 +595,7 @@ public class Controller {
 			 }
 		});;
 		
-		Button noButton = new Button("NO");
+		Button noButton = new Button("NO"); //Button for player to cancel passing a turn
 		noButton.setMaxSize(80, 40);
 		noButton.setMinSize(80, 40);
 		
@@ -635,7 +637,7 @@ public class Controller {
 		doneButton.setMaxSize(150, 20);
 		doneButton.setMinSize(200, 40);
 
-		/*When done button is clicked, parse input from user and set it as player 2's name*/
+		/*When done button is clicked, parse input from user and set it as player 1's name*/
 		doneButton.setOnAction(e -> {
 			player1.setName(playerName.getText());
 			playerNameWindow.close();
@@ -710,7 +712,7 @@ public class Controller {
 		Stage challengeWindow = new Stage();	      
 		challengeWindow.setTitle("Challenge");  
 		
-		Button yesButton = new Button("YES");
+		Button yesButton = new Button("YES"); //Button for player to confirm they wish to challenge
 		yesButton.setMaxSize(80, 40);
 		yesButton.setMinSize(80, 40);
 		
@@ -723,7 +725,7 @@ public class Controller {
 			 }
 		});;
 		
-		Button noButton = new Button("NO");
+		Button noButton = new Button("NO"); //Button to cancel the challenge
 		noButton.setMaxSize(80, 40);
 		noButton.setMinSize(80, 40);
 		
@@ -755,14 +757,14 @@ public class Controller {
 		Stage quitWindow = new Stage();	      
 		quitWindow.setTitle("Quit");  
 		
-		Button yesButton = new Button("YES");
+		Button yesButton = new Button("YES"); //Button to confirm a player quits
 		yesButton.setMaxSize(80, 40);
 		yesButton.setMinSize(80, 40);
 		
 		/*If user clicks yes then close window and terminate the program*/
 		yesButton.setOnAction(e -> {quitWindow.close();Platform.exit();});
 		
-		Button noButton = new Button("NO");
+		Button noButton = new Button("NO"); //Button to cancel quitting the game
 		noButton.setMaxSize(80, 40);
 		noButton.setMinSize(80, 40);
 		
