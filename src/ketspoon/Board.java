@@ -107,11 +107,9 @@ public class Board {
 				}
 				
 				if(currentSquare.getSquareIndex()+15>=0 && currentSquare.getSquareIndex()+15 < 225) {
-					System.out.println(currentSquare.getSquareIndex()+15);
 					Square down = gameBoard.get(currentSquare.getSquareIndex()+15);
 					gameBoard.get(down.getSquareIndex()).setPlayableSquare(true);
 					gameBoard.get(down.getSquareIndex()).getSquareButton().setDisable(false);
-					System.out.println("11");
 					
 				}
 				
