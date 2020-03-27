@@ -1,21 +1,21 @@
 package ketspoon;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Scanner;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-
-/*This class is just a rough idea on how we plan on our classes working.
- * This is just for testing purposes.
- * From doing this we can see we will not need to check letters in the frame as 
- * a player will only be able to remove letters displayed
- * We plan on buttons being made variables in the future and the player and frame will not need to be passed
- * */
-
-//public class TestDisplay {
+//
+//import java.awt.event.ActionEvent;
+//import java.awt.event.ActionListener;
+//import java.util.ArrayList;
+//import java.util.Scanner;
+//
+//import javax.swing.JButton;
+//import javax.swing.JFrame;
+//
+///*This class is just a rough idea on how we plan on our classes working.
+// * This is just for testing purposes.
+// * From doing this we can see we will not need to check letters in the frame as 
+// * a player will only be able to remove letters displayed
+// * We plan on buttons being made variables in the future and the player and frame will not need to be passed
+// * */
+//
+public class TestDisplay {
 //	int xAxis;
 //	int yAxis;
 //	
@@ -251,4 +251,4 @@ import javax.swing.JFrame;
 //	    newFrame.setLayout(null);  
 //	    newFrame.setVisible(true);
 //	}
-//}
+}

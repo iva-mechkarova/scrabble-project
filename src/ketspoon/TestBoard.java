@@ -1,9 +1,9 @@
-//
+
 package ketspoon;
-//
-//
-//public class TestBoard {
-//
+
+
+public class TestBoard {
+
 //	public static void main(String[] args) {
 //		Board testBoard = new Board(); //Create instance of board
 //
@@ -25,5 +25,5 @@ package ketspoon;
 //		testFrame.displayFrame(p1Frame,p1,testBoard);
 //		testFrame.displayFrame(p2Frame,p2,testBoard);
 //	}
-//
-//}
+
+}

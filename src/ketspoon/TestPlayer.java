@@ -1,7 +1,7 @@
 package ketspoon;
 
-//public class TestPlayer {
-//	
+public class TestPlayer {
+	
 //	public static void main(String[] args) {
 //		Pool testPool = new Pool();
 //		System.out.println("Pool size:"+testPool.poolSize());
@@ -27,4 +27,4 @@ package ketspoon;
 //		testFrame.displayFrame(p1Frame,p1,);
 //		testFrame.displayFrame(p2Frame,p2);
 //	}
-//}
+}
