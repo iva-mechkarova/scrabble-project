@@ -30,14 +30,16 @@ public class Controller {
     private Player currentPlayer;
     private Board scrabbleBoard;
     private Pool pool;
+    
+    private int turnScore=0;
+    private int prevScore;
+    
     ArrayList<Tile> currentLetters;
+    ArrayList<Tile> currentWord;
+    String currentWordString="";
     
-    private int turnScore;
-    
-    
-    ArrayList<Tile> playedWord;
-    String playedWordString;
-    
+    String lastPlay;
+    ArrayList<Tile> prevLetters;
     
     Tile currentSelectedTile;
     private int gameState;
@@ -86,6 +88,10 @@ public class Controller {
 	Label playerOneInfo;
 	@FXML
 	Label playerTwoInfo;
+	@FXML
+	Label wordString;
+	@FXML
+	Label poolSize;
 
 	private EventHandler<ActionEvent> createHandler(Square s ) {
 	    return event -> handler(s);
@@ -93,7 +99,7 @@ public class Controller {
 	private void handler (Square s){
 		if(!s.isPlayedSquare()&&gameState==CAN_PLACE_ON_BOARD) {
 			scrabbleBoard.addTileToSquare(s.getSquareIndex(), currentSelectedTile);
-			scrabbleBoard.possiblePlays(s.getSquareIndex(), currentPlayer.playerFrame, currentLetters);
+			scrabbleBoard.possiblePlays(s.getSquareIndex(), currentLetters);
 			currentSelectedTile.setTileSquareIndex(s.getSquareIndex());
 			gameState=CAN_SELECT_FROM_RACK;
 			updateButtons();
@@ -106,12 +112,15 @@ public class Controller {
 		pool = new Pool();
 		frame1 = new Frame(pool);
 		frame2 = new Frame(pool);
+		poolSize.setText("Pool:"+pool.poolSize());
 		currentLetters = new ArrayList<>(); 
-		playedWord = new ArrayList<Tile>();
-		player1=new Player(frame1, "test");
-		player2=new Player(frame2, "test1");
+		prevLetters = new ArrayList<Tile>();
+		currentWord = new ArrayList<Tile>();
+		player1=new Player(frame1, "Player1");
+		player2=new Player(frame2, "Player2");
 		currentPlayer=player1;
 		gameState=START_TURN;
+	
 
 		initFrame();
 		initSquares();
@@ -260,9 +269,9 @@ public class Controller {
 						 pool.addTileToPool(currentLetters.get(i)); //Adds the tiles back to the pool
 					 }
 					 currentPlayer.playerFrame.fillFrame(pool);
-					 currentLetters.clear(); //Removes all elements from the currentLetters list
 					 gameState=MUST_END_TURN; //Change game state as player must now end their turn
-					 exchangeButton.setText("EXCHANGE"); 
+					 exchangeButton.setText("EXCHANGE");
+					 currentLetters.clear();
 					 updateFrameVisual(); //Display the frame with the new tiles which have been added
 					 updateButtons(); //Update which buttons should be disabled/enabled
 				 }
@@ -286,7 +295,8 @@ public class Controller {
 				 currentPlayer.playerFrame.fillFrame(pool);
 				 calculateScore();
 				 updateFrameVisual();
-				 currentLetters.clear();
+				 wordString.setText(currentWordString);
+				 poolSize.setText("Pool:"+pool.poolSize());
 				 gameState=MUST_END_TURN;
 				 updateButtons();
 				 displayPlayerInfo();
@@ -301,30 +311,42 @@ public class Controller {
 		endTurnButton.setOnAction(new EventHandler<ActionEvent>() {
 			 @Override public void handle(ActionEvent e) {
 				 placingWord=false;
-				 playedWord.clear();
 				 gameState=START_TURN;
 				 switchPlayer();
+				 updateGameData();
 				 updateButtons();
 			 }
 		});;
 	}
 	
+	public void updateGameData() {
+		prevScore=turnScore;
+		turnScore=0;
+		prevLetters.clear();
+		for (int i = 0; i < currentLetters.size(); i++)
+			prevLetters.add(currentLetters.get(i));
+		currentLetters.clear(); //Removes all elements from the currentLetters list
+		currentWord.clear();
+	    lastPlay=currentWordString;
+		currentWordString="";
+		
+		updateFrameVisual(); //Calling this method ensures the current player's frame is displayed
+		scrabbleBoard.updatePlayableSquares(); //This updates the playable squares on the board
+		displayPlayerInfo(); //This updates the visual of the players' current scores
+	}
+	
 	/*This method switches which player's turn it is*/
-	public void switchPlayer() {
+	public void switchPlayer() { 
 		if(currentPlayer==player1)
 			currentPlayer=player2;
 		else 
 			currentPlayer=player1;
-		updateFrameVisual(); //Calling this method ensures the current player's frame is displayed
-		scrabbleBoard.updatePlayableSquares(); //This updates the playable squares on the board
-		displayPlayerInfo(); //This updates the visual of the players' current scores
 	}
 	
 	/*This method gets the word that was just placed by the user*/
 	public void getFullWord(){
 		int startIndex=currentSelectedTile.getTileSquareIndex();
 		int endIndex=currentSelectedTile.getTileSquareIndex();
-		playedWordString="";
 
 		
 		if (scrabbleBoard.getDirection()==Board.HORIZONTAL) {
@@ -336,8 +358,8 @@ public class Controller {
 			}
 			
 			for (int i = startIndex; i <= endIndex; i++) {
-				playedWord.add(scrabbleBoard.gameBoard.get(i).getSquaresTile());
-				playedWordString+=scrabbleBoard.gameBoard.get(i).getSquaresTile().getTileLetter();
+				currentWord.add(scrabbleBoard.gameBoard.get(i).getSquaresTile());
+				currentWordString+=scrabbleBoard.gameBoard.get(i).getSquaresTile().getTileLetter();
 			}
 		}
 		
@@ -350,12 +372,10 @@ public class Controller {
 			}
 			
 			for (int i = startIndex; i <= endIndex; i+=15) {
-				playedWord.add(scrabbleBoard.gameBoard.get(i).getSquaresTile());
-				playedWordString+=scrabbleBoard.gameBoard.get(i).getSquaresTile().getTileLetter();
+				currentWord.add(scrabbleBoard.gameBoard.get(i).getSquaresTile());
+				currentWordString+=scrabbleBoard.gameBoard.get(i).getSquaresTile().getTileLetter();
 			}
 		}
-		
-		System.out.println(playedWordString);
 	}
 	
 	/*This method updates which buttons should be disabled in each game state*/
@@ -370,6 +390,7 @@ public class Controller {
 			exchangeButton.setDisable(true);
 			passButton.setDisable(true);
 			endTurnButton.setDisable(true);
+			challengeButton.setDisable(true);
 			//If you have selected a tile to place then you must place it before playing word
 			if(gameState==CAN_PLACE_ON_BOARD)
 			{
@@ -390,6 +411,7 @@ public class Controller {
 				playWordButton.setDisable(true);
 				passButton.setDisable(false);
 				exchangeButton.setDisable(false);
+				challengeButton.setDisable(prevLetters.isEmpty());
 				break;
 			//At the end of turn your only move is to end turn
 			case MUST_END_TURN:
@@ -403,6 +425,7 @@ public class Controller {
 				passButton.setDisable(true);
 				endTurnButton.setDisable(true);
 				playWordButton.setDisable(true);
+				challengeButton.setDisable(true);
 				break;
 			default:
 				exchangeButton.setDisable(false);
@@ -417,10 +440,9 @@ public class Controller {
 	public void calculateScore(){
 		boolean tripleWord=false;
 		boolean doubleWord=false;
-		turnScore=0;
 		
-		for (int i = 0; i < playedWord.size(); i++) {
-			turnScore+=playedWord.get(i).getTileValue();
+		for (int i = 0; i < currentWord.size(); i++) {
+			turnScore+=currentWord.get(i).getTileValue();
 		}
 		for (int i = 0; i < currentLetters.size(); i++) {
 			tripleWord=scrabbleBoard.gameBoard.get(currentLetters.get(i).getTileSquareIndex()).getSquareType()==Board.TRIPLEWORD;
@@ -589,7 +611,10 @@ public class Controller {
 			 @Override public void handle(ActionEvent e) 
 			 {
 				 passWindow.close();
+				 currentLetters.clear();
 				 switchPlayer();
+				 updateGameData();
+				 updateButtons();
 			 }
 		});;
 		
@@ -715,25 +740,18 @@ public class Controller {
 		yesButton.setMinSize(80, 40);
 		
 		/*If user clicks yes then challenge word and close window*/
-		yesButton.setOnAction(new EventHandler<ActionEvent>() 
-		{
-			 @Override public void handle(ActionEvent e) 
-			 {
-				 challengeWindow.close();
-			 }
-		});;
+		yesButton.setOnAction(e -> {challengeWindow.close();switchPlayer();updateGameData();updateButtons();});
 		
 		Button noButton = new Button("NO");
 		noButton.setMaxSize(80, 40);
 		noButton.setMinSize(80, 40);
 		
-		noButton.setOnAction(e -> challengeWindow.close()); //If user selects no then just close the window
+		noButton.setOnAction(e -> {challengeWindow.close();challageValid();updateButtons();}); //If user selects no then just close the window
 		
 		HBox buttonsHbox = new HBox(10);
 		buttonsHbox.getChildren().addAll(yesButton, noButton);
 		
-		Text challengeText = new Text("Are you sure you want to challenge? If you are wrong"
-				+ " you will lose your turn.");
+		Text challengeText = new Text("Is "+lastPlay+" a real word?");
 		challengeText.setStyle("-fx-font-size: 15pt;"
 				+ "-fx-font-weight: bold;");
 		
@@ -748,6 +766,34 @@ public class Controller {
 		challengeText.wrappingWidthProperty().bind(scene.widthProperty().subtract(15));
 		challengeWindow.showAndWait();		
 	}
+	
+	public void challageValid() {
+		
+		switchPlayer();
+		currentPlayer.updateScore(-prevScore);
+		for (int i = 6; i > 7-prevLetters.size()-1; i--) {		
+			pool.addTileToPool(currentPlayer.playerFrame.getLettersInFrame().get(i));
+			currentPlayer.playerFrame.getLettersInFrame().remove(i);
+		}
+		Square resetSquare=null;
+		
+		for(Tile t :prevLetters) {
+			currentPlayer.playerFrame.getLettersInFrame().add(t);
+			resetSquare=scrabbleBoard.gameBoard.get(t.getTileSquareIndex());
+			resetSquare.setSquaresTile(null);
+			resetSquare.setPlayedSquare(false);
+			resetSquare.getSquareButton().setGraphic(new ImageView(resetSquare.getSquareImage()));
+		}
+		for(Square b: scrabbleBoard.gameBoard) {
+			if(b.getSquareIndex()!=112)
+				b.setPlayableSquare(false);
+		}
+		poolSize.setText("Pool:"+pool.poolSize());
+		
+		switchPlayer();updateGameData();updateButtons();
+	}
+	
+	
 	
 	/*Method to display window to ask user if they are sure they wish to quit the game*/
 	public void displayQuitWindow()
@@ -790,7 +836,7 @@ public class Controller {
 	/*Method to display player name and score and prompt the user who's turn it is*/
 	public void displayPlayerInfo()
 	{
-		currentPlayerName.setText(currentPlayer.getName() +  " it is your turn!");
+		currentPlayerName.setText(currentPlayer.getName());
 		playerOneInfo.setText(player1.getName() + ": " + player1.getScore());
 		playerTwoInfo.setText(player2.getName() + ": " + player2.getScore());
 	}

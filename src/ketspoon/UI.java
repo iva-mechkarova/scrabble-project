@@ -25,7 +25,7 @@ public class UI extends Application {
 	        Parent root = loader.load();
 
 	        primaryStage.setTitle("Scrabble");
-	        primaryStage.setScene(new Scene(root, 1000, 830));
+	        primaryStage.setScene(new Scene(root, 980, 830));
 	        root.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 	        primaryStage.show();
 	        

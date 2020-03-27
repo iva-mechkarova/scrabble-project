@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Label?>
-
+<?import javafx.scene.text.Font?>
 
 <BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ketspoon.Controller">
    <center>
@@ -50,7 +51,7 @@
       </GridPane>
    </center>
    <bottom>
-      <HBox prefHeight="100.0" prefWidth="1178.0" BorderPane.alignment="CENTER">
+      <HBox prefHeight="100.0" prefWidth="1100.0" BorderPane.alignment="CENTER">
          <children>
             <Button fx:id="exchangeButton" maxHeight="50.0" maxWidth="100.0" minHeight="50.0" minWidth="100.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="EXCHANGE" translateX="10.0" translateY="20.0" HBox.hgrow="NEVER" />
             <Button fx:id="frameButton0" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" translateX="110.0" translateY="20.0" />
@@ -61,20 +62,60 @@
             <Button fx:id="frameButton5" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" translateX="110.0" translateY="20.0" />
             <Button fx:id="frameButton6" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" translateX="110.0" translateY="20.0" />
             <Button fx:id="playWordButton" maxHeight="50.0" maxWidth="100.0" minHeight="50.0" minWidth="100.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="PLAY WORD" translateX="210.0" translateY="20.0" />
+         	<Button fx:id="endTurnButton" maxHeight="50.0" maxWidth="100.0" minHeight="50.0" minWidth="100.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="END" translateX="220.0" translateY="20.0" />
+            <Button fx:id="passButton" maxHeight="50.0" maxWidth="100.0" minHeight="50.0" minWidth="100.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="PASS" translateX="220.0" translateY="20.0" />
          </children>
       </HBox>
    </bottom>
    <right>
-      <VBox prefHeight="611.0" prefWidth="428.0" BorderPane.alignment="CENTER" spacing="10">
+      <VBox prefHeight="611.0" prefWidth="428.0" spacing="10" BorderPane.alignment="CENTER">
          <children>
-         	<Button fx:id="endTurnButton" maxHeight="50.0" maxWidth="210.0" minHeight="50.0" minWidth="210.0" prefHeight="50.0" prefWidth="210.0" mnemonicParsing="false" text="END TURN" translateX="20.0" translateY="10.0" />
-            <Button fx:id="helpButton" maxHeight="50.0" maxWidth="210.0" minHeight="50.0" minWidth="210.0" prefHeight="50.0" prefWidth="210.0" mnemonicParsing="false" text="HELP" translateX="20.0" translateY="10.0" />
-            <Button fx:id="passButton" maxHeight="50.0" maxWidth="210.0" minHeight="50.0" minWidth="210.0" prefHeight="50.0" prefWidth="210.0" mnemonicParsing="false" text="PASS" translateX="20.0" translateY="10.0" />
-            <Button fx:id="challengeButton" maxHeight="50.0" maxWidth="210.0" minHeight="50.0" minWidth="210.0" prefHeight="50.0" prefWidth="210.0" mnemonicParsing="false" text="CHALLENGE" translateX="20.0" translateY="10.0"/> 
-            <Button fx:id="quitButton" maxHeight="50.0" maxWidth="210.0" minHeight="50.0" minWidth="210.0" prefHeight="50.0" prefWidth="210.0" mnemonicParsing="false" text="QUIT" translateX="20.0" translateY="10.0" />
-         	<Label fx:id="currentPlayerName" translateX="20.0" translateY="10.0"/>
-         	<Label fx:id="playerOneInfo" translateX="20.0" translateY="10.0"/>
-         	<Label fx:id="playerTwoInfo" translateX="20.0" translateY="10.0"/>
+         	<Label fx:id="currentPlayerName" alignment="CENTER" maxHeight="50.0" maxWidth="200.0" minHeight="50.0" minWidth="200.0" prefHeight="50.0" prefWidth="200.0" text="Player" textOverrun="CENTER_ELLIPSIS" translateX="20.0" translateY="10.0">
+               <font>
+                  <Font size="30.0" />
+               </font>
+            </Label>
+            <HBox prefHeight="70.0" prefWidth="428.0">
+               <children>
+                  <Button fx:id="helpButton" maxHeight="50.0" maxWidth="100.0" minHeight="50.0" minWidth="100.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="HELP" translateX="20.0" translateY="10.0" /> 
+                  <Button fx:id="quitButton" maxHeight="50.0" maxWidth="100.0" minHeight="50.0" minWidth="100.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="QUIT" translateX="20.0" translateY="10.0" />
+               </children>
+            </HBox>
+            <Label alignment="CENTER" maxHeight="50.0" maxWidth="200.0" minHeight="50.0" minWidth="200.0" prefHeight="50.0" prefWidth="200.0" text="Score" textOverrun="CENTER_ELLIPSIS" translateX="20.0">
+               <font>
+                  <Font size="30.0" />
+               </font>
+            </Label>
+         	<Label fx:id="playerOneInfo" alignment="CENTER" textAlignment="CENTER" textFill="RED" translateX="20.0">
+               <font>
+                  <Font size="18.0" />
+               </font></Label>
+         	<Label fx:id="playerTwoInfo" alignment="CENTER" textAlignment="CENTER" textFill="RED" translateX="20.0">
+               <font>
+                  <Font size="18.0" />
+               </font></Label>
+            <Label alignment="CENTER" maxHeight="50.0" maxWidth="200.0" minHeight="22.0" minWidth="200.0" prefHeight="27.0" prefWidth="200.0" text="Game Log" textOverrun="CENTER_ELLIPSIS" translateX="20.0">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <TextArea maxHeight="300.0" maxWidth="200.0" minHeight="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" translateX="20.0" />
+            <Label fx:id="poolSize" alignment="CENTER" maxHeight="50.0" maxWidth="200.0" minHeight="37.0" minWidth="200.0" prefHeight="37.0" prefWidth="200.0" textFill="RED" textOverrun="CENTER_ELLIPSIS" translateX="20.0">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" maxHeight="50.0" maxWidth="200.0" minHeight="37.0" minWidth="200.0" prefHeight="37.0" prefWidth="200.0" text="Last Play" textOverrun="CENTER_ELLIPSIS" translateX="20.0">
+               <font>
+                  <Font size="30.0" />
+               </font>
+            </Label>
+            <Label fx:id="wordString" alignment="CENTER" maxHeight="50.0" maxWidth="200.0" minHeight="37.0" minWidth="200.0" prefHeight="37.0" prefWidth="200.0" textFill="RED" textOverrun="CENTER_ELLIPSIS" translateX="20.0">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <Button fx:id="challengeButton" maxHeight="50.0" maxWidth="200.0" minHeight="50.0" minWidth="100.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="200.0" text="CHALLENGE" translateX="20.0" translateY="50.0" />
          </children></VBox>
    </right>
 </BorderPane>

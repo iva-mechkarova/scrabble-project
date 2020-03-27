@@ -17,12 +17,12 @@ public class Square {
 	private Image squareImage;
 	
 	
-	public Square(int index,int type,Image i,boolean playeable) {
+	public Square(int index,int type,Image i,boolean p) {
 		squareIndex=index;
 		squaresTile=null;
 		squareImage=i;
 		squareType=type;
-		playableSquare=playeable;
+		playableSquare=p;
 		playedSquare=false;
 		squareButton=new Button();
 	}

@@ -11,48 +11,46 @@ public class Pool {
 	public ArrayList<Tile> tileTable; /* Array list to store all tiles */
 	
 	public Pool() {
-		
 		gamePool = new ArrayList<>(); 
-		tileTable = new ArrayList<>(); 
-		
-		/* Creating the tile objects and adding them to the tile table */
-		Tile A = new Tile('A',1,new Image(getClass().getResourceAsStream("/resources/Letters/A.png")));   /**/   tileTable.add(A);
-		Tile B = new Tile('B',3,new Image(getClass().getResourceAsStream("/resources/Letters/B.png")));   /**/   tileTable.add(B);
-		Tile C = new Tile('C',3,new Image(getClass().getResourceAsStream("/resources/Letters/C.png")));   /**/   tileTable.add(C);   
-		Tile D = new Tile('D',2,new Image(getClass().getResourceAsStream("/resources/Letters/D.png")));   /**/   tileTable.add(D);
-		Tile E = new Tile('E',1,new Image(getClass().getResourceAsStream("/resources/Letters/E.png")));   /**/   tileTable.add(E);
-		Tile F = new Tile('F',4,new Image(getClass().getResourceAsStream("/resources/Letters/F.png")));   /**/   tileTable.add(F);
-		Tile G = new Tile('G',2,new Image(getClass().getResourceAsStream("/resources/Letters/G.png")));   /**/   tileTable.add(G);
-		Tile H = new Tile('H',4,new Image(getClass().getResourceAsStream("/resources/Letters/H.png")));   /**/   tileTable.add(H);
-		Tile I = new Tile('I',1,new Image(getClass().getResourceAsStream("/resources/Letters/I.png")));   /**/   tileTable.add(I);
-		Tile J = new Tile('J',8,new Image(getClass().getResourceAsStream("/resources/Letters/J.png")));   /**/   tileTable.add(J);
-		Tile K = new Tile('K',5,new Image(getClass().getResourceAsStream("/resources/Letters/K.png")));   /**/   tileTable.add(K);
-		Tile L = new Tile('L',1,new Image(getClass().getResourceAsStream("/resources/Letters/L.png")));   /**/   tileTable.add(L);
-		Tile M = new Tile('M',3,new Image(getClass().getResourceAsStream("/resources/Letters/M.png")));   /**/   tileTable.add(M);
-		Tile N = new Tile('N',1,new Image(getClass().getResourceAsStream("/resources/Letters/N.png")));   /**/   tileTable.add(N);
-		Tile O = new Tile('O',1,new Image(getClass().getResourceAsStream("/resources/Letters/O.png")));   /**/   tileTable.add(O);
-		Tile P = new Tile('P',3,new Image(getClass().getResourceAsStream("/resources/Letters/P.png")));   /**/   tileTable.add(P);
-		Tile Q = new Tile('Q',10,new Image(getClass().getResourceAsStream("/resources/Letters/Q.png")));  /**/   tileTable.add(Q);
-		Tile R = new Tile('R',1,new Image(getClass().getResourceAsStream("/resources/Letters/R.png")));   /**/   tileTable.add(R);
-		Tile S = new Tile('S',1,new Image(getClass().getResourceAsStream("/resources/Letters/S.png")));   /**/   tileTable.add(S);
-		Tile T = new Tile('T',1,new Image(getClass().getResourceAsStream("/resources/Letters/T.png")));   /**/   tileTable.add(T);
-		Tile U = new Tile('U',1,new Image(getClass().getResourceAsStream("/resources/Letters/U.png")));   /**/   tileTable.add(U);
-		Tile V = new Tile('V',4,new Image(getClass().getResourceAsStream("/resources/Letters/V.png")));   /**/   tileTable.add(V);
-		Tile W = new Tile('W',4,new Image(getClass().getResourceAsStream("/resources/Letters/W.png")));   /**/   tileTable.add(W);
-		Tile X = new Tile('X',8,new Image(getClass().getResourceAsStream("/resources/Letters/X.png")));   /**/   tileTable.add(X);
-		Tile Y = new Tile('Y',4,new Image(getClass().getResourceAsStream("/resources/Letters/Y.png")));   /**/   tileTable.add(Y);
-		Tile Z = new Tile('Z',10,new Image(getClass().getResourceAsStream("/resources/Letters/Z.png")));  /**/   tileTable.add(Z);
-		Tile blank = new Tile('+',0,new Image(getClass().getResourceAsStream("/resources/Letters/BLANK.png")));   /**/ tileTable.add(blank);
-		
 		defaultPool();
 	}
 	
 	/* this method is used to initialize the pool and to reset the pool */
 	public void defaultPool() {
 		int poolLetterCount[] = {9,2,2,4,12,2,3,2,9,1,1,4,2,6,8,2,1,6,4,6,4,2,2,1,2,1,2}; /* number of letter in pool in order A-Z + Blank */
-		for(int i=0; i<tileTable.size();i++) {
+		for(int i=0; i<27;i++) {
 			for(int j=0; j<poolLetterCount[i]; j++) {
-				gamePool.add(tileTable.get(i));
+				switch (i) {
+				case 0 : gamePool.add(new Tile('A',1,new Image(getClass().getResourceAsStream("/resources/Letters/A.png"))));break;  
+				case 1 : gamePool.add(new Tile('B',3,new Image(getClass().getResourceAsStream("/resources/Letters/B.png"))));break;   
+				case 2 : gamePool.add(new Tile('C',3,new Image(getClass().getResourceAsStream("/resources/Letters/C.png"))));break;   
+				case 3 : gamePool.add(new Tile('D',2,new Image(getClass().getResourceAsStream("/resources/Letters/D.png"))));break; 
+				case 4 : gamePool.add(new Tile('E',1,new Image(getClass().getResourceAsStream("/resources/Letters/E.png"))));break;   
+				case 5 : gamePool.add(new Tile('F',4,new Image(getClass().getResourceAsStream("/resources/Letters/F.png"))));break;   
+				case 6 : gamePool.add(new Tile('G',2,new Image(getClass().getResourceAsStream("/resources/Letters/G.png"))));break;   
+				case 7 : gamePool.add(new Tile('H',4,new Image(getClass().getResourceAsStream("/resources/Letters/H.png"))));break;  
+				case 8: gamePool.add(new Tile('I',1,new Image(getClass().getResourceAsStream("/resources/Letters/I.png"))));break;   
+				case 9 : gamePool.add(new Tile('J',8,new Image(getClass().getResourceAsStream("/resources/Letters/J.png"))));break;   
+				case 10 : gamePool.add(new Tile('K',5,new Image(getClass().getResourceAsStream("/resources/Letters/K.png"))));break;   
+				case 11 : gamePool.add(new Tile('L',1,new Image(getClass().getResourceAsStream("/resources/Letters/L.png"))));break;  
+				case 12 : gamePool.add(new Tile('M',3,new Image(getClass().getResourceAsStream("/resources/Letters/M.png"))));break; 
+				case 13 : gamePool.add(new Tile('N',1,new Image(getClass().getResourceAsStream("/resources/Letters/N.png"))));break;
+				case 14 : gamePool.add(new Tile('O',1,new Image(getClass().getResourceAsStream("/resources/Letters/O.png"))));break;
+				case 15: gamePool.add(new Tile('P',3,new Image(getClass().getResourceAsStream("/resources/Letters/P.png"))));break; 
+				case 16 : gamePool.add(new Tile('Q',10,new Image(getClass().getResourceAsStream("/resources/Letters/Q.png"))));break;
+				case 17 : gamePool.add(new Tile('R',1,new Image(getClass().getResourceAsStream("/resources/Letters/R.png"))));break;
+				case 18 : gamePool.add(new Tile('S',1,new Image(getClass().getResourceAsStream("/resources/Letters/S.png"))));break; 
+				case 19 : gamePool.add(new Tile('T',1,new Image(getClass().getResourceAsStream("/resources/Letters/T.png"))));break; 
+				case 20 : gamePool.add(new Tile('U',1,new Image(getClass().getResourceAsStream("/resources/Letters/U.png"))));break;  
+				case 21 : gamePool.add(new Tile('V',4,new Image(getClass().getResourceAsStream("/resources/Letters/V.png"))));break;  
+				case 22 : gamePool.add(new Tile('W',4,new Image(getClass().getResourceAsStream("/resources/Letters/W.png"))));break;  
+				case 23 : gamePool.add(new Tile('X',8,new Image(getClass().getResourceAsStream("/resources/Letters/X.png"))));break;  
+				case 24 : gamePool.add(new Tile('Y',4,new Image(getClass().getResourceAsStream("/resources/Letters/Y.png"))));break;   
+				case 25 : gamePool.add(new Tile('Z',10,new Image(getClass().getResourceAsStream("/resources/Letters/Z.png"))));break; 
+				case 26 : gamePool.add(new Tile('+',0,new Image(getClass().getResourceAsStream("/resources/Letters/BLANK.png"))));break; 
+				default:
+					;
+				}
 			}
 		}	
 	}
