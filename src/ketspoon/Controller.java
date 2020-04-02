@@ -311,15 +311,6 @@ public class Controller {
 		quitButton.setOnAction(e -> displayQuitWindow());
 		challengeButton.setOnAction(e -> {displayChallengeWindow();validateChallenge();});
 		
-		/*challengeButton.setOnAction(new EventHandler<ActionEvent>() {
-			 @Override public void handle(ActionEvent e) {
-				 if(challengeWord())
-				 {
-					 
-				 }
-			 }
-		});;*/
-		
 		endTurnButton.setOnAction(new EventHandler<ActionEvent>() {
 			 @Override public void handle(ActionEvent e) {
 				 placingWord=false;
