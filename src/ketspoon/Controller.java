@@ -1,7 +1,10 @@
 
 package ketspoon;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -306,7 +309,16 @@ public class Controller {
 		helpButton.setOnAction(e -> displayHelp());
 		passButton.setOnAction(e -> displayPassWindow());
 		quitButton.setOnAction(e -> displayQuitWindow());
-		challengeButton.setOnAction(e -> displayChallengeWindow());
+		challengeButton.setOnAction(e -> {displayChallengeWindow();validateChallenge();});
+		
+		/*challengeButton.setOnAction(new EventHandler<ActionEvent>() {
+			 @Override public void handle(ActionEvent e) {
+				 if(challengeWord())
+				 {
+					 
+				 }
+			 }
+		});;*/
 		
 		endTurnButton.setOnAction(new EventHandler<ActionEvent>() {
 			 @Override public void handle(ActionEvent e) {
@@ -729,34 +741,38 @@ public class Controller {
 		playerNameWindow.showAndWait(); 
 	}
 	
-	/*Method to display window to ask user if they are sure they wish to challenge*/
+	/**Method to display who was correct after challenge has been selected*/
 	public void displayChallengeWindow()
 	{
 		Stage challengeWindow = new Stage();	      
-		challengeWindow.setTitle("Challenge");  
+		challengeWindow.setTitle("Challenge");
+		String challengingPlayer;
+		String challengedPlayer;
 		
-		Button yesButton = new Button("YES");
-		yesButton.setMaxSize(80, 40);
-		yesButton.setMinSize(80, 40);
+		challengingPlayer = currentPlayer==player1 ? player1.getName() : player2.getName();
+		challengedPlayer = currentPlayer==player1 ? player2.getName() : player1.getName();
+		
+		Button okayButton = new Button("OKAY");
+		okayButton.setMaxSize(90, 40);
+		okayButton.setMinSize(90, 40);
 		
 		/*If user clicks yes then challenge word and close window*/
-		yesButton.setOnAction(e -> {challengeWindow.close();switchPlayer();updateGameData();updateButtons();});
+		okayButton.setOnAction(e -> challengeWindow.close());
 		
-		Button noButton = new Button("NO");
-		noButton.setMaxSize(80, 40);
-		noButton.setMinSize(80, 40);
-		
-		noButton.setOnAction(e -> {challengeWindow.close();challageValid();updateButtons();}); //If user selects no then just close the window
-		
-		HBox buttonsHbox = new HBox(10);
-		buttonsHbox.getChildren().addAll(yesButton, noButton);
-		
-		Text challengeText = new Text("Is "+lastPlay+" a real word?");
-		challengeText.setStyle("-fx-font-size: 15pt;"
+		Text challengeText = new Text(challengedPlayer + " is correct! "
+				+ challengingPlayer + " you miss your turn.");
+		challengeText.setStyle("-fx-font-size: 20pt;"
 				+ "-fx-font-weight: bold;");
 		
+		if(validateChallenge())
+		{
+			challengedPlayer = challengedPlayer.toLowerCase().endsWith("s")? challengedPlayer.concat("'") : challengedPlayer.concat("'s");
+			challengeText.setText(challengingPlayer + " is correct! " + challengedPlayer +
+					" score has been deducted.");
+		}
+		
 		VBox layout = new VBox(10);	      
-		layout.getChildren().addAll(challengeText, buttonsHbox);		      
+		layout.getChildren().addAll(challengeText, okayButton);		      
 		layout.setAlignment(Pos.CENTER);
 		      
 		Scene scene = new Scene(layout, 220, 200);  
@@ -767,8 +783,33 @@ public class Controller {
 		challengeWindow.showAndWait();		
 	}
 	
-	public void challageValid() {
+	public boolean validateChallenge() {	
+		File dictionary = new File("sowpods.txt");
+		boolean isValidChallenge = true;
+
+		try {
+			Scanner sc = new Scanner(dictionary);
+
+			while (sc.hasNext()) {
+				if (lastPlay.equals(sc.nextLine())) {
+					isValidChallenge = false;
+					break;
+				}
+			}
+			sc.close();
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
 		
+		if(!isValidChallenge)
+		{
+			switchPlayer();
+			updateGameData();
+			updateButtons();
+			
+			return isValidChallenge;
+		}
+
 		switchPlayer();
 		currentPlayer.updateScore(-prevScore);
 		for (int i = 6; i > 7-prevLetters.size()-1; i--) {		
@@ -790,7 +831,9 @@ public class Controller {
 		}
 		poolSize.setText("Pool:"+pool.poolSize());
 		
-		switchPlayer();updateGameData();updateButtons();
+		switchPlayer();updateGameData();updateButtons();	
+		
+		return isValidChallenge;	
 	}
 	
 	
