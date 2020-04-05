@@ -97,8 +97,6 @@ public class Controller {
 	Label wordString;
 	@FXML
 	Label poolSize;
-	@FXML
-	Button closeErrorButton;
 
 	private EventHandler<ActionEvent> createHandler(Square s ) {
 	    return event -> handler(s);
@@ -296,10 +294,13 @@ public class Controller {
 		
 		playWordButton.setOnAction(new EventHandler<ActionEvent>() {
 			 @Override public void handle(ActionEvent e) {
+				 getMainWord();
 				 placingWord=false;
 				 for (int i = 0; i < currentLetters.size(); i++) {
 					 currentPlayer.playerFrame.removeTile(currentLetters.get(i));
 				 }
+				 currentPlayer.playerFrame.fillFrame(pool);
+				 updateFrameVisual();
 				 String tempAllWords="";
 				 for(String s:allWords) {
 					 tempAllWords+=s+"\n";
@@ -309,9 +310,6 @@ public class Controller {
 				 gameState=MUST_END_TURN;
 				 updateButtons();
 				 displayPlayerInfo();
-				 getMainWord();
-				 currentPlayer.playerFrame.fillFrame(pool);
-				 updateFrameVisual();
 			 }
 		});;
 				
@@ -373,21 +371,6 @@ public class Controller {
 			subWordDirection=2;
 		}
 		getSubWords(subWordDirection);
-		
-		/*Makes player1 re-do their turn if they place only one tile as their first turn*/
-		if(currentLetters.size() == 1 && currentLetters.get(0).getTileSquareIndex() == 112) 
-		{
-			displayError();
-			currentPlayer.playerFrame.addTile(currentSelectedTile);
-			scrabbleBoard = new Board();
-			currentLetters = new ArrayList<>(); 
-			currentWord = new ArrayList<Tile>();
-			currentPlayer=player1;
-			gameState=START_TURN;
-			initSquares();
-			initButtons();
-			updateButtons();
-		}
 	}
 	
 	public void getSubWords(int x) {
@@ -532,9 +515,6 @@ public class Controller {
 		if(doubleWord)
 			wordScore=wordScore*2*doubleWordNum;
 		
-		if(currentLetters.size() == 7)
-			wordScore += 50;
-		
 		turnScore+=wordScore;
 		currentPlayer.updateScore(wordScore);
 	}
@@ -592,35 +572,7 @@ public class Controller {
 		else
 			frameButton6.setVisible(false);
 	}
-	/*Displays an error message when player1 places only one tile as a first move*/ 
-	public void displayError()
-	{
-		Stage errorWindow = new Stage();
-		errorWindow.setTitle("Error");
-		
-		Button closeErrorButton = new Button("CLOSE");
-		closeErrorButton.setMaxSize(200, 20);
-		closeErrorButton.setMinSize(200, 40);
-		
-		closeErrorButton.setOnAction(e -> errorWindow.close());
-		
-		Text errorTextTitle = new Text("An Error has occurred, Try again");
-		errorTextTitle.setStyle("-fx-font-size: 15pt;"
-				+ "-fx-font-weight: bold;");
-		Text errorTextBody = new Text("Select more than one tile from your rack to form a word");
-		errorTextBody.setStyle("-fx-font-size: 10pt;");
-		
-		VBox layout = new VBox(10);
-		layout.getChildren().addAll(errorTextTitle, errorTextBody, closeErrorButton);
-		layout.setAlignment(Pos.CENTER);
-		
-		Scene scene = new Scene(layout, 350, 150);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-		
-		errorWindow.setScene(scene);
-		errorWindow.showAndWait();
-	}
-	
+
 	/*Method to display window when help is clicked*/
 	public void displayHelp()
 	{
@@ -877,35 +829,62 @@ public class Controller {
 		challengeWindow.showAndWait();		
 	}
 	
+	/**Method to check if a challenge is valid or not and if the challenge is valid, 
+	 * the challenged player's score is deducted and word is removed,
+	 * otherwise the challenger loses their turn.*/
 	public boolean validateChallenge() {	
 		File dictionary = new File("sowpods.txt");
 		boolean isValidChallenge = true;
+		int noOfValidWords=0;
 
 		try {
-			Scanner sc = new Scanner(dictionary);
+			Scanner sc = new Scanner(dictionary); //Initialize scanner to scan file
 
-			while (sc.hasNext()) {
-				if (lastPlay.equals(sc.nextLine())) {
-					isValidChallenge = false;
-					break;
-				}
+			//Check that each word from the last play is valid
+			for(int i=0; i<lastPlay.size(); i++)
+			{
+				sc.reset(); //Reset scanner when checking each word
+				while (sc.hasNext()) 
+				{
+					//If a match is found increment noOfValidWords and stop checking
+					if (lastPlay.get(i).equals(sc.nextLine())) 
+					{
+						noOfValidWords+=1;
+						break; 
+					}
+				}				
 			}
+			
+			//If all words are valid then the challenge was not valid
+			if(noOfValidWords==lastPlay.size())
+			{
+				isValidChallenge=false;
+			}
+			
 			sc.close();
+			
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
 		
+		//If the challenge is not valid then the challenger loses their turn and isValidChallenge is returned
 		if(!isValidChallenge)
 		{
 			switchPlayer();
 			updateGameData();
 			updateButtons();
 			
-			return isValidChallenge;
+			return isValidChallenge; 
 		}
 
+		//If the challenge is valid, switch player in order to get the other player's data
 		switchPlayer();
+		
+		//Deduct the previous score from the challenged player's score
 		currentPlayer.updateScore(-prevScore);
+		
+		/*Remove the tiles from the incorrect word on the board and add them back to the player's frame while adding
+		the new tiles from the player's frame back to the pool*/
 		for (int i = 6; i > 7-prevLetters.size()-1; i--) {		
 			pool.addTileToPool(currentPlayer.playerFrame.getLettersInFrame().get(i));
 			currentPlayer.playerFrame.getLettersInFrame().remove(i);
