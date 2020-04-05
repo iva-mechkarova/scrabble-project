@@ -1,10 +1,11 @@
 
 package ketspoon;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -865,21 +866,23 @@ public class Controller {
 	 * the challenged player's score is deducted and word is removed,
 	 * otherwise the challenger loses their turn.*/
 	public boolean validateChallenge() {	
-		File dictionary = new File("sowpods.txt");
 		boolean isValidChallenge = true;
 		int noOfValidWords=0;
-
+		InputStream is = getClass().getResourceAsStream("/sowpods.txt"); //Declare input stream as dictionary
+		InputStreamReader isr = new InputStreamReader(is);
+		BufferedReader br = null;
+		
 		try {
-			Scanner sc = new Scanner(dictionary); //Initialize scanner to scan file
-
+		    String line;  
+			
 			//Check that each word from the last play is valid
 			for(int i=0; i<lastPlay.size(); i++)
 			{
-				sc.reset(); //Reset scanner when checking each word
-				while (sc.hasNext()) 
+				br = new BufferedReader(isr); //Reset bufferedReader after each word is checked
+				while ((line = br.readLine()) != null) 
 				{
 					//If a match is found increment noOfValidWords and stop checking
-					if (lastPlay.get(i).equals(sc.nextLine())) 
+					if (lastPlay.get(i).equals(line)) 
 					{
 						noOfValidWords+=1;
 						break; 
@@ -892,10 +895,12 @@ public class Controller {
 			{
 				isValidChallenge=false;
 			}
+				
+			is.close();
+			isr.close();
+			br.close();
 			
-			sc.close();
-			
-		} catch (FileNotFoundException e1) {
+		} catch(IOException e1) {
 			e1.printStackTrace();
 		}
 		
