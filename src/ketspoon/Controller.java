@@ -97,6 +97,8 @@ public class Controller {
 	Label wordString;
 	@FXML
 	Label poolSize;
+	@FXML
+	Button closeErrorButton;
 
 	private EventHandler<ActionEvent> createHandler(Square s ) {
 	    return event -> handler(s);
@@ -375,6 +377,7 @@ public class Controller {
 		/*Makes player1 re-do their turn if they place only one tile as their first turn*/
 		if(currentLetters.size() == 1 && currentLetters.get(0).getTileSquareIndex() == 112) 
 		{
+			displayError();
 			currentPlayer.playerFrame.addTile(currentSelectedTile);
 			scrabbleBoard = new Board();
 			currentLetters = new ArrayList<>(); 
@@ -589,7 +592,35 @@ public class Controller {
 		else
 			frameButton6.setVisible(false);
 	}
-
+	/*Displays an error message when player1 places only one tile as a first move*/ 
+	public void displayError()
+	{
+		Stage errorWindow = new Stage();
+		errorWindow.setTitle("Error");
+		
+		Button closeErrorButton = new Button("CLOSE");
+		closeErrorButton.setMaxSize(200, 20);
+		closeErrorButton.setMinSize(200, 40);
+		
+		closeErrorButton.setOnAction(e -> errorWindow.close());
+		
+		Text errorTextTitle = new Text("An Error has occurred, Try again");
+		errorTextTitle.setStyle("-fx-font-size: 15pt;"
+				+ "-fx-font-weight: bold;");
+		Text errorTextBody = new Text("Select more than one tile from your rack to form a word");
+		errorTextBody.setStyle("-fx-font-size: 10pt;");
+		
+		VBox layout = new VBox(10);
+		layout.getChildren().addAll(errorTextTitle, errorTextBody, closeErrorButton);
+		layout.setAlignment(Pos.CENTER);
+		
+		Scene scene = new Scene(layout, 350, 150);
+		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		
+		errorWindow.setScene(scene);
+		errorWindow.showAndWait();
+	}
+	
 	/*Method to display window when help is clicked*/
 	public void displayHelp()
 	{
