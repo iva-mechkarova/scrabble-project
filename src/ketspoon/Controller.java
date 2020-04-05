@@ -39,10 +39,12 @@ public class Controller {
     
     ArrayList<Tile> currentLetters;
     ArrayList<Tile> currentWord;
-    String currentWordString="";
     
-    String lastPlay;
+    ArrayList<String> lastPlay;
     ArrayList<Tile> prevLetters;
+    
+    
+    ArrayList<String> allWords;
     
     Tile currentSelectedTile;
     private int gameState;
@@ -116,7 +118,9 @@ public class Controller {
 		frame1 = new Frame(pool);
 		frame2 = new Frame(pool);
 		poolSize.setText("Pool:"+pool.poolSize());
+		allWords = new ArrayList<String>();
 		currentLetters = new ArrayList<>(); 
+		lastPlay=new ArrayList<String>();
 		prevLetters = new ArrayList<Tile>();
 		currentWord = new ArrayList<Tile>();
 		player1=new Player(frame1, "Player1");
@@ -290,15 +294,18 @@ public class Controller {
 		
 		playWordButton.setOnAction(new EventHandler<ActionEvent>() {
 			 @Override public void handle(ActionEvent e) {
-				 getFullWord();
+				 getMainWord();
 				 placingWord=false;
 				 for (int i = 0; i < currentLetters.size(); i++) {
 					 currentPlayer.playerFrame.removeTile(currentLetters.get(i));
 				 }
 				 currentPlayer.playerFrame.fillFrame(pool);
-				 calculateScore();
 				 updateFrameVisual();
-				 wordString.setText(currentWordString);
+				 String tempAllWords="";
+				 for(String s:allWords) {
+					 tempAllWords+=s+"\n";
+				 }
+				 wordString.setText(tempAllWords);
 				 poolSize.setText("Pool:"+pool.poolSize());
 				 gameState=MUST_END_TURN;
 				 updateButtons();
@@ -330,8 +337,10 @@ public class Controller {
 			prevLetters.add(currentLetters.get(i));
 		currentLetters.clear(); //Removes all elements from the currentLetters list
 		currentWord.clear();
-	    lastPlay=currentWordString;
-		currentWordString="";
+		lastPlay.clear();
+		for(String s:allWords)
+			lastPlay.add(s);
+		allWords.clear();
 		
 		updateFrameVisual(); //Calling this method ensures the current player's frame is displayed
 		scrabbleBoard.updatePlayableSquares(); //This updates the playable squares on the board
@@ -347,38 +356,72 @@ public class Controller {
 	}
 	
 	/*This method gets the word that was just placed by the user*/
-	public void getFullWord(){
+	public void getMainWord(){
 		int startIndex=currentSelectedTile.getTileSquareIndex();
 		int endIndex=currentSelectedTile.getTileSquareIndex();
-
+		int subWordDirection=0;
 		
 		if (scrabbleBoard.getDirection()==Board.HORIZONTAL) {
-			while(scrabbleBoard.gameBoard.get(startIndex).getSquareIndex()%15!=0 && scrabbleBoard.gameBoard.get(startIndex-1).isPlayedSquare()) {
-				startIndex--;
-			}
-			while((scrabbleBoard.gameBoard.get(endIndex).getSquareIndex()+1)%15!=0 && scrabbleBoard.gameBoard.get(endIndex+1).isPlayedSquare()) {
-				endIndex++;
-			}
-			
-			for (int i = startIndex; i <= endIndex; i++) {
-				currentWord.add(scrabbleBoard.gameBoard.get(i).getSquaresTile());
-				currentWordString+=scrabbleBoard.gameBoard.get(i).getSquaresTile().getTileLetter();
-			}
+			horizontalWords(startIndex, endIndex);
+			subWordDirection=1;
 		}
 		
 		if (scrabbleBoard.getDirection()==Board.VERTICAL) {
-			while(scrabbleBoard.gameBoard.get(startIndex).getSquareIndex()-15>=0 && scrabbleBoard.gameBoard.get(startIndex-15).isPlayedSquare()) {
-				startIndex-=15;
+			verticalWords(startIndex, endIndex);
+			subWordDirection=2;
+		}
+		getSubWords(subWordDirection);
+	}
+	
+	public void getSubWords(int x) {
+		for(Tile t :currentLetters) {
+			if (x==1) {
+				verticalWords(t.getTileSquareIndex(), t.getTileSquareIndex());
 			}
-			while((scrabbleBoard.gameBoard.get(endIndex).getSquareIndex())+15<225 && scrabbleBoard.gameBoard.get(endIndex+15).isPlayedSquare()) {
-				endIndex+=15;
-			}
-			
-			for (int i = startIndex; i <= endIndex; i+=15) {
-				currentWord.add(scrabbleBoard.gameBoard.get(i).getSquaresTile());
-				currentWordString+=scrabbleBoard.gameBoard.get(i).getSquaresTile().getTileLetter();
+			if (x==2) {
+				horizontalWords(t.getTileSquareIndex(), t.getTileSquareIndex());
 			}
 		}
+	}
+	
+	public void verticalWords(int startIndex, int endIndex) {
+		String currentWordString="";
+		while(scrabbleBoard.gameBoard.get(startIndex).getSquareIndex()-15>=0 && scrabbleBoard.gameBoard.get(startIndex-15).isPlayedSquare()) {
+			startIndex-=15;
+		}
+		while((scrabbleBoard.gameBoard.get(endIndex).getSquareIndex())+15<225 && scrabbleBoard.gameBoard.get(endIndex+15).isPlayedSquare()) {
+			endIndex+=15;
+		}
+		
+		for (int i = startIndex; i <= endIndex; i+=15) {
+			currentWord.add(scrabbleBoard.gameBoard.get(i).getSquaresTile());
+			currentWordString+=scrabbleBoard.gameBoard.get(i).getSquaresTile().getTileLetter();
+		}
+		if(currentWordString.length()>1) {
+			calculateScore();
+			allWords.add(currentWordString);
+		}
+		currentWord.clear();
+	}
+	
+	public void horizontalWords(int startIndex, int endIndex) {
+		String currentWordString="";
+		while(scrabbleBoard.gameBoard.get(startIndex).getSquareIndex()%15!=0 && scrabbleBoard.gameBoard.get(startIndex-1).isPlayedSquare()) {
+			startIndex--;
+		}
+		while((scrabbleBoard.gameBoard.get(endIndex).getSquareIndex()+1)%15!=0 && scrabbleBoard.gameBoard.get(endIndex+1).isPlayedSquare()) {
+			endIndex++;
+		}
+		
+		for (int i = startIndex; i <= endIndex; i++) {
+			currentWord.add(scrabbleBoard.gameBoard.get(i).getSquaresTile());
+			currentWordString+=scrabbleBoard.gameBoard.get(i).getSquaresTile().getTileLetter();
+		}
+		if(currentWordString.length()>1) {
+			calculateScore();
+			allWords.add(currentWordString);
+		}
+		currentWord.clear();
 	}
 	
 	/*This method updates which buttons should be disabled in each game state*/
@@ -441,29 +484,41 @@ public class Controller {
 	}
 	
 	public void calculateScore(){
+		int wordScore=0;
 		boolean tripleWord=false;
 		boolean doubleWord=false;
 		
-		for (int i = 0; i < currentWord.size(); i++) {
-			turnScore+=currentWord.get(i).getTileValue();
-		}
-		for (int i = 0; i < currentLetters.size(); i++) {
-			tripleWord=scrabbleBoard.gameBoard.get(currentLetters.get(i).getTileSquareIndex()).getSquareType()==Board.TRIPLEWORD;
-			doubleWord=scrabbleBoard.gameBoard.get(currentLetters.get(i).getTileSquareIndex()).getSquareType()==Board.DOUBLEWORD;
-			
-			if(scrabbleBoard.gameBoard.get(currentLetters.get(i).getTileSquareIndex()).getSquareType()==Board.TRIPLELETTER) 
-				turnScore+=(currentLetters.get(i).getTileValue()*2);
-			
-			if(scrabbleBoard.gameBoard.get(currentLetters.get(i).getTileSquareIndex()).getSquareType()==Board.DOUBLELETTER) 
-				turnScore+=currentLetters.get(i).getTileValue();
-		}
-		if(tripleWord) 
-			turnScore=turnScore*3;
-		if(doubleWord)
-			turnScore=turnScore*2;
+		int tripleWordNum=0;
+		int doubleWordNum=0;
 		
-		currentPlayer.updateScore(turnScore);
+		for (int i = 0; i < currentWord.size(); i++) {
+			wordScore+=currentWord.get(i).getTileValue();
+			if(scrabbleBoard.gameBoard.get(currentWord.get(i).getTileSquareIndex()).getSquareType()==Board.TRIPLELETTER&&currentLetters.contains(currentWord.get(i))) 
+				wordScore+=(currentWord.get(i).getTileValue()*2);
+			
+			if(scrabbleBoard.gameBoard.get(currentWord.get(i).getTileSquareIndex()).getSquareType()==Board.DOUBLELETTER&&currentLetters.contains(currentWord.get(i))) 
+				wordScore+=currentWord.get(i).getTileValue();
+			
+			if(scrabbleBoard.gameBoard.get(currentWord.get(i).getTileSquareIndex()).getSquareType()==Board.TRIPLEWORD&&currentLetters.contains(currentWord.get(i))) {
+				tripleWord=true;
+				tripleWordNum++;
+			}
+			
+			if(scrabbleBoard.gameBoard.get(currentWord.get(i).getTileSquareIndex()).getSquareType()==Board.DOUBLEWORD&&currentLetters.contains(currentWord.get(i))) {
+				doubleWord=true;
+				doubleWordNum++;
+			}
+		}
+		
+		if(tripleWord) 
+			wordScore=wordScore*3*tripleWordNum;
+		if(doubleWord)
+			wordScore=wordScore*2*doubleWordNum;
+		
+		turnScore+=wordScore;
+		currentPlayer.updateScore(wordScore);
 	}
+	
 
 	/*Method to update the frame that is displayed*/
 	public void updateFrameVisual() {
