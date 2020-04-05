@@ -294,13 +294,10 @@ public class Controller {
 		
 		playWordButton.setOnAction(new EventHandler<ActionEvent>() {
 			 @Override public void handle(ActionEvent e) {
-				 getMainWord();
 				 placingWord=false;
 				 for (int i = 0; i < currentLetters.size(); i++) {
 					 currentPlayer.playerFrame.removeTile(currentLetters.get(i));
 				 }
-				 currentPlayer.playerFrame.fillFrame(pool);
-				 updateFrameVisual();
 				 String tempAllWords="";
 				 for(String s:allWords) {
 					 tempAllWords+=s+"\n";
@@ -310,6 +307,9 @@ public class Controller {
 				 gameState=MUST_END_TURN;
 				 updateButtons();
 				 displayPlayerInfo();
+				 getMainWord();
+				 currentPlayer.playerFrame.fillFrame(pool);
+				 updateFrameVisual();
 			 }
 		});;
 				
@@ -371,6 +371,20 @@ public class Controller {
 			subWordDirection=2;
 		}
 		getSubWords(subWordDirection);
+		
+		/*Makes player1 re-do their turn if they place only one tile as their first turn*/
+		if(currentLetters.size() == 1 && currentLetters.get(0).getTileSquareIndex() == 112) 
+		{
+			currentPlayer.playerFrame.addTile(currentSelectedTile);
+			scrabbleBoard = new Board();
+			currentLetters = new ArrayList<>(); 
+			currentWord = new ArrayList<Tile>();
+			currentPlayer=player1;
+			gameState=START_TURN;
+			initSquares();
+			initButtons();
+			updateButtons();
+		}
 	}
 	
 	public void getSubWords(int x) {
@@ -514,6 +528,9 @@ public class Controller {
 			wordScore=wordScore*3*tripleWordNum;
 		if(doubleWord)
 			wordScore=wordScore*2*doubleWordNum;
+		
+		if(currentLetters.size() == 7)
+			wordScore += 50;
 		
 		turnScore+=wordScore;
 		currentPlayer.updateScore(wordScore);

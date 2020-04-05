@@ -36,6 +36,11 @@ public class Frame
 		return lettersInFrame.remove(lettersInFrame.indexOf(letter));
 	}
 	
+	public void addTile(Tile letter)
+	{
+		lettersInFrame.add(letter);
+	}
+	
 	//Allows a check to be made if letters are in the frame
 	public boolean checkLetter(Tile letter)
 	{
