@@ -293,25 +293,49 @@ public class Controller {
 		
 		
 		playWordButton.setOnAction(new EventHandler<ActionEvent>() {
-			 @Override public void handle(ActionEvent e) {
-				 getMainWord();
-				 placingWord=false;
-				 for (int i = 0; i < currentLetters.size(); i++) {
-					 currentPlayer.playerFrame.removeTile(currentLetters.get(i));
-				 }
-				 currentPlayer.playerFrame.fillFrame(pool);
-				 updateFrameVisual();
-				 String tempAllWords="";
-				 for(String s:allWords) {
-					 tempAllWords+=s+"\n";
-				 }
-				 wordString.setText(tempAllWords);
-				 poolSize.setText("Pool:"+pool.poolSize());
-				 gameState=MUST_END_TURN;
-				 updateButtons();
-				 displayPlayerInfo();
-			 }
-		});;
+			@Override
+			public void handle(ActionEvent e) {
+				getMainWord();
+				if (currentLetters.size() == 1 && currentLetters.get(0).getTileSquareIndex() == 112) {
+					
+					placingWord=false;
+					currentLetters.clear();
+					scrabbleBoard.gameBoard.get(112).setSquaresTile(null);
+					scrabbleBoard.gameBoard.get(112).setPlayedSquare(false);
+					scrabbleBoard.gameBoard.get(112).getSquareButton().setGraphic(new ImageView(scrabbleBoard.gameBoard.get(112).getSquareImage()));
+					
+					for (Square b : scrabbleBoard.gameBoard) {
+						if (b.getSquareIndex() != 112)
+							b.setPlayableSquare(false);
+						else if(b.getSquareIndex()==112)
+							b.setPlayableSquare(true);
+					}
+					poolSize.setText("Pool:" + pool.poolSize());
+					updateGameData();
+					displayError();
+					updateButtons();
+					endTurnButton.setDisable(true);
+				} 
+				else {
+					placingWord = false;
+					for (int i = 0; i < currentLetters.size(); i++) {
+						currentPlayer.playerFrame.removeTile(currentLetters.get(i));
+					}
+					currentPlayer.playerFrame.fillFrame(pool);
+					updateFrameVisual();
+					String tempAllWords = "";
+					for (String s : allWords) {
+						tempAllWords += s + "\n";
+					}
+					wordString.setText(tempAllWords);
+					poolSize.setText("Pool:" + pool.poolSize());
+					gameState = MUST_END_TURN;
+					updateButtons();
+					displayPlayerInfo();
+					updateGameData();
+				}
+			}
+		});
 				
 		helpButton.setOnAction(e -> displayHelp());
 		passButton.setOnAction(e -> displayPassWindow());
@@ -514,6 +538,11 @@ public class Controller {
 			wordScore=wordScore*3*tripleWordNum;
 		if(doubleWord)
 			wordScore=wordScore*2*doubleWordNum;
+		
+		if(currentLetters.size()==7)
+		{
+			turnScore+=50;
+		}
 		
 		turnScore+=wordScore;
 		currentPlayer.updateScore(wordScore);
@@ -948,6 +977,36 @@ public class Controller {
 		challengeText.wrappingWidthProperty().bind(scene.widthProperty().subtract(15));
 		quitWindow.showAndWait();		
 	}
+	
+	/*Displays an error message when player1 places only one tile as a first move*/ 
+	public void displayError()
+	{
+		Stage errorWindow = new Stage();
+		errorWindow.setTitle("Error");
+
+		Button closeErrorButton = new Button("CLOSE");
+		closeErrorButton.setMaxSize(200, 20);
+		closeErrorButton.setMinSize(200, 40);
+
+		closeErrorButton.setOnAction(e -> errorWindow.close());
+
+		Text errorTextTitle = new Text("An Error has occurred, Try again");
+		errorTextTitle.setStyle("-fx-font-size: 15pt;"
+				+ "-fx-font-weight: bold;");
+		Text errorTextBody = new Text("Select more than one tile from your rack to form a word");
+		errorTextBody.setStyle("-fx-font-size: 10pt;");
+
+		VBox layout = new VBox(10);
+		layout.getChildren().addAll(errorTextTitle, errorTextBody, closeErrorButton);
+		layout.setAlignment(Pos.CENTER);
+
+		Scene scene = new Scene(layout, 350, 150);
+		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+
+		errorWindow.setScene(scene);
+		errorWindow.showAndWait();
+	}
+
 
 	/*Method to display player name and score and prompt the user who's turn it is*/
 	public void displayPlayerInfo()
