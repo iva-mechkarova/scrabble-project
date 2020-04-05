@@ -290,39 +290,43 @@ public class Controller {
 			 }
 		});;
 		
-		
-		
+		/*This action sets what clicking the Play Word button should do*/
 		playWordButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				getMainWord();
+				/*If the player on the first turn attempts to play a word with only one letter an error is displayed and it is removed from the board*/
 				if (currentLetters.size() == 1 && currentLetters.get(0).getTileSquareIndex() == 112) {
 					
 					placingWord=false;
-					currentLetters.clear();
+					currentLetters.remove(0);
+					
+					/*Resets the middle square*/
 					scrabbleBoard.gameBoard.get(112).setSquaresTile(null);
 					scrabbleBoard.gameBoard.get(112).setPlayedSquare(false);
 					scrabbleBoard.gameBoard.get(112).getSquareButton().setGraphic(new ImageView(scrabbleBoard.gameBoard.get(112).getSquareImage()));
 					
+					/*Ensures only the middle square is playable*/
 					for (Square b : scrabbleBoard.gameBoard) {
 						if (b.getSquareIndex() != 112)
 							b.setPlayableSquare(false);
 						else if(b.getSquareIndex()==112)
 							b.setPlayableSquare(true);
 					}
-					poolSize.setText("Pool:" + pool.poolSize());
-					updateGameData();
-					displayError();
+					updateGameData(); //Updates the board and the frame
+					gameState=START_TURN;
+					displayError(); 
 					updateButtons();
 					endTurnButton.setDisable(true);
 				} 
 				else {
+					getMainWord(); //Method to get the main word - this will be needed for challenge
 					placingWord = false;
+					/*Removes the played tiles from the frame*/
 					for (int i = 0; i < currentLetters.size(); i++) {
 						currentPlayer.playerFrame.removeTile(currentLetters.get(i));
 					}
-					currentPlayer.playerFrame.fillFrame(pool);
-					updateFrameVisual();
+					currentPlayer.playerFrame.fillFrame(pool); //Fills the player's frame
+					updateFrameVisual(); //Updates the frame graphics
 					String tempAllWords = "";
 					for (String s : allWords) {
 						tempAllWords += s + "\n";
@@ -332,7 +336,6 @@ public class Controller {
 					gameState = MUST_END_TURN;
 					updateButtons();
 					displayPlayerInfo();
-					updateGameData();
 				}
 			}
 		});
@@ -340,7 +343,7 @@ public class Controller {
 		helpButton.setOnAction(e -> displayHelp());
 		passButton.setOnAction(e -> displayPassWindow());
 		quitButton.setOnAction(e -> displayQuitWindow());
-		challengeButton.setOnAction(e -> {displayChallengeWindow();validateChallenge();});
+		challengeButton.setOnAction(e -> displayChallengeWindow());
 		
 		endTurnButton.setOnAction(new EventHandler<ActionEvent>() {
 			 @Override public void handle(ActionEvent e) {
