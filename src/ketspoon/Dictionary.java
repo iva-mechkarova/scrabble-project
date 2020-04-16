@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class Dictionary {
 
-    private static String inputFileName = "csw.txt";
+    private static String inputFileName = "dictionary/csw.txt";
     private Node root;
 
     Dictionary() throws FileNotFoundException {
