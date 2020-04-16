@@ -1,93 +1,60 @@
- package ketspoon;
-
-import javafx.scene.control.Button;
-import javafx.scene.image.Image;
+package ketspoon;
 
 public class Square {
-	
-	private int squareIndex;
-	private Tile squaresTile;
-	private char squaresChar;
-	private int squareType;
-	private boolean playableSquare;
-	private boolean playedSquare;
-	private Button squareButton;
-	private Image squareImage;
-	
-	
-	public Square(int index,int type,Image i,boolean p) {
-		squareIndex=index;
-		squaresTile=null;
-		squareImage=i;
-		squareType=type;
-		playableSquare=p;
-		playedSquare=false;
-		squareButton=new Button();
-	}
 
-	public char getSquaresChar() {
-		return squaresChar;
-	}
+    private int letterMuliplier;
+    private int wordMultiplier;
+    private boolean isOccupied;
+    private Tile tile;
 
+    Square(int letterMultiplier, int wordMultiplier) {
+        isOccupied = false;
+        this.letterMuliplier = letterMultiplier;
+        this.wordMultiplier = wordMultiplier;
+    }
 
-	public void setSquaresChar(char squaresChar) {
-		this.squaresChar = squaresChar;
-	}
+    public int getLetterMuliplier() {
+        return letterMuliplier;
+    }
 
-	public Tile getSquaresTile() {
-		return squaresTile;
-	}
+    public int getWordMultiplier() {
+        return wordMultiplier;
+    }
 
-	public void setSquaresTile(Tile squaresTile) {
-		this.squaresTile = squaresTile;
-	}
+    public boolean isDoubleLetter() {
+        return letterMuliplier == 2;
+    }
 
-	public boolean isPlayableSquare() {
-		return playableSquare;
-	}
+    public boolean isTripleLetter() {
+        return letterMuliplier == 3;
+    }
 
-	public void setPlayableSquare(boolean playableSquare) {
-		this.playableSquare = playableSquare;
-	}
+    public boolean isDoubleWord() {
+        return wordMultiplier == 2;
+    }
 
-	public boolean isPlayedSquare() {
-		return playedSquare;
-	}
+    public boolean isTripleWord() {
+        return wordMultiplier == 3;
+    }
 
-	public void setPlayedSquare(boolean playedSquare) {
-		this.playedSquare = playedSquare;
-	}
+    public void add(Tile tile) {
+        isOccupied = true;
+        this.tile = tile;
+    }
 
-	public int getSquareIndex() {
-		return squareIndex;
-	}
+    public Tile removeTile() {
+        isOccupied = false;
+        return tile;
+    }
 
-	public void setSquareIndex(int squareIndex) {
-		this.squareIndex = squareIndex;
-	}
+    public boolean isOccupied() {
+        return isOccupied;
+    }
 
-	public int getSquareType() {
-		return squareType;
-	}
+    // getTile pre-condition: isOccupied must be true
+    public Tile getTile() {
+        return tile;
+    }
 
-	public void setSquareType(int squareType) {
-		this.squareType = squareType;
-	}
-
-	public Button getSquareButton() {
-		return squareButton;
-	}
-
-	public void setSquareButton(Button squareButton) {
-		this.squareButton = squareButton;
-	}
-
-	public Image getSquareImage() {
-		return squareImage;
-	}
-
-	public void setSquareImage(Image squareImage) {
-		this.squareImage = squareImage;
-	}
-	
 }
+

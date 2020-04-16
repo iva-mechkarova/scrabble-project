@@ -2,273 +2,301 @@ package ketspoon;
 
 import java.util.ArrayList;
 
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-
 public class Board {
-	public static final int NUMBEROFSQUARES=225;
-	
-	public final Image plainSquare = new Image(getClass().getResourceAsStream("/resources/plainSquare.png"));
-	public final Image doubleLetter = new Image(getClass().getResourceAsStream("/resources/doubleLetter.png"));
-	public final Image doubleWord = new Image(getClass().getResourceAsStream("/resources/doubleWord.png"));
-	public final Image tripleLetter = new Image(getClass().getResourceAsStream("/resources/tripleLetter.png"));
-	public final Image tripleWord= new Image(getClass().getResourceAsStream("/resources/tripleWord.png"));
-	public final Image centerSquare= new Image(getClass().getResourceAsStream("/resources/centerSquare.png"));
-	private int direction;
-	
-	public static final int HORIZONTAL=0;
-	public static final int VERTICAL=1;
-	public static final int ONESQUARE=3;
-	
-	
-	public static final int DOUBLEWORD=0;	
-	public static final int DOUBLELETTER=1;
-	public static final int TRIPLEWORD=2;
-	public static final int TRIPLELETTER=3;
-	public static final int NORMAL=9;
-	public static final int CENTER=8;
-	
-	
-	private Square previousSquare; //Stores previously played square during turn
-	
-	public ArrayList<Square> gameBoard;
 
-	public Board(){
-		initializeBoard();
-	}
-	
-	public void initializeBoard() {
-		gameBoard = new ArrayList<>();
-		for (int i = 0; i < NUMBEROFSQUARES; i++) { /* cases for each square type */
-			switch (i) {
-			case 16:case 28:case 32:case 42:case 48:case 56:case 64:case 70:case 154:case 160:case 168:case 176:case 182:case 192:case 196:case 208:
-			{gameBoard.add(new Square(i,DOUBLEWORD,doubleWord,false));break;}
-			
-			case 3:case 11:case 36:case 38:case 45:case 52:case 59:case 92:case 96:case 98:case 102:case 108:case 116:case 122:case 126:case 128:case 132:case 165:case 172:case 179:case 186:case 188:case 213:case 221:
-			{gameBoard.add(new Square(i,DOUBLELETTER,doubleLetter,false));break;}
-			
-			case 0:case 7:case 14:case 105:case 119:case 210:case 217:case 224:
-			{gameBoard.add(new Square(i,TRIPLEWORD,tripleWord,false));break;}
-			
-			case 20:case 24:case 76:case 80:case 84:case 88:case 136:case 140:case 144:case 148:case 200:case 204:
-			{gameBoard.add(new Square(i,TRIPLELETTER,tripleLetter,false));break;}
-			
-			case 112:
-			{gameBoard.add(new Square(i,CENTER,centerSquare,true));break;}
-				
-			default:
-				gameBoard.add(new Square(i,NORMAL,plainSquare,false));
-				break;
+	public static final int BOARD_SIZE = 15;
+	public static final int BOARD_CENTRE = 7;
+	private static int BONUS = 50;
+
+	public static final int WORD_INCORRECT_FIRST_PLAY = 0;
+	public static final int WORD_OUT_OF_BOUNDS = 1;
+	public static final int WORD_LETTER_NOT_IN_FRAME = 2;
+	public static final int WORD_LETTER_CLASH = 3;
+	public static final int WORD_NO_LETTER_PLACED = 4;
+	public static final int WORD_NO_CONNECTION = 5;
+	public static final int WORD_EXCLUDES_LETTERS = 6;
+	public static final int WORD_ONLY_ONE_LETTER = 7;
+
+	private static final int[][] LETTER_MULTIPLIER =
+			{ 	{1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1},
+				{1, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 1, 1},
+				{1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1},
+				{2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2},
+				{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+				{1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1},
+				{1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1},
+				{1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1},
+				{1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1},
+				{1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1},
+				{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+				{2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2},
+				{1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1},
+				{1, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 1, 1},
+				{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1} };
+	private static final int[][] WORD_MULTIPLIER =
+			{   {3, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 3},
+				{1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1},
+				{1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1},
+				{1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1},
+				{1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1},
+				{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+				{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+				{3, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 3},
+				{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+				{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+				{1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1},
+				{1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1},
+				{1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1},
+				{1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1},
+				{3, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 3} };
+
+	private Square[][] squares;
+	private int errorCode;
+	private int numPlays;
+	private ArrayList<Coordinates> newLetterCoords;
+
+	Board() {
+		squares = new Square[BOARD_SIZE][BOARD_SIZE];
+		for (int r=0; r<BOARD_SIZE; r++)  {
+			for (int c=0; c<BOARD_SIZE; c++)   {
+				squares[r][c] = new Square(LETTER_MULTIPLIER[r][c],WORD_MULTIPLIER[r][c]);
 			}
 		}
+		numPlays = 0;
 	}
-	
-//	public void displayBoard() {
-//		System.out.println("-------------------------------------------------------------");
-//		for (int i = 0; i < NUMBEROFSQUARES; i++) {
-//			System.out.print("| "+gameBoard.get(i).getSquaresChar()+" ");
-//			if((i+1)%15==0) /* prints a line every 15 squares */
-//				System.out.println("| "+i
-//						/15+"\n-------------------------------------------------------------");
-//		}
-//		System.out.println("  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14 ");
-//	}
-	
-	public int coordinateToIndex(int x,int y) { /* converts a coordinate to array list index*/
-		return (15*x)+y;
-	}
-	
-	public void addTileToSquare(int x, Tile t) {     /*method to add a tile to a coordinate*/
-		gameBoard.get(x).setSquaresTile(t); 
-		gameBoard.get(x).setSquaresChar(t.getTileLetter());
-		gameBoard.get(x).getSquareButton().setGraphic(new ImageView(t.getTileImage()));
-		gameBoard.get(x).setPlayedSquare(true);
-		updatePlayableSquares();
-	}
-	
-	public void updateSquareDisabled() {
-		for (int i = 0; i < NUMBEROFSQUARES; i++) {
-			if(gameBoard.get(i).isPlayableSquare()&&!gameBoard.get(i).isPlayedSquare())
-				gameBoard.get(i).getSquareButton().setDisable(false);
-			
-			if(!gameBoard.get(i).isPlayableSquare()&&!gameBoard.get(i).isPlayedSquare())
-				gameBoard.get(i).getSquareButton().setDisable(true);	
+
+	public boolean isLegalPlay(Frame frame, Word word) {
+		boolean isLegal = true;
+		//check for invalid first play
+		if (numPlays == 0 &&
+				((word.isHorizontal() && (word.getRow()!=BOARD_CENTRE || word.getFirstColumn()>BOARD_CENTRE ||
+						word.getLastColumn()<BOARD_CENTRE)) ||
+						(word.isVertical() && (word.getColumn()!=BOARD_CENTRE || word.getFirstRow()>BOARD_CENTRE ||
+								word.getLastRow()<BOARD_CENTRE)))) {
+			isLegal = false;
+			errorCode = WORD_INCORRECT_FIRST_PLAY;
 		}
-	}
-	
-	public void updatePlayableSquares() {    /*makes squares in the four positions around a played square available */
-		for(Square currentSquare:gameBoard) {
-			if(currentSquare.isPlayedSquare()) {
-				
-				if(currentSquare.getSquareIndex()+1>=0 && currentSquare.getSquareIndex()+1 < 225) {
-					Square right = gameBoard.get(currentSquare.getSquareIndex()+1);
-					if(right.getSquareIndex()%15!=0)
-					{
-						gameBoard.get(right.getSquareIndex()).setPlayableSquare(true);
-						gameBoard.get(right.getSquareIndex()).getSquareButton().setDisable(false);	
-					}	
+		// check for word out of bounds
+		if (isLegal &&
+				((word.getRow() >= BOARD_SIZE) ||
+				 (word.getFirstColumn() >= BOARD_SIZE) ||
+				 (word.getLastRow()>= BOARD_SIZE) ||
+				 (word.getLastColumn()>= BOARD_SIZE)) ) {
+			isLegal = false;
+			errorCode = WORD_OUT_OF_BOUNDS;
+		}
+		// check that letters in the word do not clash with those on the board
+		String lettersPlaced = "";
+		if (isLegal) {
+			int r = word.getFirstRow();
+			int c = word.getFirstColumn();
+			for (int i = 0; i < word.length() && isLegal; i++) {
+				if (squares[r][c].isOccupied() && squares[r][c].getTile().getLetter() != word.getLetter(i)) {
+					isLegal = false;
+					errorCode = WORD_LETTER_CLASH;
+				} else if (!squares[r][c].isOccupied()) {
+					lettersPlaced = lettersPlaced + word.getLetter(i);
 				}
-				
-				if(currentSquare.getSquareIndex()+15>=0 && currentSquare.getSquareIndex()+15 < 225) {
-					Square down = gameBoard.get(currentSquare.getSquareIndex()+15);
-					gameBoard.get(down.getSquareIndex()).setPlayableSquare(true);
-					gameBoard.get(down.getSquareIndex()).getSquareButton().setDisable(false);
-					
+				if (word.isHorizontal()) {
+					c++;
+				} else {
+					r++;
 				}
-				
-				if(currentSquare.getSquareIndex()-1>=0 && currentSquare.getSquareIndex()-1 < 225) {
-					Square left = gameBoard.get(currentSquare.getSquareIndex()-1);
-					if(left.getSquareIndex()%15!=14)
-					{
-						gameBoard.get(left.getSquareIndex()).setPlayableSquare(true);
-						gameBoard.get(left.getSquareIndex()).getSquareButton().setDisable(false);
+			}
+		}
+		// check that more than one letter is placed
+		if (isLegal && lettersPlaced.length() == 0) {
+			isLegal = false;
+			errorCode = WORD_NO_LETTER_PLACED;
+		}
+		// check that the letters placed are in the frame
+		if (isLegal && !frame.isAvailable(lettersPlaced)) {
+			isLegal = false;
+			errorCode = WORD_LETTER_NOT_IN_FRAME;
+		}
+		// check that the letters placed connect with the letters on the board
+		if (isLegal && numPlays>0) {
+			int boxTop = Math.max(word.getFirstRow()-1,0);
+			int boxBottom = Math.min(word.getLastRow()+1, BOARD_SIZE-1);
+			int boxLeft = Math.max(word.getFirstColumn()-1,0);
+			int boxRight = Math.min(word.getLastColumn()+1, BOARD_SIZE-1);
+			boolean foundConnection = false;
+			for (int r=boxTop; r<=boxBottom && !foundConnection; r++) {
+				for (int c=boxLeft; c<=boxRight && !foundConnection; c++) {
+					if (squares[r][c].isOccupied()) {
+						foundConnection = true;
 					}
-					
 				}
-				
-				if(currentSquare.getSquareIndex()-15>=0 && currentSquare.getSquareIndex()-15 < 225) {
-					Square up = gameBoard.get(currentSquare.getSquareIndex()-15);
-					gameBoard.get(up.getSquareIndex()).setPlayableSquare(true);
-					gameBoard.get(up.getSquareIndex()).getSquareButton().setDisable(false);
-					
-				}
-
+			}
+			if (!foundConnection) {
+				isLegal = false;
+				errorCode = WORD_NO_CONNECTION;
 			}
 		}
-		updateSquareDisabled();
+		// check there are no tiles before or after the word
+		if (isLegal &&
+				(word.isHorizontal() && word.getFirstColumn()>0 &&
+				squares[word.getRow()][word.getFirstColumn()-1].isOccupied()) ||
+				(word.isHorizontal() && word.getLastColumn()<BOARD_SIZE-1 &&
+				squares[word.getRow()][word.getLastColumn()+1].isOccupied()) ||
+				(word.isVertical() && word.getFirstRow()>0 &&
+				squares[word.getFirstRow()-1][word.getColumn()].isOccupied()) ||
+				(word.isVertical() && word.getLastRow()<BOARD_SIZE-1 &&
+				squares[word.getLastRow()+1][word.getColumn()].isOccupied())) {
+			isLegal = false;
+			errorCode = WORD_EXCLUDES_LETTERS;
+		}
+		// check more than one letter
+		if (isLegal && word.length()==1) {
+			isLegal = false;
+			errorCode = WORD_ONLY_ONE_LETTER;
+		}
+		return isLegal;
 	}
 
-	
-	/*Method to change playable squares once player starts placing letters*/
-	/*i.e. after first letter is placed only squares around this are playable and after second letter
-	 is placed the direction of the word is decided*/
-	/*The index of the played square is passed in and the player's frame*/
-	public void possiblePlays(int index, ArrayList<Tile> placedTiles)
-	{
-		/*Sets all squares on board to not playable*/
-		for(Square currentSquare:gameBoard)
-		{
-			currentSquare.setPlayableSquare(false);
-			
-		}
-		
-		//Get the played square from the index
-		Square playedSquare = gameBoard.get(index); 
-		
-		//There is a max of 4 possible plays once a square has been placed
-		//These variables store these plays
-		Square right; 
-		Square left;
-		Square up;
-		Square down;
-
-		/*If exactly one tile has been placed, we'll have 4 squares to pick from for the next placement so we need right & left options*/
-		/*If the index is less than absolute 15 then we must be going in a horizontal direction so we have right & left plays*/
-		if(placedTiles.size()==1 || Math.abs(index - getPreviousSquare().getSquareIndex())<15)
-		{
-			direction = HORIZONTAL;
-			
-			//Initialize right & left variables as the squares to the right and left of the played square
-			right = gameBoard.get(playedSquare.getSquareIndex()); 
-			left = gameBoard.get(playedSquare.getSquareIndex());
-			
-			/*Check if the right square is a played square, if it is we need to check if the square to the right of that one is
-			a playable square as we cannot place a tile on a played square*/
-			int i =0;
-			int differenceRight = 15-playedSquare.getSquareIndex()%15;
-			while(right.isPlayedSquare() && i<=differenceRight)
-			{
-				if(playedSquare.getSquareIndex()+i <225) {
-					right = gameBoard.get(playedSquare.getSquareIndex()+i);
-					i++;
-				}
-				else
-					break;
-			}
-			//If we have found a playable square, set it to playable
-			if(i>=0 && i<=differenceRight) 
-				right.setPlayableSquare(true);
-			
-			/*Check if the left square is a played square, if it is we need to check if the square to the left of that one is
-			a playable square as we cannot place a tile on a played square*/
-			i = 0;
-			int differenceLeft = playedSquare.getSquareIndex()%15+1;
-			while(left.isPlayedSquare()  && i<=differenceLeft)
-			{
-				if(playedSquare.getSquareIndex()-i >=0) {
-					left = gameBoard.get(playedSquare.getSquareIndex()-i);
-					i++;
-				}
-				else
-					break;
-			}
-			
-			//If we have found a playable square, set it to playable
-			if(i>=0 && i<=differenceLeft) 	
-				left.setPlayableSquare(true);	
-		}
-		
-		/*If exactly one tile has been placed, we'll have 4 squares to pick from for the next placement so we need up & down options*/
-		/*If the index is greater than absolute 15 then we must be going in a vertical direction so we have up & down plays*/
-		if(placedTiles.size()==1 || Math.abs(index - getPreviousSquare().getSquareIndex())>=15)
-		{
-			direction = VERTICAL;
-			//Initialize up & down variables as the squares above and below the played square
-			up = gameBoard.get(playedSquare.getSquareIndex());
-			down = gameBoard.get(playedSquare.getSquareIndex());
-			/*Check if the above square is a played square, if it is we need to check if the square above that one is
-			a playable square as we cannot place a tile on a played square*/
-			int i = 0;
-			while(up.isPlayedSquare())
-			{
-				if(playedSquare.getSquareIndex()-i >=0) {
-					up = gameBoard.get(playedSquare.getSquareIndex()-i);
-					i+=15;	
-				}
-				else
-					break;
-			}
-			//If we have found a playable square, set it to playable
-			if(i>15 && i<15*15) 
-				up.setPlayableSquare(true);
-			
-			/*Check if the below square is a played square, if it is we need to check if the square below that one is
-			a playable square as we cannot place a tile on a played square*/
-			i = 0;
-			while(down.isPlayedSquare())
-			{
-				if(playedSquare.getSquareIndex()+i <225) {
-					down = gameBoard.get(playedSquare.getSquareIndex()+i);
-					i+=15;
-				}
-				else
-					break;
-			}
-			//If we have found a playable square, set it to playable
-			if(i>15 && i<15*15) 
-				down.setPlayableSquare(true);	
-		}
-		updateSquareDisabled(); //Call method to update squares i.e. if square is playable it'll appear blank 
-		setPreviousSquare(gameBoard.get(index)); //Set previous square to the played square
-	}
-	
-	/*Mutator method for previousSquare*/
-	public void setPreviousSquare(Square prev)
-	{
-		previousSquare = prev;
-	}
-	
-	/*Accessor method for previousSquare*/
-	public Square getPreviousSquare()
-	{
-		return previousSquare;
+	// getCheckCode precondition: isLegal is false
+	public int getErrorCode() {
+		return errorCode;
 	}
 
-	public int getDirection() {
-		return direction;
+	// place precondition: isLegal is true
+	public void place(Frame frame, Word word) {
+		newLetterCoords = new ArrayList<>();
+		int r = word.getFirstRow();
+		int c = word.getFirstColumn();
+		for (int i = 0; i<word.length(); i++) {
+			if (!squares[r][c].isOccupied()) {
+				char letter = word.getLetter(i);
+				Tile tile = frame.getTile(letter);
+				if (tile.isBlank()) {
+					tile.designate(word.getDesignatedLetter(i));
+				}
+				squares[r][c].add(tile);
+				frame.removeTile(tile);
+				newLetterCoords.add(new Coordinates(r,c));
+			}
+			if (word.isHorizontal()) {
+				c++;
+			} else {
+				r++;
+			}
+		}
+		numPlays++;
+	}
+
+	public ArrayList<Tile> pickupLatestWord() {
+		ArrayList<Tile> tiles = new ArrayList<>();
+		for (Coordinates coord : newLetterCoords) {
+			Tile tile = squares[coord.getRow()][coord.getCol()].removeTile();
+			if (tile.isBlank()) {
+				tile.removeDesignation();
+			}
+			tiles.add(tile);
+		}
+		return tiles;
+	}
+
+	private boolean isAdditionalWord(int r, int c, boolean isHorizontal) {
+		if ((isHorizontal &&
+				(r>0 && squares[r-1][c].isOccupied() || (r<BOARD_SIZE-1 && squares[r+1][c].isOccupied()))) ||
+				(!isHorizontal) &&
+				(c>0 && squares[r][c-1].isOccupied() || (c<BOARD_SIZE-1 && squares[r][c+1].isOccupied())) ) {
+			return true;
+		}
+		return false;
+	}
+
+	private Word getAdditionalWord(int mainWordRow, int mainWordCol, boolean mainWordIsHorizontal) {
+		int firstRow = mainWordRow;
+		int firstCol = mainWordCol;
+		// search up or left for the first letter
+		while (firstRow >= 0 && firstCol >= 0 && squares[firstRow][firstCol].isOccupied()) {
+			if (mainWordIsHorizontal) {
+				firstRow--;
+			} else {
+				firstCol--;
+			}
+		}
+		// went too far
+		if (mainWordIsHorizontal) {
+			firstRow++;
+		} else {
+			firstCol++;
+		}
+		// collect the letters by moving down or right
+		String letters = "";
+		int r = firstRow;
+		int c = firstCol;
+		while (r<BOARD_SIZE && c<BOARD_SIZE && squares[r][c].isOccupied()) {
+			letters = letters + squares[r][c].getTile().getLetter();
+			if (mainWordIsHorizontal) {
+				r++;
+			} else {
+				c++;
+			}
+		}
+		return new Word (firstRow, firstCol, !mainWordIsHorizontal, letters);
+	}
+
+	public ArrayList<Word> getAllWords(Word mainWord) {
+		ArrayList<Word> words = new ArrayList<>();
+		words.add(mainWord);
+		int r = mainWord.getFirstRow();
+		int c = mainWord.getFirstColumn();
+		for (int i=0; i<mainWord.length(); i++) {
+			if (newLetterCoords.contains(new Coordinates(r,c))) {
+				if (isAdditionalWord(r, c, mainWord.isHorizontal())) {
+					words.add(getAdditionalWord(r, c, mainWord.isHorizontal()));
+				}
+			}
+			if (mainWord.isHorizontal()) {
+				c++;
+			} else {
+				r++;
+			}
+		}
+		return words;
+	}
+
+	private int getWordPoints(Word word) {
+		int wordValue = 0;
+		int wordMultipler = 1;
+		int r = word.getFirstRow();
+		int c = word.getFirstColumn();
+		for (int i = 0; i<word.length(); i++) {
+			int letterValue = squares[r][c].getTile().getValue();
+			if (newLetterCoords.contains(new Coordinates(r,c))) {
+				wordValue = wordValue + letterValue * squares[r][c].getLetterMuliplier();
+				wordMultipler = wordMultipler * squares[r][c].getWordMultiplier();
+			} else {
+				wordValue = wordValue + letterValue;
+			}
+			if (word.isHorizontal()) {
+				c++;
+			} else {
+				r++;
+			}
+		}
+		return wordValue * wordMultipler;
+	}
+
+	public int getAllPoints(ArrayList<Word> words) {
+		int points = 0;
+		for (Word word : words) {
+			points = points + getWordPoints(word);
+		}
+		if (newLetterCoords.size() == Frame.MAX_TILES) {
+			points = points + BONUS;
+		}
+		return points;
+	}
+
+	public Square getSquare(int row, int col) {
+		return squares[row][col];
+	}
+
+	public boolean isFirstPlay() {
+		return numPlays == 0;
 	}
 
 }
-
-
-

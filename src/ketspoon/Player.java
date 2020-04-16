@@ -1,49 +1,67 @@
 package ketspoon;
 
 
-public class Player
-{
-	private String playerName ;    
-	private int playerScore;       
-	
-	Frame playerFrame;
-	
-	
-	public Player(Frame frame, String name)
-	{
-		this.playerFrame=frame;
-		this.playerName = name;
-	}
-	
-	public void updateScore(int score)
-	{
-		playerScore+=score;
+import java.util.ArrayList;
+
+public class Player {
+
+	private int id;
+	private String name;
+	private int score;
+	private Frame frame;
+
+	Player(int id)  {
+		this.id = id;
+		name = "";
+		score = 0;
+		frame = new Frame();
 	}
 
-	public void resetData()  //Allows the player data to be reset//
-	{
-		playerName = null;
-		playerScore = 0;
+	public int getPrintableId() {
+		return id+1;
 	}
-	
-	public void setName(String name) //Allows the name of the player to be set//
-	{
-		this.playerName = name;
+
+	public void setName(String text) {
+		name = text;
 	}
-	
-	public String getName() //Allows access to a players name//
-	{
-		return playerName;
+
+	public String getName() {
+		return name;
 	}
-	
-	public int getScore() //Allows access to a players score//
-	{
-		return playerScore;
+
+	public void addPoints(int increase) {
+		score = score + increase;
 	}
-	
-	public String toString() //Allows display of a players name//
-	{
-		return "PLAYER NAME:"+playerName+"\nSCORE:"+playerScore+"\nFrame:"+playerFrame.displayFrame();
+
+	public void subtractPoints(int decrease) {
+		score = score - decrease;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public Frame getFrame() {
+		return frame;
+	}
+
+	public void adjustScore() {
+		int unused = 0;
+		ArrayList<Tile> tiles = frame.getTiles();
+		for (Tile tile : tiles) {
+			unused = unused + tile.getValue();
+		}
+		score = score - unused;
+	}
+
+	public String toString() {
+
+		if (name.isEmpty()) {
+			return "Player " + getPrintableId();
+		} else {
+			return name;
+		}
 	}
 
 }
+
