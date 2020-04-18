@@ -22,6 +22,10 @@ public class Bot0 implements BotAPI {
     
     public static ArrayList<Word> allPossibleCombo= new ArrayList<Word>();
     public static ArrayList<Word> realWords= new ArrayList<Word>();
+    
+    private Square[][] boardCopy;
+    private ArrayList<Word> verticalWords = new ArrayList<Word>();
+    private ArrayList<Word> horizontalWords = new ArrayList<Word>();
 
     Bot0(PlayerAPI me, OpponentAPI opponent, BoardAPI board, UserInterfaceAPI ui, DictionaryAPI dictionary) {
         this.me = me;
@@ -33,7 +37,7 @@ public class Bot0 implements BotAPI {
     }
 
     public String getCommand() {
-    	setMyLetter(me.getFrameAsString().replaceAll(", ", "").replaceAll("\\]", "").replaceAll("\\[", "").replace("\\_", ""));
+    	setMyLetter(me.getFrameAsString().replaceAll(", ", "").replaceAll("\\]", "").replaceAll("\\[", "").replace("_", ""));
         String command = "";
         
         if(turnCount==0) {
@@ -53,6 +57,18 @@ public class Bot0 implements BotAPI {
         	realWords.clear();
             allPossibleCombo.clear();
         }
+        
+        /*getHorizontalWords();
+        getVerticalWords();
+        for(Word word : horizontalWords)
+        {
+        	System.out.println("Horizontal: " + word);
+        }
+        
+        for(Word word : verticalWords)
+        {
+        	System.out.println("Vertical: " + word);
+        }*/
         
         turnCount++;
         return command;
@@ -107,5 +123,110 @@ public class Bot0 implements BotAPI {
 			distinctPermutn(ros, ans + ch,x,y); 
 			alpha[ch - 'A'] = true; 
 		} 
+	}
+	
+	/**Method to get a copy of the current state of the board*/
+	public void getBoardCopy()
+	{
+		boardCopy = new Square[15][15]; 
+		for (int row = 0; row < 15; row++) 
+		{ 
+			for (int col = 0; col < 15; col++) 
+			{ 
+				boardCopy[row][col] = board.getSquareCopy(row,col);
+			} 
+		}
+	}
+	
+	/**Method to get an array list of the current horizontal words on the board*/
+	public void getHorizontalWords()
+	{
+		Word word; //Variable to store each word
+		getBoardCopy();
+		
+		/*Iterate through each square of the board, checking to see if any squares are occupied*/
+		for(int i=0; i<15; i++)
+		{
+			for(int j=0; j<15; j++)
+			{
+				if(boardCopy[i][j].isOccupied())
+				{	
+					String wordString = boardCopy[i][j].getTile().toString();
+					if(j==14) //If it starts in the last column then the word only consists of one letter
+					{
+						word = new Word(i, j, true, wordString);
+						horizontalWords.add(word);
+					}
+					else if (j<14)
+					{
+						if(!boardCopy[i][j+1].isOccupied()) //If the square beside it isn't occupied then we have found the whole word
+						{
+							word = new Word(i, j, true, wordString);
+							horizontalWords.add(word);
+						}
+						else //Else we need to find all of the letters of the word
+						{
+							int col = j; //Stores column position of first letter of word
+							j+=1;
+							//Keep looping while there are occupied squares to the right of the occupied square to find the whole word
+							while(j<15 && boardCopy[i][j].isOccupied())
+							{
+								wordString += boardCopy[i][j].getTile().toString();
+								j++;
+							}
+							
+							word = new Word(i, col, true, wordString);
+							horizontalWords.add(word);
+						}
+					}
+				}
+			}	
+		}	
+	}
+	
+	/**Method to get an array list of the current vertical words on the board*/
+	public void getVerticalWords()
+	{
+		Word word; //Variable to store each word
+		getBoardCopy();
+		
+		/*Iterate through each square of the board, checking to see if any squares are occupied*/
+		for(int i=0; i<15; i++)
+		{
+			for(int j=0; j<15; j++)
+			{
+				if(boardCopy[j][i].isOccupied()) //If the square beside it isn't occupied then we have found the whole word
+				{	
+					String wordString = boardCopy[j][i].getTile().toString();
+					if(j==14) //If it starts in the last column then the word only consists of one letter
+					{
+						word = new Word(j, i, false, wordString);
+						verticalWords.add(word);
+					}
+					else if (j<14)
+					{
+						if(!boardCopy[j+1][i].isOccupied())
+						{
+							word = new Word(j, i, false, wordString);
+							verticalWords.add(word);
+						}
+						else //Else we need to find all of the letters of the word
+						{
+							int row = j; //Stores row position of first letter of word
+							j+=1;	
+							//Keep looping while there are occupied squares below the occupied square to find the whole word
+							while(j<15 && boardCopy[j][i].isOccupied())
+							{
+								wordString += boardCopy[j][i].getTile().toString();
+								j++;
+							}
+							
+							word = new Word(row, i, false, wordString);
+							verticalWords.add(word);
+						}
+					}
+				}
+			}	
+		}	
 	}
 }
