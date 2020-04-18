@@ -1,9 +1,6 @@
-package ketspoon;
-
-
 import java.util.ArrayList;
 
-public class Player {
+public class Player implements PlayerAPI, OpponentAPI {
 
 	private int id;
 	private String name;
@@ -45,6 +42,8 @@ public class Player {
 		return frame;
 	}
 
+	public String getFrameAsString() {return frame.toString();}
+
 	public void adjustScore() {
 		int unused = 0;
 		ArrayList<Tile> tiles = frame.getTiles();
@@ -64,4 +63,3 @@ public class Player {
 	}
 
 }
-

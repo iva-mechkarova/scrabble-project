@@ -1,8 +1,6 @@
-package ketspoon;
-
 import java.util.ArrayList;
 
-public class Board {
+public class Board implements BoardAPI {
 
 	public static final int BOARD_SIZE = 15;
 	public static final int BOARD_CENTRE = 7;
@@ -133,7 +131,7 @@ public class Board {
 				errorCode = WORD_NO_CONNECTION;
 			}
 		}
-		// check there are no tiles before or after the word
+		// check there are no tiles before the word
 		if (isLegal &&
 				(word.isHorizontal() && word.getFirstColumn()>0 &&
 				squares[word.getRow()][word.getFirstColumn()-1].isOccupied()) ||
@@ -293,6 +291,10 @@ public class Board {
 
 	public Square getSquare(int row, int col) {
 		return squares[row][col];
+	}
+
+	public Square getSquareCopy(int row, int col) {
+		return new Square(squares[row][col]);
 	}
 
 	public boolean isFirstPlay() {

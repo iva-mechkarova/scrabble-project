@@ -1,5 +1,3 @@
-package ketspoon;
-
 import java.util.ArrayList;
 
 public class Pool {
@@ -56,4 +54,3 @@ public class Pool {
 	}
 
 }
-

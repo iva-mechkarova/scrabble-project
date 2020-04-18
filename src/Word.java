@@ -1,5 +1,3 @@
-package ketspoon;
-
 public class Word {
 
 	private int row, column; // first letter position
@@ -101,4 +99,3 @@ public class Word {
 
 
 }
-

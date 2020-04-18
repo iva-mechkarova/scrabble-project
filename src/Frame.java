@@ -1,5 +1,3 @@
-package ketspoon;
-
 import java.util.ArrayList;
 
 public class Frame {
@@ -126,4 +124,3 @@ public class Frame {
 	}
 
 }
-

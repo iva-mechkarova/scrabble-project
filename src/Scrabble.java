@@ -1,11 +1,9 @@
-package ketspoon;
-
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class Scrabble {
 
-	private static int NUM_PLAYERS = 2;
+	public static int NUM_PLAYERS = 2;
 	private static int ZERO_SCORE_PLAY_LIMIT = 6;
 
 	private Board board;
@@ -31,6 +29,10 @@ public class Scrabble {
 		currentPlayerId = 0;
 		numZeroScorePlays = 0;
 		dictionary = new Dictionary();
+	}
+
+	public int getCurrentPlayerId() {
+		return currentPlayerId;
 	}
 
 	public Player getCurrentPlayer() {
@@ -119,4 +121,3 @@ public class Scrabble {
 		return empty;
 	}
 }
-
