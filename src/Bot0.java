@@ -174,18 +174,40 @@ public class Bot0 implements BotAPI {
             if ( matches(freq,freqIn))
             	if(wordOnBoard.equals("") || (s.contains(wordOnBoard) && !s.equals(wordOnBoard))) {
             		if(!board.isFirstPlay()) {
+            			getBoardCopy();
             			int rowOffset=0;
                     	int colOffset=0;
+                    	boolean validCross=true;
                     	char letterOnBoard=boardCopy[row][col].getTile().getLetter();
-                    	if(horizontal) {
+                    	if(horizontal) 
+                    	{
                     		colOffset=s.indexOf(letterOnBoard);
-                    		if(col-colOffset>=0 && col-colOffset+s.length()<=14)
-                    			realPlayableWords.add(new Word(row, col, horizontal, s));	
+                    		if(col-colOffset>=0 && col-colOffset+s.length()-1<=14) 
+                    		{
+                    			for (int i = col-colOffset,j=0; i < col-colOffset+s.length(); i++,j++) {
+                    				/*if the letter in the occupied squares do not match the letters of the playable word then 
+                    				 * the word is not playable */
+                    				if (boardCopy[row][i].isOccupied() && s.charAt(j)!=boardCopy[row][i].getTile().getLetter())
+										validCross=false;
+								}
+                    			if(validCross)
+                    				realPlayableWords.add(new Word(row, col, horizontal, s));
+                    		}
                     	}
-            			if(!horizontal) {
+            			if(!horizontal) 
+            			{
                     		rowOffset=s.indexOf(letterOnBoard);
-                    		if(row-rowOffset>=0 && row-rowOffset+s.length()<=14)
-                    			realPlayableWords.add(new Word(row, col, horizontal, s));
+                    		if(row-rowOffset>=0 && row-rowOffset+s.length()-1<=14) 
+                    		{
+                    			for (int i = row-rowOffset,j=0; i < row-rowOffset+s.length(); i++,j++) {
+                    				/*if the letter in the occupied squares do not match the letters of the playable word then 
+                    				 * the word is not playable*/
+                    				if (boardCopy[i][col].isOccupied() && s.charAt(j)!=boardCopy[i][col].getTile().getLetter())
+										validCross=false;
+								}
+                    			if(validCross)
+                    				realPlayableWords.add(new Word(row, col, horizontal, s));	
+                    		}
                     	}
             		}
             		else
