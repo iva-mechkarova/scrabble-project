@@ -80,6 +80,8 @@ public class Bot0 implements BotAPI {
         	
         	realPlayableWordscores();
         	int realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore));
+        	
+        	
 
         	int row = realPlayableWords.get(realWordIndex).getRow();
         	int col = realPlayableWords.get(realWordIndex).getFirstColumn();
@@ -98,6 +100,8 @@ public class Bot0 implements BotAPI {
         		direction="A";
         		colOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
         	}
+        	
+        	realSubWords(row-rowOffset, col-colOffset, realPlayableWords.get(realWordIndex).getLetters(), realPlayableWords.get(realWordIndex).isHorizontal());
      
         	char colChar=(char)(col+65-colOffset);
         	if(lettersInFrameOG.contains("_") && realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
@@ -174,6 +178,42 @@ public class Bot0 implements BotAPI {
 	    		wordScore*=3;
 	    	realPlayableWordsScore.add(wordScore);
 		}
+	}
+	
+	public boolean realSubWords(int startRow,int startCol,String word,boolean isHorizontal) {
+		String subWord = null;
+		
+		boolean allReal=true;
+		
+		int subWordRow=startRow;	
+		int subWordCol=startCol;
+		
+		for (int i = 0; i < word.length(); i++) {
+			subWord="";
+			if(!isHorizontal) {
+				subWord+=word.charAt(i);
+				while (subWordCol-1>=0 && boardCopy[subWordRow][subWordCol-1].isOccupied()) {
+					subWordCol--;
+					subWord= boardCopy[subWordRow][subWordCol].getTile().getLetter()+subWord;
+					
+				}
+				subWordCol=startCol;
+				
+				while (subWordCol+1<=14 && boardCopy[subWordRow][subWordCol+1].isOccupied()) {
+					subWordCol++;
+					subWord=subWord+boardCopy[subWordRow][subWordCol].getTile().getLetter();
+				}
+				subWordRow++;
+				subWordCol=startCol;
+			}
+			//if subword lenght >1 and isnt in the all word array
+			//check if subword is in dict
+			System.out.println(subWord);
+			
+			//if not ,real false
+			//break;
+		}	
+		return allReal;
 	}
 	
 	private void findrealPlayableWords(String wordOnBoard,String myLetters, List<String> list,int row,int col,boolean horizontal )
