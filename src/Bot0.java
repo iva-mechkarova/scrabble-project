@@ -190,6 +190,23 @@ public class Bot0 implements BotAPI {
 		
 		for (int i = 0; i < word.length(); i++) {
 			subWord="";
+			
+			if(isHorizontal) {
+				subWord+=word.charAt(i);
+				while (subWordRow-1>=0 && boardCopy[subWordRow-1][subWordCol].isOccupied()) {
+					subWordRow--;
+					subWord= boardCopy[subWordRow][subWordCol].getTile().getLetter()+subWord;
+					
+				}
+				subWordRow=startRow;
+				while (subWordRow+1<=14 && boardCopy[subWordRow+1][subWordCol].isOccupied()) {
+					subWordRow--;
+					subWord=subWord+boardCopy[subWordRow][subWordCol].getTile().getLetter();
+				}
+				subWordCol++;
+				subWordRow=startRow;
+			}
+			
 			if(!isHorizontal) {
 				subWord+=word.charAt(i);
 				while (subWordCol-1>=0 && boardCopy[subWordRow][subWordCol-1].isOccupied()) {
