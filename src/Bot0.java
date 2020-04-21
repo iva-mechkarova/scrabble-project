@@ -49,8 +49,8 @@ public class Bot0 implements BotAPI {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	
-    	setMyLetter(me.getFrameAsString().replaceAll(", ", "").replaceAll("\\]", "").replaceAll("\\[", "").replace("_", ""));
+    	String lettersInFrameOG=me.getFrameAsString().replaceAll(", ", "").replaceAll("\\]", "").replaceAll("\\[", "");
+    	setMyLetter(lettersInFrameOG.replace("_", "E"));
         String command = "";
         
         if(turnCount==0) {
@@ -60,7 +60,14 @@ public class Bot0 implements BotAPI {
         	findrealPlayableWords("",myLetter, list,7,7,true);
         	realPlayableWordscores();
         	int realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore));
-        	command = "H8 A "+realPlayableWords.get(realWordIndex).getLetters();
+        	if(lettersInFrameOG.contains("_") && realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
+        		command = "H8 A "+realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")+" E";
+        	}
+        	else
+        		command = "H8 A "+realPlayableWords.get(realWordIndex).getLetters();
+        		
+        	
+        	
         }
         
         
@@ -93,7 +100,11 @@ public class Bot0 implements BotAPI {
         	}
      
         	char colChar=(char)(col+65-colOffset);
-            command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters();
+        	if(lettersInFrameOG.contains("_") && realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
+        		command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")+" E";
+        	}
+        	else
+        		command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters();
         }
         realPlayableWords.clear();
         realPlayableWordsScore.clear();
@@ -177,7 +188,7 @@ public class Bot0 implements BotAPI {
             			getBoardCopy();
             			int rowOffset=0;
                     	int colOffset=0;
-                    	boolean validCross=true;
+                    	boolean validPlay=true;
                     	char letterOnBoard=boardCopy[row][col].getTile().getLetter();
                     	if(horizontal) 
                     	{
@@ -188,9 +199,14 @@ public class Bot0 implements BotAPI {
                     				/*if the letter in the occupied squares do not match the letters of the playable word then 
                     				 * the word is not playable */
                     				if (boardCopy[row][i].isOccupied() && s.charAt(j)!=boardCopy[row][i].getTile().getLetter())
-										validCross=false;
+										validPlay=false;
 								}
-                    			if(validCross)
+                    			if(validPlay && col-colOffset>=1 && col-colOffset+s.length()-1<=13) {
+                        			if (boardCopy[row][col-colOffset-1].isOccupied() || boardCopy[row][col-colOffset+s.length()-1+1].isOccupied() ) {
+    									validPlay=false;
+    								}
+                        		}
+                    			if(validPlay)
                     				realPlayableWords.add(new Word(row, col, horizontal, s));
                     		}
                     	}
@@ -203,9 +219,14 @@ public class Bot0 implements BotAPI {
                     				/*if the letter in the occupied squares do not match the letters of the playable word then 
                     				 * the word is not playable*/
                     				if (boardCopy[i][col].isOccupied() && s.charAt(j)!=boardCopy[i][col].getTile().getLetter())
-										validCross=false;
+										validPlay=false;
+                    				if(validPlay && row-rowOffset>=1 && row-rowOffset+s.length()-1<=13) {
+                            			if (boardCopy[row-rowOffset-1][col].isOccupied() || boardCopy[row-rowOffset+s.length()-1+1][col].isOccupied() ) {
+        									validPlay=false;
+        								}
+                            		}
 								}
-                    			if(validCross)
+                    			if(validPlay)
                     				realPlayableWords.add(new Word(row, col, horizontal, s));	
                     		}
                     	}
