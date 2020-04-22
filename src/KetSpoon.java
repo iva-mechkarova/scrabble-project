@@ -268,22 +268,24 @@ public class KetSpoon implements BotAPI {
                     	int colOffset=0;
                     	boolean validPlay=true;
                     	char letterOnBoard=boardCopy[row][col].getTile().getLetter();
-                    	if(horizontal) 
-                    	{
+                    	if(horizontal) {
                     		colOffset=s.indexOf(letterOnBoard);
-                    		if(col-colOffset>=0 && col-colOffset+s.length()-1<=14) 
-                    		{
+                    		if(col-colOffset>=0 && col-colOffset+s.length()-1<=14) {
                     			for (int i = col-colOffset,j=0; i < col-colOffset+s.length(); i++,j++) {
                     				/*if the letter in the occupied squares do not match the letters of the playable word then 
                     				 * the word is not playable */
                     				if (boardCopy[row][i].isOccupied() && s.charAt(j)!=boardCopy[row][i].getTile().getLetter())
 										validPlay=false;
 								}
-                    			if(validPlay && col-colOffset>=1 && col-colOffset+s.length()-1<=13) {
-                        			if (boardCopy[row][col-colOffset-1].isOccupied() || boardCopy[row][col-colOffset+s.length()-1+1].isOccupied() ) {
+                    			if(validPlay && col-colOffset-1>=0) {
+                        			if (boardCopy[row][col-colOffset-1].isOccupied()) 
     									validPlay=false;
-    								}
                         		}
+                    			if(validPlay && col-colOffset+s.length()-1+1<=14) {
+                        			if (boardCopy[row][col-colOffset+s.length()-1+1].isOccupied())
+    									validPlay=false;
+                        		}
+                    			
                     			if(validPlay && realSubWords(row-rowOffset, col-colOffset, s, true))
                     				realPlayableWords.add(new Word(row, col, horizontal, s));
                     		}
@@ -298,12 +300,18 @@ public class KetSpoon implements BotAPI {
                     				 * the word is not playable*/
                     				if (boardCopy[i][col].isOccupied() && s.charAt(j)!=boardCopy[i][col].getTile().getLetter())
 										validPlay=false;
-                    				if(validPlay && row-rowOffset>=1 && row-rowOffset+s.length()-1<=13) {
-                            			if (boardCopy[row-rowOffset-1][col].isOccupied() || boardCopy[row-rowOffset+s.length()-1+1][col].isOccupied() ) {
-        									validPlay=false;
-        								}
-                            		}
+
 								}
+                    			if(validPlay && row-rowOffset-1>=0) {
+                        			if (boardCopy[row-rowOffset-1][col].isOccupied())
+    									validPlay=false;
+                    			}
+                    			
+                    			if(row-rowOffset+s.length()-1+1<=14) {
+                        			if (boardCopy[row-rowOffset+s.length()-1+1][col].isOccupied())
+    									validPlay=false;
+                    			}
+    								
                     			if(validPlay && realSubWords(row-rowOffset, col-colOffset, s, false))
                     				realPlayableWords.add(new Word(row, col, horizontal, s));	
                     		}
