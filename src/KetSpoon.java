@@ -144,10 +144,12 @@ public class KetSpoon implements BotAPI {
 		this.myLetter = myLetter;
 	}
 	
+	/** Method to score the real playable words */
 	public void realPlayableWordscores() {
 		int[] allLetterValues = {1,3,3,2,1,4,2,4,1,8,5,1,3,1,1,3,10,1,1,1,1,4,4,8,4,10};
 		getBoardCopy();
 		
+		//loop through playable words
 		for (int realWordIndex = 0; realWordIndex < realPlayableWords.size(); realWordIndex++) {
 			int wordScore=0,tripleWord=0,doubleWord=0,rowOffset=0,colOffset=0;
 			int row = realPlayableWords.get(realWordIndex).getRow();
@@ -168,17 +170,22 @@ public class KetSpoon implements BotAPI {
 	    	for (int i = 0; i <realPlayableWords.get(realWordIndex).getLetters().length(); i++) {
 	    		int letterValue=allLetterValues[realPlayableWords.get(realWordIndex).getLetter(i)-'A'];
 	    		if(letterRow==row && letterCol==col) {
-	    			wordScore+=letterValue;
+	    			wordScore+=letterValue;  //Increments score by letter value
 	    		}
 	    		else {
+	    			//Increments score for double letters
 	    			if(boardCopy[letterRow][letterCol].isDoubleLetter())
 	    				wordScore+=letterValue*2;
+	    			//Increments score for double letters
 	    			else if(boardCopy[letterRow][letterCol].isTripleLetter())
 	    				wordScore+=letterValue*2;
+	    			//Increments score by letter value
 	    			else
 	    				wordScore+=letterValue;
+	    			//Increments doubleWord counter
 	    			if(boardCopy[letterRow][letterCol].isDoubleWord())
 	    				doubleWord++;
+	    			//Increments tripleWord counter
 	    			if(boardCopy[letterRow][letterCol].isTripleWord())
 	    				tripleWord++;
 	    		}
@@ -189,6 +196,7 @@ public class KetSpoon implements BotAPI {
 	        		letterCol++;
 	    		
 			}
+	    	//Increments score for each doubleWord and each tripleWord
 	    	if(doubleWord>0)
 	    		wordScore*=2;
 	    	if (tripleWord>0)
@@ -197,6 +205,7 @@ public class KetSpoon implements BotAPI {
 		}
 	}
 	
+	/** Boolean method to find real sub words */
 	public boolean realSubWords(int startRow,int startCol,String word,boolean isHorizontal) {
 		String subWord = null;
 		
@@ -210,12 +219,14 @@ public class KetSpoon implements BotAPI {
 			
 			if(isHorizontal) {
 				subWord+=word.charAt(i);
+				//builds subword from occupied squares from the rows above
 				while (subWordRow-1>=0 && boardCopy[subWordRow-1][subWordCol].isOccupied()) {
 					subWordRow--;
 					subWord= boardCopy[subWordRow][subWordCol].getTile().getLetter()+subWord;
 					
 				}
 				subWordRow=startRow;
+				//builds subword from occupied squares from the rows below
 				while (subWordRow+1<=14 && boardCopy[subWordRow+1][subWordCol].isOccupied()) {
 					subWordRow++;
 					subWord=subWord+boardCopy[subWordRow][subWordCol].getTile().getLetter();
@@ -226,13 +237,14 @@ public class KetSpoon implements BotAPI {
 			
 			if(!isHorizontal) {
 				subWord+=word.charAt(i);
+				//builds subword from occupied squares from the columns to the left
 				while (subWordCol-1>=0 && boardCopy[subWordRow][subWordCol-1].isOccupied()) {
 					subWordCol--;
 					subWord= boardCopy[subWordRow][subWordCol].getTile().getLetter()+subWord;
 					
 				}
 				subWordCol=startCol;
-				
+				//builds subword from occupied squares from the columns to the right
 				while (subWordCol+1<=14 && boardCopy[subWordRow][subWordCol+1].isOccupied()) {
 					subWordCol++;
 					subWord=subWord+boardCopy[subWordRow][subWordCol].getTile().getLetter();
@@ -243,6 +255,7 @@ public class KetSpoon implements BotAPI {
 			
 			if(subWord.length()>1)
 			{
+				//if list doesn't contain the subword return false 
 				if(!list.contains(subWord))
 				{
 					allReal=false;
@@ -250,10 +263,11 @@ public class KetSpoon implements BotAPI {
 				}				
 			}
 		}
-		
+		//returns true for valid subwords 
 		return allReal;
 	}
 	
+	/** Method to get an array list of the real playable words */
 	private void findrealPlayableWords(String wordOnBoard,String myLetters,int row,int col,boolean horizontal)
     {
         int[] freq = toFreq(wordOnBoard+myLetters);
@@ -278,14 +292,17 @@ public class KetSpoon implements BotAPI {
 										validPlay=false;
 								}
                     			if(validPlay && col-colOffset-1>=0) {
+                    				//if the played word is within the board boundaries but square is already occupied
                         			if (boardCopy[row][col-colOffset-1].isOccupied()) 
     									validPlay=false;
                         		}
                     			if(validPlay && col-colOffset+s.length()-1+1<=14) {
+                    				//if the played word is within the board boundaries but square is already occupied
                         			if (boardCopy[row][col-colOffset+s.length()-1+1].isOccupied())
     									validPlay=false;
                         		}
                     			
+                    			//if returns true then the subword is added to realPlayableWords
                     			if(validPlay && realSubWords(row-rowOffset, col-colOffset, s, true))
                     				realPlayableWords.add(new Word(row, col, horizontal, s));
                     		}
@@ -303,21 +320,25 @@ public class KetSpoon implements BotAPI {
 
 								}
                     			if(validPlay && row-rowOffset-1>=0) {
+                    				//if the played word is within the board boundaries but square is already occupied
                         			if (boardCopy[row-rowOffset-1][col].isOccupied())
     									validPlay=false;
                     			}
                     			
                     			if(row-rowOffset+s.length()-1+1<=14) {
+                    				//if the played word is within the board boundaries but square is already occupied
                         			if (boardCopy[row-rowOffset+s.length()-1+1][col].isOccupied())
     									validPlay=false;
                     			}
-    								
+    							
+                    			//if returns true then the subword is added to realPlayableWords
                     			if(validPlay && realSubWords(row-rowOffset, col-colOffset, s, false))
                     				realPlayableWords.add(new Word(row, col, horizontal, s));	
                     		}
                     	}
             		}
             		else
+            			//else the word is playable and added to the array list
             			realPlayableWords.add(new Word(row, col, horizontal, s));
             	}
         }
