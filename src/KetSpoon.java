@@ -1,3 +1,4 @@
+/*Bot for Group 2 (Ketspoon)*/
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,7 +9,7 @@ import java.util.List;
 
 public class KetSpoon implements BotAPI {
 
-    // The public API of Bot must not change
+    // The private API of Bot must not change
     // This is ONLY class that you can edit in the program
     // Rename Bot to the name of your team. Use camel case.
     // Bot may not alter the state of the game objects
@@ -22,12 +23,11 @@ public class KetSpoon implements BotAPI {
     private int turnCount;
     
     private String myLetter;
-    public List<String> list;
+    private List<String> list;
     
-    public static ArrayList<Word> allPossibleCombo=new ArrayList<Word>();
-    
-    public static ArrayList<Word> realPlayableWords= new ArrayList<Word>();
-    public static ArrayList<Integer> realPlayableWordsScore= new ArrayList<Integer>();
+    private static ArrayList<Word> allPossibleCombo=new ArrayList<Word>();
+    private static ArrayList<Word> realPlayableWords= new ArrayList<Word>();
+    private static ArrayList<Integer> realPlayableWordsScore= new ArrayList<Integer>();
     
     private Square[][] boardCopy;
     private ArrayList<Word> wordsOnBoard = new ArrayList<Word>();
@@ -42,16 +42,17 @@ public class KetSpoon implements BotAPI {
     }
 
     public String getCommand() {
+    	//Calling the following methods gets all the words currently on board
     	getVerticalWords();
     	getHorizontalWords();
     	
-    	String direction = null;
+    	String direction = null; 
     	
     	String lettersInFrameOG=me.getFrameAsString().replaceAll(", ", "").replaceAll("\\]", "").replaceAll("\\[", "");
-    	setMyLetter(lettersInFrameOG.replace("_", "E"));
+    	setMyLetter(lettersInFrameOG.replace("_", "E")); //E is the most common letter in English so we replace any blank tiles with an E
         String command = "";
         
-        if(turnCount==0) {
+        if(turnCount==0) { //At beginning of game set name and initialize list of real words (dictionary)
         	command = "NAME Ketspoon";
         	try {
         		list = Files.readAllLines( new File( "csw.txt" ).toPath());
@@ -59,72 +60,83 @@ public class KetSpoon implements BotAPI {
     			e.printStackTrace();
     		}
         }
-        else if(board.isFirstPlay()&&turnCount>0) {
+        else if(board.isFirstPlay()&&turnCount>0) { //If first play but name has been set (i.e. turnCount>0)
         	findrealPlayableWords("",myLetter,7,7,true);
         	realPlayableWordscores();
-        	int realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore));
+        	int realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore)); //Ensures the highest scoring word is played
+        	/*If blank tile is being played then change it to blank tile and state that it is an E at the end of the command*/
         	if(lettersInFrameOG.contains("_") && realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
         		command = "H8 A "+realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")+" E";
         	}
         	else
         		command = "H8 A "+realPlayableWords.get(realWordIndex).getLetters();
         }
-        else if (me.getFrameAsString().isEmpty()) {
-        	command = "PASS";
-        }
         else {
-        	boolean challenge = false;
+        	/*At the beginning of each turn check if should challenge (except first turn as it was not letting us place on board if word removed)*/
+        	boolean challenge = false; 
         	
+        	/*Our bot never places fake words so if any words on the board aren't real then challenge*/
         	if(turnCount>1&&!wordsOnBoard.isEmpty())
         	{
         		for(Word w : wordsOnBoard)
         		{
-        			if(w.getLetters().length()>1 && !list.contains(w.getLetters()))
+        			if(w.getLetters().length()>1 && !list.contains(w.getLetters())) 
         			{
         				challenge = true;
         				command = "CHALLENGE";
         			}
         		}
         	}
-        	
+        
         	if(!challenge)
         	{
-	        	for (int i = 0; i < wordsOnBoard.size(); i++) {
-	        		findrealPlayableWords(wordsOnBoard.get(i).getLetters(),myLetter,wordsOnBoard.get(i).getRow(),wordsOnBoard.get(i).getColumn(),wordsOnBoard.get(i).isHorizontal());
-				}
-	        	
-	        	if(realPlayableWords.isEmpty())
-	        	{
-	        		command = "PASS";
+        		if(me.getFrameAsString().isEmpty()) //At the end of game, frame may be empty so pass
+        		{
+        			command = "PASS";
+        		}
+        		else
+        		{
+        			//Loop to find all real playable words - combining frame and words on board
+    	        	for (int i = 0; i < wordsOnBoard.size(); i++) {
+    	        		findrealPlayableWords(wordsOnBoard.get(i).getLetters(),myLetter,wordsOnBoard.get(i).getRow(),wordsOnBoard.get(i).getColumn(),wordsOnBoard.get(i).isHorizontal());
+    				}
+    	        	//If there are no playable words then pass
+    	        	if(realPlayableWords.isEmpty())
+    	        	{
+    	        		command = "PASS";
+    	        	}
+    	        	else
+    	        	{
+    		        	realPlayableWordscores(); //Find scores of all the playableWords
+    		        	int realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore)); //Get the word with the highest score
+    		        	
+    		        	int row = realPlayableWords.get(realWordIndex).getRow();
+    		        	int col = realPlayableWords.get(realWordIndex).getFirstColumn();
+    		        	
+    		        	int rowOffset=0;
+    		        	int colOffset=0;
+    		        	
+    		        	char letterOnBoard=boardCopy[row][col].getTile().getLetter();
+    		        	
+    		        	/*The following gets direction of word and declares offset in order to find first letter as letter on board may not be first letter*/
+    		        	if(realPlayableWords.get(realWordIndex).isVertical()) {
+    		        		direction="D";
+    		        		rowOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
+    		        	}
+    		        	
+    		        	else {
+    		        		direction="A";
+    		        		colOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
+    		        	}
+    		     
+    		        	char colChar=(char)(col+65-colOffset);
+    		        	if(lettersInFrameOG.contains("_") && realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
+    		        		command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")+" E";
+    		        	}
+    		        	else
+    		        		command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters();
+    	        	}
 	        	}
-	        	
-	        	realPlayableWordscores();
-	        	int realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore));
-	        	
-	        	int row = realPlayableWords.get(realWordIndex).getRow();
-	        	int col = realPlayableWords.get(realWordIndex).getFirstColumn();
-	        	
-	        	int rowOffset=0;
-	        	int colOffset=0;
-	        	
-	        	char letterOnBoard=boardCopy[row][col].getTile().getLetter();
-	        	
-	        	if(realPlayableWords.get(realWordIndex).isVertical()) {
-	        		direction="D";
-	        		rowOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
-	        	}
-	        	
-	        	else {
-	        		direction="A";
-	        		colOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
-	        	}
-	     
-	        	char colChar=(char)(col+65-colOffset);
-	        	if(lettersInFrameOG.contains("_") && realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
-	        		command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")+" E";
-	        	}
-	        	else
-	        		command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters();
         	}
         }
         realPlayableWords.clear();
@@ -136,16 +148,16 @@ public class KetSpoon implements BotAPI {
     }
     
     
-	public String getMyLetter() {
+	private String getMyLetter() {
 		return myLetter;
 	}
 
-	public void setMyLetter(String myLetter) {
+	private void setMyLetter(String myLetter) {
 		this.myLetter = myLetter;
 	}
 	
 	/** Method to score the real playable words */
-	public void realPlayableWordscores() {
+	private void realPlayableWordscores() {
 		int[] allLetterValues = {1,3,3,2,1,4,2,4,1,8,5,1,3,1,1,3,10,1,1,1,1,4,4,8,4,10};
 		getBoardCopy();
 		
@@ -206,7 +218,7 @@ public class KetSpoon implements BotAPI {
 	}
 	
 	/** Boolean method to find real sub words */
-	public boolean realSubWords(int startRow,int startCol,String word,boolean isHorizontal) {
+	private boolean realSubWords(int startRow,int startCol,String word,boolean isHorizontal) {
 		String subWord = null;
 		
 		boolean allReal=true;
@@ -370,7 +382,7 @@ public class KetSpoon implements BotAPI {
 	
 	
 	/**Method to get a copy of the current state of the board*/
-	public void getBoardCopy()
+	private void getBoardCopy()
 	{
 		boardCopy = new Square[15][15]; 
 		for (int row = 0; row < 15; row++) 
@@ -383,7 +395,7 @@ public class KetSpoon implements BotAPI {
 	}
 	
 	/**Method to get an array list of the current horizontal words on the board*/
-	public void getHorizontalWords()
+	private void getHorizontalWords()
 	{
 		Word word; //Variable to store each word
 		getBoardCopy();
@@ -429,7 +441,7 @@ public class KetSpoon implements BotAPI {
 	}
 	
 	/**Method to get an array list of the current vertical words on the board*/
-	public void getVerticalWords()
+	private void getVerticalWords()
 	{
 		Word word; //Variable to store each word
 		getBoardCopy();

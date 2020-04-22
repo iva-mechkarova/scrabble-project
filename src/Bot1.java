@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Bot1 implements BotAPI {
 
-	   // The public API of Bot must not change
+    // The private API of Bot must not change
     // This is ONLY class that you can edit in the program
     // Rename Bot to the name of your team. Use camel case.
     // Bot may not alter the state of the game objects
@@ -21,12 +21,12 @@ public class Bot1 implements BotAPI {
     private int turnCount;
     
     private String myLetter;
-    public List<String> list;
+    private List<String> list;
     
-    public static ArrayList<Word> allPossibleCombo=new ArrayList<Word>();
+    private static ArrayList<Word> allPossibleCombo=new ArrayList<Word>();
     
-    public static ArrayList<Word> realPlayableWords= new ArrayList<Word>();
-    public static ArrayList<Integer> realPlayableWordsScore= new ArrayList<Integer>();
+    private static ArrayList<Word> realPlayableWords= new ArrayList<Word>();
+    private static ArrayList<Integer> realPlayableWordsScore= new ArrayList<Integer>();
     
     private Square[][] boardCopy;
     private ArrayList<Word> wordsOnBoard = new ArrayList<Word>();
@@ -41,16 +41,17 @@ public class Bot1 implements BotAPI {
     }
 
     public String getCommand() {
+    	//Calling the following methods gets all the words currently on board
     	getVerticalWords();
     	getHorizontalWords();
     	
-    	String direction = null;
+    	String direction = null; 
     	
     	String lettersInFrameOG=me.getFrameAsString().replaceAll(", ", "").replaceAll("\\]", "").replaceAll("\\[", "");
-    	setMyLetter(lettersInFrameOG.replace("_", "E"));
+    	setMyLetter(lettersInFrameOG.replace("_", "E")); //E is the most common letter in English so we replace any blank tiles with an E
         String command = "";
         
-        if(turnCount==0) {
+        if(turnCount==0) { //At beginning of game set name and initialize list of real words (dictionary)
         	command = "NAME Bot1";
         	try {
         		list = Files.readAllLines( new File( "csw.txt" ).toPath());
@@ -58,72 +59,79 @@ public class Bot1 implements BotAPI {
     			e.printStackTrace();
     		}
         }
-        else if(board.isFirstPlay()&&turnCount>0) {
+        else if(board.isFirstPlay()&&turnCount>0) { //If first play but name has been set (i.e. turnCount>0)
         	findrealPlayableWords("",myLetter,7,7,true);
         	realPlayableWordscores();
-        	int realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore));
+        	int realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore)); //Ensures the highest scoring word is played
+        	/*If blank tile is being played then change it to blank tile and state that it is an E at the end of the command*/
         	if(lettersInFrameOG.contains("_") && realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
         		command = "H8 A "+realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")+" E";
         	}
         	else
         		command = "H8 A "+realPlayableWords.get(realWordIndex).getLetters();
         }
-        else if (me.getFrameAsString().isEmpty()) {
+        else if (me.getFrameAsString().isEmpty()) { //At the end of game, frame may be empty so pass
         	command = "PASS";
         }
         else {
-        	boolean challenge = false;
+        	/*At the beginning of each turn check if should challenge (except first turn as it was not letting us place on board if word removed)*/
+        	boolean challenge = false; 
         	
+        	/*Our bot never places fake words so if any words on the board aren't real then challenge*/
         	if(turnCount>1&&!wordsOnBoard.isEmpty())
         	{
         		for(Word w : wordsOnBoard)
         		{
-        			if(w.getLetters().length()>1 && !list.contains(w.getLetters()))
+        			if(w.getLetters().length()>1 && !list.contains(w.getLetters())) 
         			{
         				challenge = true;
         				command = "CHALLENGE";
         			}
         		}
         	}
-        	
+        
         	if(!challenge)
         	{
+        		//Loop to find all real playable words - combining frame and words on board
 	        	for (int i = 0; i < wordsOnBoard.size(); i++) {
 	        		findrealPlayableWords(wordsOnBoard.get(i).getLetters(),myLetter,wordsOnBoard.get(i).getRow(),wordsOnBoard.get(i).getColumn(),wordsOnBoard.get(i).isHorizontal());
 				}
-	        	
+	        	//If there are no playable words then pass
 	        	if(realPlayableWords.isEmpty())
 	        	{
 	        		command = "PASS";
 	        	}
-	        	
-	        	realPlayableWordscores();
-	        	int realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore));
-	        	
-	        	int row = realPlayableWords.get(realWordIndex).getRow();
-	        	int col = realPlayableWords.get(realWordIndex).getFirstColumn();
-	        	
-	        	int rowOffset=0;
-	        	int colOffset=0;
-	        	
-	        	char letterOnBoard=boardCopy[row][col].getTile().getLetter();
-	        	
-	        	if(realPlayableWords.get(realWordIndex).isVertical()) {
-	        		direction="D";
-	        		rowOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
-	        	}
-	        	
-	        	else {
-	        		direction="A";
-	        		colOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
-	        	}
-	     
-	        	char colChar=(char)(col+65-colOffset);
-	        	if(lettersInFrameOG.contains("_") && realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
-	        		command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")+" E";
-	        	}
 	        	else
-	        		command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters();
+	        	{
+		        	realPlayableWordscores(); //Find scores of all the playableWords
+		        	int realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore)); //Get the word with the highest score
+		        	
+		        	int row = realPlayableWords.get(realWordIndex).getRow();
+		        	int col = realPlayableWords.get(realWordIndex).getFirstColumn();
+		        	
+		        	int rowOffset=0;
+		        	int colOffset=0;
+		        	
+		        	char letterOnBoard=boardCopy[row][col].getTile().getLetter();
+		        	
+		        	/*The following gets direction of word and declares offset in order to find first letter as letter on board may not be first letter*/
+		        	if(realPlayableWords.get(realWordIndex).isVertical()) {
+		        		direction="D";
+		        		rowOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
+		        	}
+		        	
+		        	else {
+		        		direction="A";
+		        		colOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
+		        	}
+		     
+		        	char colChar=(char)(col+65-colOffset);
+		        	if(lettersInFrameOG.contains("_") && realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
+		        		command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")+" E";
+		        	}
+		        	else
+		        		command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters();
+	        	}
         	}
         }
         realPlayableWords.clear();
@@ -135,18 +143,20 @@ public class Bot1 implements BotAPI {
     }
     
     
-	public String getMyLetter() {
+	private String getMyLetter() {
 		return myLetter;
 	}
 
-	public void setMyLetter(String myLetter) {
+	private void setMyLetter(String myLetter) {
 		this.myLetter = myLetter;
 	}
 	
-	public void realPlayableWordscores() {
+	/** Method to score the real playable words */
+	private void realPlayableWordscores() {
 		int[] allLetterValues = {1,3,3,2,1,4,2,4,1,8,5,1,3,1,1,3,10,1,1,1,1,4,4,8,4,10};
 		getBoardCopy();
 		
+		//loop through playable words
 		for (int realWordIndex = 0; realWordIndex < realPlayableWords.size(); realWordIndex++) {
 			int wordScore=0,tripleWord=0,doubleWord=0,rowOffset=0,colOffset=0;
 			int row = realPlayableWords.get(realWordIndex).getRow();
@@ -167,17 +177,22 @@ public class Bot1 implements BotAPI {
 	    	for (int i = 0; i <realPlayableWords.get(realWordIndex).getLetters().length(); i++) {
 	    		int letterValue=allLetterValues[realPlayableWords.get(realWordIndex).getLetter(i)-'A'];
 	    		if(letterRow==row && letterCol==col) {
-	    			wordScore+=letterValue;
+	    			wordScore+=letterValue;  //Increments score by letter value
 	    		}
 	    		else {
+	    			//Increments score for double letters
 	    			if(boardCopy[letterRow][letterCol].isDoubleLetter())
 	    				wordScore+=letterValue*2;
+	    			//Increments score for double letters
 	    			else if(boardCopy[letterRow][letterCol].isTripleLetter())
 	    				wordScore+=letterValue*2;
+	    			//Increments score by letter value
 	    			else
 	    				wordScore+=letterValue;
+	    			//Increments doubleWord counter
 	    			if(boardCopy[letterRow][letterCol].isDoubleWord())
 	    				doubleWord++;
+	    			//Increments tripleWord counter
 	    			if(boardCopy[letterRow][letterCol].isTripleWord())
 	    				tripleWord++;
 	    		}
@@ -188,6 +203,7 @@ public class Bot1 implements BotAPI {
 	        		letterCol++;
 	    		
 			}
+	    	//Increments score for each doubleWord and each tripleWord
 	    	if(doubleWord>0)
 	    		wordScore*=2;
 	    	if (tripleWord>0)
@@ -196,7 +212,8 @@ public class Bot1 implements BotAPI {
 		}
 	}
 	
-	public boolean realSubWords(int startRow,int startCol,String word,boolean isHorizontal) {
+	/** Boolean method to find real sub words */
+	private boolean realSubWords(int startRow,int startCol,String word,boolean isHorizontal) {
 		String subWord = null;
 		
 		boolean allReal=true;
@@ -209,12 +226,14 @@ public class Bot1 implements BotAPI {
 			
 			if(isHorizontal) {
 				subWord+=word.charAt(i);
+				//builds subword from occupied squares from the rows above
 				while (subWordRow-1>=0 && boardCopy[subWordRow-1][subWordCol].isOccupied()) {
 					subWordRow--;
 					subWord= boardCopy[subWordRow][subWordCol].getTile().getLetter()+subWord;
 					
 				}
 				subWordRow=startRow;
+				//builds subword from occupied squares from the rows below
 				while (subWordRow+1<=14 && boardCopy[subWordRow+1][subWordCol].isOccupied()) {
 					subWordRow++;
 					subWord=subWord+boardCopy[subWordRow][subWordCol].getTile().getLetter();
@@ -225,13 +244,14 @@ public class Bot1 implements BotAPI {
 			
 			if(!isHorizontal) {
 				subWord+=word.charAt(i);
+				//builds subword from occupied squares from the columns to the left
 				while (subWordCol-1>=0 && boardCopy[subWordRow][subWordCol-1].isOccupied()) {
 					subWordCol--;
 					subWord= boardCopy[subWordRow][subWordCol].getTile().getLetter()+subWord;
 					
 				}
 				subWordCol=startCol;
-				
+				//builds subword from occupied squares from the columns to the right
 				while (subWordCol+1<=14 && boardCopy[subWordRow][subWordCol+1].isOccupied()) {
 					subWordCol++;
 					subWord=subWord+boardCopy[subWordRow][subWordCol].getTile().getLetter();
@@ -242,6 +262,7 @@ public class Bot1 implements BotAPI {
 			
 			if(subWord.length()>1)
 			{
+				//if list doesn't contain the subword return false 
 				if(!list.contains(subWord))
 				{
 					allReal=false;
@@ -249,10 +270,11 @@ public class Bot1 implements BotAPI {
 				}				
 			}
 		}
-		
+		//returns true for valid subwords 
 		return allReal;
 	}
 	
+	/** Method to get an array list of the real playable words */
 	private void findrealPlayableWords(String wordOnBoard,String myLetters,int row,int col,boolean horizontal)
     {
         int[] freq = toFreq(wordOnBoard+myLetters);
@@ -267,22 +289,27 @@ public class Bot1 implements BotAPI {
                     	int colOffset=0;
                     	boolean validPlay=true;
                     	char letterOnBoard=boardCopy[row][col].getTile().getLetter();
-                    	if(horizontal) 
-                    	{
+                    	if(horizontal) {
                     		colOffset=s.indexOf(letterOnBoard);
-                    		if(col-colOffset>=0 && col-colOffset+s.length()-1<=14) 
-                    		{
+                    		if(col-colOffset>=0 && col-colOffset+s.length()-1<=14) {
                     			for (int i = col-colOffset,j=0; i < col-colOffset+s.length(); i++,j++) {
                     				/*if the letter in the occupied squares do not match the letters of the playable word then 
                     				 * the word is not playable */
                     				if (boardCopy[row][i].isOccupied() && s.charAt(j)!=boardCopy[row][i].getTile().getLetter())
 										validPlay=false;
 								}
-                    			if(validPlay && col-colOffset>=1 && col-colOffset+s.length()-1<=13) {
-                        			if (boardCopy[row][col-colOffset-1].isOccupied() || boardCopy[row][col-colOffset+s.length()-1+1].isOccupied() ) {
+                    			if(validPlay && col-colOffset-1>=0) {
+                    				//if the played word is within the board boundaries but square is already occupied
+                        			if (boardCopy[row][col-colOffset-1].isOccupied()) 
     									validPlay=false;
-    								}
                         		}
+                    			if(validPlay && col-colOffset+s.length()-1+1<=14) {
+                    				//if the played word is within the board boundaries but square is already occupied
+                        			if (boardCopy[row][col-colOffset+s.length()-1+1].isOccupied())
+    									validPlay=false;
+                        		}
+                    			
+                    			//if returns true then the subword is added to realPlayableWords
                     			if(validPlay)
                     				realPlayableWords.add(new Word(row, col, horizontal, s));
                     		}
@@ -297,18 +324,28 @@ public class Bot1 implements BotAPI {
                     				 * the word is not playable*/
                     				if (boardCopy[i][col].isOccupied() && s.charAt(j)!=boardCopy[i][col].getTile().getLetter())
 										validPlay=false;
-                    				if(validPlay && row-rowOffset>=1 && row-rowOffset+s.length()-1<=13) {
-                            			if (boardCopy[row-rowOffset-1][col].isOccupied() || boardCopy[row-rowOffset+s.length()-1+1][col].isOccupied() ) {
-        									validPlay=false;
-        								}
-                            		}
+
 								}
+                    			if(validPlay && row-rowOffset-1>=0) {
+                    				//if the played word is within the board boundaries but square is already occupied
+                        			if (boardCopy[row-rowOffset-1][col].isOccupied())
+    									validPlay=false;
+                    			}
+                    			
+                    			if(row-rowOffset+s.length()-1+1<=14) {
+                    				//if the played word is within the board boundaries but square is already occupied
+                        			if (boardCopy[row-rowOffset+s.length()-1+1][col].isOccupied())
+    									validPlay=false;
+                    			}
+    							
+                    			//if returns true then the subword is added to realPlayableWords
                     			if(validPlay)
                     				realPlayableWords.add(new Word(row, col, horizontal, s));	
                     		}
                     	}
             		}
             		else
+            			//else the word is playable and added to the array list
             			realPlayableWords.add(new Word(row, col, horizontal, s));
             	}
         }
@@ -340,7 +377,7 @@ public class Bot1 implements BotAPI {
 	
 	
 	/**Method to get a copy of the current state of the board*/
-	public void getBoardCopy()
+	private void getBoardCopy()
 	{
 		boardCopy = new Square[15][15]; 
 		for (int row = 0; row < 15; row++) 
@@ -353,7 +390,7 @@ public class Bot1 implements BotAPI {
 	}
 	
 	/**Method to get an array list of the current horizontal words on the board*/
-	public void getHorizontalWords()
+	private void getHorizontalWords()
 	{
 		Word word; //Variable to store each word
 		getBoardCopy();
@@ -399,7 +436,7 @@ public class Bot1 implements BotAPI {
 	}
 	
 	/**Method to get an array list of the current vertical words on the board*/
-	public void getVerticalWords()
+	private void getVerticalWords()
 	{
 		Word word; //Variable to store each word
 		getBoardCopy();
@@ -443,5 +480,4 @@ public class Bot1 implements BotAPI {
 			}	
 		}	
 	}
-
 }
