@@ -5,9 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Bot1 implements BotAPI {
 
-	   // The public API of Bot must not change
+public class KetSpoon implements BotAPI {
+
+    // The public API of Bot must not change
     // This is ONLY class that you can edit in the program
     // Rename Bot to the name of your team. Use camel case.
     // Bot may not alter the state of the game objects
@@ -31,7 +32,7 @@ public class Bot1 implements BotAPI {
     private Square[][] boardCopy;
     private ArrayList<Word> wordsOnBoard = new ArrayList<Word>();
 
-    Bot1(PlayerAPI me, OpponentAPI opponent, BoardAPI board, UserInterfaceAPI ui, DictionaryAPI dictionary) {
+    KetSpoon(PlayerAPI me, OpponentAPI opponent, BoardAPI board, UserInterfaceAPI ui, DictionaryAPI dictionary) {
         this.me = me;
         this.opponent = opponent;
         this.board = board;
@@ -51,7 +52,7 @@ public class Bot1 implements BotAPI {
         String command = "";
         
         if(turnCount==0) {
-        	command = "NAME Bot1";
+        	command = "NAME Ketspoon";
         	try {
         		list = Files.readAllLines( new File( "csw.txt" ).toPath());
     		} catch (IOException e) {
@@ -283,7 +284,7 @@ public class Bot1 implements BotAPI {
     									validPlay=false;
     								}
                         		}
-                    			if(validPlay)
+                    			if(validPlay && realSubWords(row-rowOffset, col-colOffset, s, true))
                     				realPlayableWords.add(new Word(row, col, horizontal, s));
                     		}
                     	}
@@ -303,7 +304,7 @@ public class Bot1 implements BotAPI {
         								}
                             		}
 								}
-                    			if(validPlay)
+                    			if(validPlay && realSubWords(row-rowOffset, col-colOffset, s, false))
                     				realPlayableWords.add(new Word(row, col, horizontal, s));	
                     		}
                     	}
@@ -443,5 +444,4 @@ public class Bot1 implements BotAPI {
 			}	
 		}	
 	}
-
 }
