@@ -115,18 +115,30 @@ public class KetSpoon implements BotAPI {
     		        	
     		        	int rowOffset=0;
     		        	int colOffset=0;
+    		        	char letterOnBoard = '.'; //Initialize letterOnBoard
     		        	
-    		        	char letterOnBoard=boardCopy[row][col].getTile().getLetter();
+    		        	if(boardCopy[row][col].isOccupied())
+    		        	{
+    		        		letterOnBoard=boardCopy[row][col].getTile().getLetter();
+    		        	}
+    		        	
     		        	
     		        	/*The following gets direction of word and declares offset in order to find first letter as letter on board may not be first letter*/
     		        	if(realPlayableWords.get(realWordIndex).isVertical()) {
     		        		direction="D";
-    		        		rowOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
+    		        		
+    		        		if(boardCopy[row][col].isOccupied())
+    		        			rowOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
+    		        		else
+    		        			rowOffset=0;
     		        	}
     		        	
     		        	else {
     		        		direction="A";
-    		        		colOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
+    		        		if(boardCopy[row][col].isOccupied())
+    		        			colOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
+    		        		else
+    		        			colOffset=0;
     		        	}
     		     
     		        	char colChar=(char)(col+65-colOffset);
@@ -166,14 +178,29 @@ public class KetSpoon implements BotAPI {
 			int wordScore=0,tripleWord=0,doubleWord=0,rowOffset=0,colOffset=0;
 			int row = realPlayableWords.get(realWordIndex).getRow();
 	    	int col = realPlayableWords.get(realWordIndex).getFirstColumn();
+	    	char letterOnBoard='.'; //Initialize letterOnBoard
 
 	    	if(!wordsOnBoard.isEmpty() && !board.isFirstPlay()) {
-	    		char letterOnBoard=boardCopy[row][col].getTile().getLetter();
-		    	
+	    		
+	    		if(boardCopy[row][col].isOccupied())
+	    		{
+	    			letterOnBoard=boardCopy[row][col].getTile().getLetter();
+	    		}
+	    			
 		    	if(realPlayableWords.get(realWordIndex).isVertical())
-		    		rowOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
+		    	{
+		    		if(boardCopy[row][col].isOccupied())
+		    			rowOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard); 		
+		    		else
+		    			rowOffset=0;	
+		    	}
 		    	else
-		    		colOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
+		    	{
+		    		if(boardCopy[row][col].isOccupied())
+		    			colOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
+		    		else
+		    			colOffset=0;
+		    	}
 	    	}
 	    	
 	    	int letterRow=row-rowOffset;
@@ -292,10 +319,19 @@ public class KetSpoon implements BotAPI {
             			getBoardCopy();
             			int rowOffset=0;
                     	int colOffset=0;
+                    	char letterOnBoard ='.'; //Initialize letterOnBoard
                     	boolean validPlay=true;
-                    	char letterOnBoard=boardCopy[row][col].getTile().getLetter();
+                    	if(boardCopy[row][col].isOccupied())
+                    	{
+                    		letterOnBoard=boardCopy[row][col].getTile().getLetter();
+                    	}
+                    	
                     	if(horizontal) {
-                    		colOffset=s.indexOf(letterOnBoard);
+                    		if(!boardCopy[row][col].isOccupied())
+                    			colOffset=0;
+                    		else
+                    			colOffset=s.indexOf(letterOnBoard);
+                    		
                     		if(col-colOffset>=0 && col-colOffset+s.length()-1<=14) {
                     			for (int i = col-colOffset,j=0; i < col-colOffset+s.length(); i++,j++) {
                     				/*if the letter in the occupied squares do not match the letters of the playable word then 
@@ -321,7 +357,11 @@ public class KetSpoon implements BotAPI {
                     	}
             			if(!horizontal) 
             			{
-                    		rowOffset=s.indexOf(letterOnBoard);
+                    		if(!boardCopy[row][col].isOccupied())
+                    			rowOffset=0;
+                    		else
+                    			rowOffset=s.indexOf(letterOnBoard);
+                    		
                     		if(row-rowOffset>=0 && row-rowOffset+s.length()-1<=14) 
                     		{
                     			for (int i = row-rowOffset,j=0; i < row-rowOffset+s.length(); i++,j++) {
@@ -412,6 +452,7 @@ public class KetSpoon implements BotAPI {
 					{
 						word = new Word(i, j, true, wordString);
 						wordsOnBoard.add(word);
+						getPlayableUnoccupiedHorizontal(i, j); //Finds unoccupied squares which are above and below letter
 					}
 					else if (j<14)
 					{
@@ -419,15 +460,19 @@ public class KetSpoon implements BotAPI {
 						{
 							word = new Word(i, j, true, wordString);
 							wordsOnBoard.add(word);
+							getPlayableUnoccupiedHorizontal(i, j); //Finds unoccupied squares which are above and below letter
 						}
 						else //Else we need to find all of the letters of the word
 						{
 							int col = j; //Stores column position of first letter of word
+							getPlayableUnoccupiedHorizontal(i, j); //Finds unoccupied squares which are above and below letter
+							
 							j+=1;
 							//Keep looping while there are occupied squares to the right of the occupied square to find the whole word
 							while(j<15 && boardCopy[i][j].isOccupied())
 							{
 								wordString += boardCopy[i][j].getTile().toString();
+								getPlayableUnoccupiedHorizontal(i, j); //Finds unoccupied squares which are above and below letter
 								j++;
 							}
 							
@@ -458,6 +503,7 @@ public class KetSpoon implements BotAPI {
 					{
 						word = new Word(j, i, false, wordString);
 						wordsOnBoard.add(word);
+						getPlayableUnoccupiedVertical(j, i); //Finds unoccupied squares which are beside letter
 					}
 					else if (j<14)
 					{
@@ -465,15 +511,19 @@ public class KetSpoon implements BotAPI {
 						{
 							word = new Word(j, i, false, wordString);
 							wordsOnBoard.add(word);
+							getPlayableUnoccupiedVertical(j, i); //Finds unoccupied squares which are beside letter
 						}
 						else //Else we need to find all of the letters of the word
 						{
 							int row = j; //Stores row position of first letter of word
+							getPlayableUnoccupiedVertical(j, i); //Finds unoccupied squares which are beside letter
+							
 							j+=1;	
 							//Keep looping while there are occupied squares below the occupied square to find the whole word
 							while(j<15 && boardCopy[j][i].isOccupied())
 							{
 								wordString += boardCopy[j][i].getTile().toString();
+								getPlayableUnoccupiedVertical(j, i); //Finds unoccupied squares which are beside letter
 								j++;
 							}
 							
@@ -484,5 +534,41 @@ public class KetSpoon implements BotAPI {
 				}
 			}	
 		}	
+	}
+	
+	/*Helper method to find the unoccupied squares above and below words on the board*/
+	private void getPlayableUnoccupiedHorizontal(int row, int col)
+	{
+		Word word;
+		
+		/*If square above or below the square that's passed in is unoccupied then it is playable*/
+		if(row<14 && !boardCopy[row+1][col].isOccupied())
+		{
+			word = new Word(row+1, col, true, "");
+			wordsOnBoard.add(word);
+		}
+		if(row>0 && !boardCopy[row-1][col].isOccupied())
+		{
+			word = new Word(row-1, col, true, "");
+			wordsOnBoard.add(word);
+		}
+	}
+	
+	/*Helper method to find the unoccupied squares above and below words on the board*/
+	private void getPlayableUnoccupiedVertical(int row, int col)
+	{
+		Word word;
+		
+		/*If square to the left or right of the square that's passed in is unoccupied then it is playable*/
+		if(col<14 && !boardCopy[row][col+1].isOccupied())
+		{
+			word = new Word(row, col+1, true, "");
+			wordsOnBoard.add(word);
+		}
+		if(col>0 && !boardCopy[row][col-1].isOccupied())
+		{
+			word = new Word(row, col-1, true, "");
+			wordsOnBoard.add(word);
+		}
 	}
 }
