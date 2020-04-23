@@ -25,7 +25,6 @@ public class KetSpoon implements BotAPI {
     private String myLetter;
     private List<String> list;
     
-    private static ArrayList<Word> allPossibleCombo=new ArrayList<Word>();
     private static ArrayList<Word> realPlayableWords= new ArrayList<Word>();
     private static ArrayList<Integer> realPlayableWordsScore= new ArrayList<Integer>();
     
@@ -42,6 +41,7 @@ public class KetSpoon implements BotAPI {
     }
 
     public String getCommand() {
+    	System.out.println("New Bot:"+me.getScore());
     	//Calling the following methods gets all the words currently on board
     	getVerticalWords();
     	getHorizontalWords();
@@ -53,7 +53,8 @@ public class KetSpoon implements BotAPI {
         String command = "";
         
         if(turnCount==0) { //At beginning of game set name and initialize list of real words (dictionary)
-        	command = "NAME Ketspoon";
+        	command = "NAME New"
+        			+ "";
         	try {
         		list = Files.readAllLines( new File( "csw.txt" ).toPath());
     		} catch (IOException e) {
@@ -109,7 +110,7 @@ public class KetSpoon implements BotAPI {
     	        	{
     		        	realPlayableWordscores(); //Find scores of all the playableWords
     		        	int realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore)); //Get the word with the highest score
-    		        	
+    		        	System.out.println("Expected score:"+realPlayableWordsScore.get(realWordIndex));
     		        	int row = realPlayableWords.get(realWordIndex).getRow();
     		        	int col = realPlayableWords.get(realWordIndex).getFirstColumn();
     		        	
@@ -142,8 +143,46 @@ public class KetSpoon implements BotAPI {
     		        	}
     		     
     		        	char colChar=(char)(col+65-colOffset);
+    		        	
     		        	if(lettersInFrameOG.contains("_") && realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
-    		        		command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")+" E";
+    		        		while(true) {
+    		        			if(boardCopy[row][col].isOccupied() && boardCopy[row][col].getTile().getLetter()!='E') {
+        		        			command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")+" E";
+        		        			break;
+    		        			}
+        		        		else {
+        		        			realPlayableWordsScore.remove(realWordIndex);
+        		        			realPlayableWords.remove(realWordIndex);
+        		        			realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore)); //Get the word with the highest score
+        		        			realPlayableWords.get(realWordIndex).getRow();
+        	    		        	realPlayableWords.get(realWordIndex).getFirstColumn();
+        	    		        	if(boardCopy[row][col].isOccupied())
+        	    		        	{
+        	    		        		letterOnBoard=boardCopy[row][col].getTile().getLetter();
+        	    		        	}
+        	    		        	
+        	    		        	
+        	    		        	/*The following gets direction of word and declares offset in order to find first letter as letter on board may not be first letter*/
+        	    		        	if(realPlayableWords.get(realWordIndex).isVertical()) {
+        	    		        		direction="D";
+        	    		        		
+        	    		        		if(boardCopy[row][col].isOccupied())
+        	    		        			rowOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
+        	    		        		else
+        	    		        			rowOffset=0;
+        	    		        	}
+        	    		        	
+        	    		        	else {
+        	    		        		direction="A";
+        	    		        		if(boardCopy[row][col].isOccupied())
+        	    		        			colOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
+        	    		        		else
+        	    		        			colOffset=0;
+        	    		        	}
+        	    		        	colChar=(char)(col+65-colOffset);
+        		        		}
+    		        		}
+    		        		
     		        	}
     		        	else
     		        		command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters();
@@ -153,7 +192,6 @@ public class KetSpoon implements BotAPI {
         }
         realPlayableWords.clear();
         realPlayableWordsScore.clear();
-        allPossibleCombo.clear();
         wordsOnBoard.clear();
         turnCount++;
         return command;
@@ -176,6 +214,7 @@ public class KetSpoon implements BotAPI {
 		//loop through playable words
 		for (int realWordIndex = 0; realWordIndex < realPlayableWords.size(); realWordIndex++) {
 			int wordScore=0,tripleWord=0,doubleWord=0,rowOffset=0,colOffset=0;
+			int fullsubScore=0;
 			int row = realPlayableWords.get(realWordIndex).getRow();
 	    	int col = realPlayableWords.get(realWordIndex).getFirstColumn();
 	    	char letterOnBoard='.'; //Initialize letterOnBoard
@@ -206,9 +245,10 @@ public class KetSpoon implements BotAPI {
 	    	int letterRow=row-rowOffset;
 	    	int letterCol=col-colOffset;
 	    	
+	    	
 	    	for (int i = 0; i <realPlayableWords.get(realWordIndex).getLetters().length(); i++) {
 	    		int letterValue=allLetterValues[realPlayableWords.get(realWordIndex).getLetter(i)-'A'];
-	    		if(letterRow==row && letterCol==col) {
+	    		if(boardCopy[letterRow][letterCol].isOccupied()) {
 	    			wordScore+=letterValue;  //Increments score by letter value
 	    		}
 	    		else {
@@ -227,7 +267,61 @@ public class KetSpoon implements BotAPI {
 	    			//Increments tripleWord counter
 	    			if(boardCopy[letterRow][letterCol].isTripleWord())
 	    				tripleWord++;
+	    			
+	    			int subScore=0;
+		    		boolean hasSub=false;
+		    		
+		    		
+		    		if((realPlayableWords.get(realWordIndex).isHorizontal() )&& !boardCopy[letterRow][letterCol].isOccupied()) {
+		    			int subWordRow=letterRow;
+		    			while (subWordRow-1>=0 && boardCopy[subWordRow-1][letterCol].isOccupied()) {
+							subWordRow--;
+							subScore+=boardCopy[subWordRow][letterCol].getTile().getValue();
+							hasSub=true;
+						}
+		    			subWordRow=letterRow;
+		    			while (subWordRow+1<=14 && boardCopy[subWordRow+1][letterCol].isOccupied()) {
+							subWordRow++;
+							subScore+=boardCopy[subWordRow][letterCol].getTile().getValue();
+							hasSub=true;
+						}
+		    		}
+		    		
+		    		if(realPlayableWords.get(realWordIndex).isVertical() && !boardCopy[letterRow][letterCol].isOccupied()) {
+						int subWordCol=letterCol;
+						while (subWordCol-1>=0 && boardCopy[letterRow][subWordCol-1].isOccupied()) {
+							subWordCol--;
+							subScore+=boardCopy[letterRow][subWordCol].getTile().getValue();
+							hasSub=true;
+						}
+						subWordCol=letterCol;
+						//builds subword from occupied squares from the columns to the right
+						while (subWordCol+1<=14 && boardCopy[letterRow][subWordCol+1].isOccupied()) {
+							subWordCol++;
+							subScore+=boardCopy[letterRow][subWordCol].getTile().getValue();
+							hasSub=true;
+						}
+		    		}
+		    		if(hasSub) {
+		    			if(boardCopy[letterRow][letterCol].isDoubleLetter())
+		    				subScore+=letterValue*2;
+		    			//Increments score for double letters
+		    			else if(boardCopy[letterRow][letterCol].isTripleLetter())
+		    				subScore+=letterValue*2;
+		    			//Increments score by letter value
+		    			else
+		    				subScore+=letterValue;
+		    			//Increments doubleWord counter
+		    			if(boardCopy[letterRow][letterCol].isDoubleWord())
+		    				subScore*=2;
+		    			//Increments tripleWord counter
+		    			if(boardCopy[letterRow][letterCol].isTripleWord())
+		    				subScore*=3;
+		    			
+		    		}
+		    		fullsubScore+=subScore;
 	    		}
+	    		
 	    		if(realPlayableWords.get(realWordIndex).isVertical()) {
 	    			letterRow++;
 	        	}
@@ -240,7 +334,9 @@ public class KetSpoon implements BotAPI {
 	    		wordScore*=2;
 	    	if (tripleWord>0)
 	    		wordScore*=3;
-	    	realPlayableWordsScore.add(wordScore);
+	    	int current=realPlayableWordsScore.get(realWordIndex);
+	    	
+	    	realPlayableWordsScore.set(realWordIndex, wordScore+fullsubScore+current);
 		}
 	}
 	
@@ -351,8 +447,13 @@ public class KetSpoon implements BotAPI {
                         		}
                     			
                     			//if returns true then the subword is added to realPlayableWords
-                    			if(validPlay && realSubWords(row-rowOffset, col-colOffset, s, true))
+                    			if(validPlay && realSubWords(row-rowOffset, col-colOffset, s, true)) {
                     				realPlayableWords.add(new Word(row, col, horizontal, s));
+                    				if(s.length()-wordOnBoard.length()==7)
+                        				realPlayableWordsScore.add(50);
+                        			else
+                        				realPlayableWordsScore.add(0);
+                    			}
                     		}
                     	}
             			if(!horizontal) 
@@ -384,14 +485,24 @@ public class KetSpoon implements BotAPI {
                     			}
     							
                     			//if returns true then the subword is added to realPlayableWords
-                    			if(validPlay && realSubWords(row-rowOffset, col-colOffset, s, false))
-                    				realPlayableWords.add(new Word(row, col, horizontal, s));	
+                    			if(validPlay && realSubWords(row-rowOffset, col-colOffset, s, false)) {
+                    				realPlayableWords.add(new Word(row, col, horizontal, s));
+                    				if(s.length()-wordOnBoard.length()==7)
+                        				realPlayableWordsScore.add(50);
+                        			else
+                        				realPlayableWordsScore.add(0);
+                    			}
                     		}
                     	}
             		}
-            		else
+            		else {
             			//else the word is playable and added to the array list
             			realPlayableWords.add(new Word(row, col, horizontal, s));
+            			if(s.length()-wordOnBoard.length()==7)
+            				realPlayableWordsScore.add(50);
+            			else
+            				realPlayableWordsScore.add(0);
+            		}
             	}
         }
     }
