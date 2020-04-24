@@ -41,6 +41,7 @@ public class KetSpoon implements BotAPI {
 	}
 
 	public String getCommand() {
+		System.out.println(me.getScore());
 		// Calling the following methods gets all the words currently on board
 		getVerticalWords();
 		getHorizontalWords();
@@ -150,53 +151,46 @@ public class KetSpoon implements BotAPI {
 
 						if (lettersInFrameOG.contains("_")
 								&& realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
-							while (boardCopy[row][col].isOccupied()
-									&& boardCopy[row][col].getTile().getLetter() == 'E') {
-								realPlayableWords.remove(realWordIndex);
-								realPlayableWordsScore.remove(realWordIndex);
-								realWordIndex = realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore)); // Get
-																															// the
-																															// word
-																															// with
-																															// the
-																															// highest
-																															// score
-								row = realPlayableWords.get(realWordIndex).getRow();
-								col = realPlayableWords.get(realWordIndex).getFirstColumn();
-								if (boardCopy[row][col].isOccupied())
-									letterOnBoard = boardCopy[row][col].getTile().getLetter();
-
-								/*
-								 * The following gets direction of word and declares offset in order to find
-								 * first letter as letter on board may not be first letter
-								 */
-								if (realPlayableWords.get(realWordIndex).isVertical()) {
-									direction = "D";
-
-									if (boardCopy[row][col].isOccupied())
-										rowOffset = realPlayableWords.get(realWordIndex).getLetters()
-												.indexOf(letterOnBoard);
-									else
-										rowOffset = 0;
-								} else {
-									direction = "A";
-									if (boardCopy[row][col].isOccupied())
-										colOffset = realPlayableWords.get(realWordIndex).getLetters()
-												.indexOf(letterOnBoard);
-									else
-										colOffset = 0;
+							boolean useBlank=true;
+							int startRow= row-rowOffset;
+							int startCol=col-colChar;
+							if(boardCopy[startRow][startCol].getTile().getLetter()=='E')
+								useBlank=false;
+								
+							if(realPlayableWords.get(realWordIndex).isHorizontal() && useBlank) {
+								while (startCol + 1 <= 14 && boardCopy[startRow][startCol+1].isOccupied()) {
+									startCol++;
+									if(boardCopy[startRow][startCol].getTile().getLetter()=='E') {
+										useBlank=false;
+										break;
+									}
 								}
-								colChar = (char) (col + 65 - colOffset);
+								
 							}
-							if (lettersInFrameOG.contains("_")
-									&& realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
+							
+							if(realPlayableWords.get(realWordIndex).isVertical() && useBlank) {
+								while (startRow + 1 <= 14 && boardCopy[startRow+1][startCol].isOccupied()) {
+									startRow++;
+									if(boardCopy[startRow][startCol].getTile().getLetter()=='E') {
+										useBlank=false;
+										break;
+									}
+								}
+								
+							}
+							
+							if(useBlank) {
+								System.out.println("Blank played E used");
 								command = colChar + "" + (row + 1 - rowOffset) + " " + direction + " "
 										+ realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")
 										+ " E";
-							} else
+							}
+							else {
+								System.out.println("Blank not needed");
 								command = colChar + "" + (row + 1 - rowOffset) + " " + direction + " "
 										+ realPlayableWords.get(realWordIndex).getLetters();
-
+							}
+							
 						} else
 							command = colChar + "" + (row + 1 - rowOffset) + " " + direction + " "
 									+ realPlayableWords.get(realWordIndex).getLetters();
