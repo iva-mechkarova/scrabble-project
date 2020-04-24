@@ -23,7 +23,6 @@ public class Bot1 implements BotAPI {
     private String myLetter;
     private List<String> list;
     
-    private static ArrayList<Word> allPossibleCombo=new ArrayList<Word>();
     private static ArrayList<Word> realPlayableWords= new ArrayList<Word>();
     private static ArrayList<Integer> realPlayableWordsScore= new ArrayList<Integer>();
     
@@ -40,158 +39,151 @@ public class Bot1 implements BotAPI {
     }
 
     public String getCommand() {
-//    	System.out.println("Old Bot:"+me.getScore());
-//    	//Calling the following methods gets all the words currently on board
-//    	getVerticalWords();
-//    	getHorizontalWords();
-//    	
-//    	String direction = null; 
-//    	
-//    	String lettersInFrameOG=me.getFrameAsString().replaceAll(", ", "").replaceAll("\\]", "").replaceAll("\\[", "");
-//    	setMyLetter(lettersInFrameOG.replace("_", "E")); //E is the most common letter in English so we replace any blank tiles with an E
-//        String command = "";
-//        
-//        if(turnCount==0) { //At beginning of game set name and initialize list of real words (dictionary)
-//        	command = "NAME Ketspoon";
-//        	try {
-//        		list = Files.readAllLines( new File( "csw.txt" ).toPath());
-//    		} catch (IOException e) {
-//    			e.printStackTrace();
-//    		}
-//        }
-//        else if(board.isFirstPlay()&&turnCount>0) { //If first play but name has been set (i.e. turnCount>0)
-//        	findrealPlayableWords("",myLetter,7,7,true);
-//        	realPlayableWordscores();
-//        	int realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore)); //Ensures the highest scoring word is played
-//        	/*If blank tile is being played then change it to blank tile and state that it is an E at the end of the command*/
-//        	if(lettersInFrameOG.contains("_") && realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
-//        		command = "H8 A "+realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")+" E";
-//        	}
-//        	else
-//        		command = "H8 A "+realPlayableWords.get(realWordIndex).getLetters();
-//        }
-//        else {
-//        	/*At the beginning of each turn check if should challenge (except first turn as it was not letting us place on board if word removed)*/
-//        	boolean challenge = false; 
-//        	
-//        	/*Our bot never places fake words so if any words on the board aren't real then challenge*/
-//        	if(turnCount>1&&!wordsOnBoard.isEmpty())
-//        	{
-//        		for(Word w : wordsOnBoard)
-//        		{
-//        			if(w.getLetters().length()>1 && !list.contains(w.getLetters())) 
-//        			{
-//        				challenge = true;
-//        				command = "CHALLENGE";
-//        			}
-//        		}
-//        	}
-//        
-//        	if(!challenge)
-//        	{
-//        		if(me.getFrameAsString().isEmpty()) //At the end of game, frame may be empty so pass
-//        		{
-//        			command = "PASS";
-//        		}
-//        		else
-//        		{
-//        			//Loop to find all real playable words - combining frame and words on board
-//    	        	for (int i = 0; i < wordsOnBoard.size(); i++) {
-//    	        		findrealPlayableWords(wordsOnBoard.get(i).getLetters(),myLetter,wordsOnBoard.get(i).getRow(),wordsOnBoard.get(i).getColumn(),wordsOnBoard.get(i).isHorizontal());
-//    				}
-//    	        	//If there are no playable words then pass
-//    	        	if(realPlayableWords.isEmpty())
-//    	        	{
-//    	        		command = "PASS";
-//    	        	}
-//    	        	else
-//    	        	{
-//    		        	realPlayableWordscores(); //Find scores of all the playableWords
-//    		        	int realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore)); //Get the word with the highest score
-//    		        	
-//    		        	int row = realPlayableWords.get(realWordIndex).getRow();
-//    		        	int col = realPlayableWords.get(realWordIndex).getFirstColumn();
-//    		        	
-//    		        	int rowOffset=0;
-//    		        	int colOffset=0;
-//    		        	char letterOnBoard = '.'; //Initialize letterOnBoard
-//    		        	
-//    		        	if(boardCopy[row][col].isOccupied())
-//    		        	{
-//    		        		letterOnBoard=boardCopy[row][col].getTile().getLetter();
-//    		        	}
-//    		        	
-//    		        	
-//    		        	/*The following gets direction of word and declares offset in order to find first letter as letter on board may not be first letter*/
-//    		        	if(realPlayableWords.get(realWordIndex).isVertical()) {
-//    		        		direction="D";
-//    		        		
-//    		        		if(boardCopy[row][col].isOccupied())
-//    		        			rowOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
-//    		        		else
-//    		        			rowOffset=0;
-//    		        	}
-//    		        	
-//    		        	else {
-//    		        		direction="A";
-//    		        		if(boardCopy[row][col].isOccupied())
-//    		        			colOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
-//    		        		else
-//    		        			colOffset=0;
-//    		        	}
-//    		     
-//    		        	char colChar=(char)(col+65-colOffset);
-//    		        	if(lettersInFrameOG.contains("_") && realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
-//    		        		while(true) {
-//    		        			if(boardCopy[row][col].isOccupied() && boardCopy[row][col].getTile().getLetter()!='E') {
-//        		        			command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")+" E";
-//        		        			break;
-//    		        			}
-//        		        		else {
-//        		        			realPlayableWordsScore.remove(realWordIndex);
-//        		        			realPlayableWords.remove(realWordIndex);
-//        		        			realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore)); //Get the word with the highest score
-//        		        			realPlayableWords.get(realWordIndex).getRow();
-//        	    		        	realPlayableWords.get(realWordIndex).getFirstColumn();
-//        	    		        	if(boardCopy[row][col].isOccupied())
-//        	    		        	{
-//        	    		        		letterOnBoard=boardCopy[row][col].getTile().getLetter();
-//        	    		        	}
-//        	    		        	
-//        	    		        	
-//        	    		        	/*The following gets direction of word and declares offset in order to find first letter as letter on board may not be first letter*/
-//        	    		        	if(realPlayableWords.get(realWordIndex).isVertical()) {
-//        	    		        		direction="D";
-//        	    		        		
-//        	    		        		if(boardCopy[row][col].isOccupied())
-//        	    		        			rowOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
-//        	    		        		else
-//        	    		        			rowOffset=0;
-//        	    		        	}
-//        	    		        	
-//        	    		        	else {
-//        	    		        		direction="A";
-//        	    		        		if(boardCopy[row][col].isOccupied())
-//        	    		        			colOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
-//        	    		        		else
-//        	    		        			colOffset=0;
-//        	    		        	}
-//        		        		}
-//    		        		}
-//    		        		
-//    		        	}
-//    		        	else
-//    		        		command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters();
-//    	        	}
-//	        	}
-//        	}
-//        }
-//        realPlayableWords.clear();
-//        realPlayableWordsScore.clear();
-//        allPossibleCombo.clear();
-//        wordsOnBoard.clear();
-//        turnCount++;
-        return "PASS";
+    	//Calling the following methods gets all the words currently on board
+    	getVerticalWords();
+    	getHorizontalWords();
+    	
+    	String direction = null; 
+    	
+    	String lettersInFrameOG=me.getFrameAsString().replaceAll(", ", "").replaceAll("\\]", "").replaceAll("\\[", "");
+    	setMyLetter(lettersInFrameOG.replace("_", "E")); //E is the most common letter in English so we replace any blank tiles with an E
+        String command = "";
+        
+        if(turnCount==0) { //At beginning of game set name and initialize list of real words (dictionary)
+        	command = "NAME KetSpoon"
+        			+ "";
+        	try {
+        		list = Files.readAllLines( new File( "csw.txt" ).toPath());
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    		}
+        }
+        else if(board.isFirstPlay()&&turnCount>0) { //If first play but name has been set (i.e. turnCount>0)
+        	findrealPlayableWords("",myLetter,7,7,true);
+        	realPlayableWordscores();
+        	int realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore)); //Ensures the highest scoring word is played
+        	/*If blank tile is being played then change it to blank tile and state that it is an E at the end of the command*/
+        	if(lettersInFrameOG.contains("_") && realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
+        		command = "H8 A "+realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")+" E";
+        	}
+        	else
+        		command = "H8 A "+realPlayableWords.get(realWordIndex).getLetters();
+        }
+        else {
+        	/*At the beginning of each turn check if should challenge (except first turn as it was not letting us place on board if word removed)*/
+        	boolean challenge = false; 
+        	
+        	/*Our bot never places fake words so if any words on the board aren't real then challenge*/
+        	if(turnCount>1&&!wordsOnBoard.isEmpty())
+        	{
+        		for(Word w : wordsOnBoard)
+        		{
+        			if(w.getLetters().length()>1 && !list.contains(w.getLetters())) 
+        			{
+        				challenge = true;
+        				command = "CHALLENGE";
+        			}
+        		}
+        	}
+        
+        	if(!challenge)
+        	{
+        		if(me.getFrameAsString().isEmpty()) //At the end of game, frame may be empty so pass
+        		{
+        			command = "PASS";
+        		}
+        		else
+        		{
+        			//Loop to find all real playable words - combining frame and words on board
+    	        	for (int i = 0; i < wordsOnBoard.size(); i++) {
+    	        		findrealPlayableWords(wordsOnBoard.get(i).getLetters(),myLetter,wordsOnBoard.get(i).getRow(),wordsOnBoard.get(i).getColumn(),wordsOnBoard.get(i).isHorizontal());
+    				}
+    	        	//If there are no playable words then pass
+    	        	if(realPlayableWords.isEmpty())
+    	        	{
+    	        		command = "PASS";
+    	        	}
+    	        	else
+    	        	{
+    		        	realPlayableWordscores(); //Find scores of all the playableWords
+    		        	int realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore)); //Get the word with the highest score
+    		        	int row = realPlayableWords.get(realWordIndex).getRow();
+    		        	int col = realPlayableWords.get(realWordIndex).getFirstColumn();
+    		        	
+    		        	int rowOffset=0;
+    		        	int colOffset=0;
+    		        	char letterOnBoard = '.'; //Initialize letterOnBoard
+    		        	
+    		        	if(boardCopy[row][col].isOccupied())
+    		        	{
+    		        		letterOnBoard=boardCopy[row][col].getTile().getLetter();
+    		        	}
+    		        	
+    		        	
+    		        	/*The following gets direction of word and declares offset in order to find first letter as letter on board may not be first letter*/
+    		        	if(realPlayableWords.get(realWordIndex).isVertical()) {
+    		        		direction="D";
+    		        		
+    		        		if(boardCopy[row][col].isOccupied())
+    		        			rowOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
+    		        		else
+    		        			rowOffset=0;
+    		        	}
+    		        	
+    		        	else {
+    		        		direction="A";
+    		        		if(boardCopy[row][col].isOccupied())
+    		        			colOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
+    		        		else
+    		        			colOffset=0;
+    		        	}
+    		     
+    		        	char colChar=(char)(col+65-colOffset);
+    		        	
+    		        	if(lettersInFrameOG.contains("_") && realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
+    		        		while(boardCopy[row][col].getTile().getLetter()=='E') {
+    		        			System.out.println("Change");
+    		        			realPlayableWords.remove(realWordIndex);
+    		        			realPlayableWordsScore.remove(realWordIndex);
+    		        			realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore)-1); //Get the word with the highest score
+    		        			realPlayableWords.get(realWordIndex).getRow();
+    	    		        	realPlayableWords.get(realWordIndex).getFirstColumn();
+    	    		        	if(boardCopy[row][col].isOccupied())
+    	    		        		letterOnBoard=boardCopy[row][col].getTile().getLetter();
+
+    	    		        	/*The following gets direction of word and declares offset in order to find first letter as letter on board may not be first letter*/
+    	    		        	if(realPlayableWords.get(realWordIndex).isVertical()) {
+    	    		        		direction="D";
+    	    		        		
+    	    		        		if(boardCopy[row][col].isOccupied())
+    	    		        			rowOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
+    	    		        		else
+    	    		        			rowOffset=0;
+    	    		        	}
+    	    		        	else {
+    	    		        		direction="A";
+    	    		        		if(boardCopy[row][col].isOccupied())
+    	    		        			colOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
+    	    		        		else
+    	    		        			colOffset=0;
+    	    		        	}
+    	    		        	colChar=(char)(col+65-colOffset);
+    		        		}
+    		        		
+		        			command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")+" E";	
+		        			System.out.println("Blank played");
+    		        	}
+    		        	else
+    		        		command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters();
+    	        	}
+	        	}
+        	}
+        }
+        realPlayableWords.clear();
+        realPlayableWordsScore.clear();
+        wordsOnBoard.clear();
+        turnCount++;
+        return command;
     }
     
     
@@ -211,6 +203,7 @@ public class Bot1 implements BotAPI {
 		//loop through playable words
 		for (int realWordIndex = 0; realWordIndex < realPlayableWords.size(); realWordIndex++) {
 			int wordScore=0,tripleWord=0,doubleWord=0,rowOffset=0,colOffset=0;
+			int fullsubScore=0;
 			int row = realPlayableWords.get(realWordIndex).getRow();
 	    	int col = realPlayableWords.get(realWordIndex).getFirstColumn();
 	    	char letterOnBoard='.'; //Initialize letterOnBoard
@@ -241,9 +234,10 @@ public class Bot1 implements BotAPI {
 	    	int letterRow=row-rowOffset;
 	    	int letterCol=col-colOffset;
 	    	
+	    	
 	    	for (int i = 0; i <realPlayableWords.get(realWordIndex).getLetters().length(); i++) {
 	    		int letterValue=allLetterValues[realPlayableWords.get(realWordIndex).getLetter(i)-'A'];
-	    		if(letterRow==row && letterCol==col) {
+	    		if(boardCopy[letterRow][letterCol].isOccupied()) {
 	    			wordScore+=letterValue;  //Increments score by letter value
 	    		}
 	    		else {
@@ -262,7 +256,61 @@ public class Bot1 implements BotAPI {
 	    			//Increments tripleWord counter
 	    			if(boardCopy[letterRow][letterCol].isTripleWord())
 	    				tripleWord++;
+	    			
+	    			int subScore=0;
+		    		boolean hasSub=false;
+		    		
+		    		
+		    		if((realPlayableWords.get(realWordIndex).isHorizontal() )&& !boardCopy[letterRow][letterCol].isOccupied()) {
+		    			int subWordRow=letterRow;
+		    			while (subWordRow-1>=0 && boardCopy[subWordRow-1][letterCol].isOccupied()) {
+							subWordRow--;
+							subScore+=boardCopy[subWordRow][letterCol].getTile().getValue();
+							hasSub=true;
+						}
+		    			subWordRow=letterRow;
+		    			while (subWordRow+1<=14 && boardCopy[subWordRow+1][letterCol].isOccupied()) {
+							subWordRow++;
+							subScore+=boardCopy[subWordRow][letterCol].getTile().getValue();
+							hasSub=true;
+						}
+		    		}
+		    		
+		    		if(realPlayableWords.get(realWordIndex).isVertical() && !boardCopy[letterRow][letterCol].isOccupied()) {
+						int subWordCol=letterCol;
+						while (subWordCol-1>=0 && boardCopy[letterRow][subWordCol-1].isOccupied()) {
+							subWordCol--;
+							subScore+=boardCopy[letterRow][subWordCol].getTile().getValue();
+							hasSub=true;
+						}
+						subWordCol=letterCol;
+						//builds subword from occupied squares from the columns to the right
+						while (subWordCol+1<=14 && boardCopy[letterRow][subWordCol+1].isOccupied()) {
+							subWordCol++;
+							subScore+=boardCopy[letterRow][subWordCol].getTile().getValue();
+							hasSub=true;
+						}
+		    		}
+		    		if(hasSub) {
+		    			if(boardCopy[letterRow][letterCol].isDoubleLetter())
+		    				subScore+=letterValue*2;
+		    			//Increments score for double letters
+		    			else if(boardCopy[letterRow][letterCol].isTripleLetter())
+		    				subScore+=letterValue*3;
+		    			//Increments score by letter value
+		    			else
+		    				subScore+=letterValue;
+		    			//Increments doubleWord counter
+		    			if(boardCopy[letterRow][letterCol].isDoubleWord())
+		    				subScore*=2;
+		    			//Increments tripleWord counter
+		    			if(boardCopy[letterRow][letterCol].isTripleWord())
+		    				subScore*=3;
+		    			
+		    		}
+		    		fullsubScore+=subScore;
 	    		}
+	    		
 	    		if(realPlayableWords.get(realWordIndex).isVertical()) {
 	    			letterRow++;
 	        	}
@@ -275,7 +323,9 @@ public class Bot1 implements BotAPI {
 	    		wordScore*=2;
 	    	if (tripleWord>0)
 	    		wordScore*=3;
-	    	realPlayableWordsScore.add(wordScore);
+	    	int current=realPlayableWordsScore.get(realWordIndex);
+	    	
+	    	realPlayableWordsScore.set(realWordIndex, wordScore+fullsubScore+current);
 		}
 	}
 	
@@ -386,8 +436,13 @@ public class Bot1 implements BotAPI {
                         		}
                     			
                     			//if returns true then the subword is added to realPlayableWords
-                    			if(validPlay && realSubWords(row-rowOffset, col-colOffset, s, true))
+                    			if(validPlay && realSubWords(row-rowOffset, col-colOffset, s, true)) {
                     				realPlayableWords.add(new Word(row, col, horizontal, s));
+                    				if(s.length()-wordOnBoard.length()==7)
+                        				realPlayableWordsScore.add(50);
+                        			else
+                        				realPlayableWordsScore.add(0);
+                    			}
                     		}
                     	}
             			if(!horizontal) 
@@ -419,14 +474,24 @@ public class Bot1 implements BotAPI {
                     			}
     							
                     			//if returns true then the subword is added to realPlayableWords
-                    			if(validPlay && realSubWords(row-rowOffset, col-colOffset, s, false))
-                    				realPlayableWords.add(new Word(row, col, horizontal, s));	
+                    			if(validPlay && realSubWords(row-rowOffset, col-colOffset, s, false)) {
+                    				realPlayableWords.add(new Word(row, col, horizontal, s));
+                    				if(s.length()-wordOnBoard.length()==7)
+                        				realPlayableWordsScore.add(50);
+                        			else
+                        				realPlayableWordsScore.add(0);
+                    			}
                     		}
                     	}
             		}
-            		else
+            		else {
             			//else the word is playable and added to the array list
             			realPlayableWords.add(new Word(row, col, horizontal, s));
+            			if(s.length()-wordOnBoard.length()==7)
+            				realPlayableWordsScore.add(50);
+            			else
+            				realPlayableWordsScore.add(0);
+            		}
             	}
         }
     }
