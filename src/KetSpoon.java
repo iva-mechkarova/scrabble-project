@@ -41,7 +41,6 @@ public class KetSpoon implements BotAPI {
 	}
 
 	public String getCommand() {
-		System.out.println(me.getScore());
 		// Calling the following methods gets all the words currently on board
 		getVerticalWords();
 		getHorizontalWords();
@@ -151,46 +150,45 @@ public class KetSpoon implements BotAPI {
 
 						if (lettersInFrameOG.contains("_")
 								&& realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
-							boolean useBlank=true;
-							int startRow= row-rowOffset;
-							int startCol=col-colChar;
-							if(boardCopy[startRow][startCol].getTile().getLetter()=='E')
-								useBlank=false;
-								
-							if(realPlayableWords.get(realWordIndex).isHorizontal() && useBlank) {
-								while (startCol + 1 <= 14 && boardCopy[startRow][startCol+1].isOccupied()) {
-									startCol++;
-									if(boardCopy[startRow][startCol].getTile().getLetter()=='E') {
-										useBlank=false;
-										break;
+							boolean useBlank = true;
+							int startRow = row;
+							int startCol = col;
+							if (boardCopy[startRow][startCol].isOccupied()) {
+								if (boardCopy[startRow][startCol].getTile().getLetter() == 'E')
+									useBlank = false;
+
+								if (realPlayableWords.get(realWordIndex).isHorizontal() && useBlank) {
+									while (startCol + 1 <= 14 && boardCopy[startRow][startCol + 1].isOccupied()) {
+										startCol++;
+										if (boardCopy[startRow][startCol].getTile().getLetter() == 'E') {
+											useBlank = false;
+											break;
+										}
 									}
+
 								}
-								
-							}
-							
-							if(realPlayableWords.get(realWordIndex).isVertical() && useBlank) {
-								while (startRow + 1 <= 14 && boardCopy[startRow+1][startCol].isOccupied()) {
-									startRow++;
-									if(boardCopy[startRow][startCol].getTile().getLetter()=='E') {
-										useBlank=false;
-										break;
+
+								if (realPlayableWords.get(realWordIndex).isVertical() && useBlank) {
+									while (startRow + 1 <= 14 && boardCopy[startRow + 1][startCol].isOccupied()) {
+										startRow++;
+										if (boardCopy[startRow][startCol].getTile().getLetter() == 'E') {
+											useBlank = false;
+											break;
+										}
 									}
+
 								}
-								
 							}
-							
-							if(useBlank) {
-								System.out.println("Blank played E used");
+
+							if (useBlank) {
 								command = colChar + "" + (row + 1 - rowOffset) + " " + direction + " "
 										+ realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")
 										+ " E";
-							}
-							else {
-								System.out.println("Blank not needed");
+							} else {
 								command = colChar + "" + (row + 1 - rowOffset) + " " + direction + " "
 										+ realPlayableWords.get(realWordIndex).getLetters();
 							}
-							
+
 						} else
 							command = colChar + "" + (row + 1 - rowOffset) + " " + direction + " "
 									+ realPlayableWords.get(realWordIndex).getLetters();
