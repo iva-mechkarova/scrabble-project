@@ -62,7 +62,7 @@ public class KetSpoon implements BotAPI {
     		}
         }
         else if(board.isFirstPlay()&&turnCount>0) { //If first play but name has been set (i.e. turnCount>0)
-        	findrealPlayableWords("",myLetter,7,7,true);
+        	findrealPlayableWords("",myLetter,7,7,true,lettersInFrameOG);
         	realPlayableWordscores();
         	int realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore)); //Ensures the highest scoring word is played
         	/*If blank tile is being played then change it to blank tile and state that it is an E at the end of the command*/
@@ -99,7 +99,7 @@ public class KetSpoon implements BotAPI {
         		{
         			//Loop to find all real playable words - combining frame and words on board
     	        	for (int i = 0; i < wordsOnBoard.size(); i++) {
-    	        		findrealPlayableWords(wordsOnBoard.get(i).getLetters(),myLetter,wordsOnBoard.get(i).getRow(),wordsOnBoard.get(i).getColumn(),wordsOnBoard.get(i).isHorizontal());
+    	        		findrealPlayableWords(wordsOnBoard.get(i).getLetters(),myLetter,wordsOnBoard.get(i).getRow(),wordsOnBoard.get(i).getColumn(),wordsOnBoard.get(i).isHorizontal(),lettersInFrameOG);
     				}
     	        	//If there are no playable words then pass
     	        	if(realPlayableWords.isEmpty())
@@ -144,46 +144,9 @@ public class KetSpoon implements BotAPI {
     		     
     		        	char colChar=(char)(col+65-colOffset);
     		        	
-    		        	if(lettersInFrameOG.contains("_") && realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
-    		        		while(true) {
-    		        			if(boardCopy[row][col].isOccupied() && boardCopy[row][col].getTile().getLetter()!='E') {
-        		        			command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")+" E";
-        		        			break;
-    		        			}
-        		        		else {
-        		        			realPlayableWordsScore.remove(realWordIndex);
-        		        			realPlayableWords.remove(realWordIndex);
-        		        			realWordIndex=realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore)); //Get the word with the highest score
-        		        			realPlayableWords.get(realWordIndex).getRow();
-        	    		        	realPlayableWords.get(realWordIndex).getFirstColumn();
-        	    		        	if(boardCopy[row][col].isOccupied())
-        	    		        	{
-        	    		        		letterOnBoard=boardCopy[row][col].getTile().getLetter();
-        	    		        	}
-        	    		        	
-        	    		        	
-        	    		        	/*The following gets direction of word and declares offset in order to find first letter as letter on board may not be first letter*/
-        	    		        	if(realPlayableWords.get(realWordIndex).isVertical()) {
-        	    		        		direction="D";
-        	    		        		
-        	    		        		if(boardCopy[row][col].isOccupied())
-        	    		        			rowOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
-        	    		        		else
-        	    		        			rowOffset=0;
-        	    		        	}
-        	    		        	
-        	    		        	else {
-        	    		        		direction="A";
-        	    		        		if(boardCopy[row][col].isOccupied())
-        	    		        			colOffset=realPlayableWords.get(realWordIndex).getLetters().indexOf(letterOnBoard);
-        	    		        		else
-        	    		        			colOffset=0;
-        	    		        	}
-        	    		        	colChar=(char)(col+65-colOffset);
-        		        		}
-    		        		}
-    		        		
-    		        	}
+    		        	if(lettersInFrameOG.contains("_") && realPlayableWords.get(realWordIndex).getLetters().contains("E"))
+		        			command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")+" E";
+
     		        	else
     		        		command = colChar+""+(row+1-rowOffset)+" "+direction+" "+realPlayableWords.get(realWordIndex).getLetters();
     	        	}
@@ -307,7 +270,7 @@ public class KetSpoon implements BotAPI {
 		    				subScore+=letterValue*2;
 		    			//Increments score for double letters
 		    			else if(boardCopy[letterRow][letterCol].isTripleLetter())
-		    				subScore+=letterValue*2;
+		    				subScore+=letterValue*3;
 		    			//Increments score by letter value
 		    			else
 		    				subScore+=letterValue;
@@ -403,7 +366,7 @@ public class KetSpoon implements BotAPI {
 	}
 	
 	/** Method to get an array list of the real playable words */
-	private void findrealPlayableWords(String wordOnBoard,String myLetters,int row,int col,boolean horizontal)
+	private void findrealPlayableWords(String wordOnBoard,String myLetters,int row,int col,boolean horizontal,String lettersInFrameOG)
     {
         int[] freq = toFreq(wordOnBoard+myLetters);
         for (String s:list)
@@ -448,11 +411,13 @@ public class KetSpoon implements BotAPI {
                     			
                     			//if returns true then the subword is added to realPlayableWords
                     			if(validPlay && realSubWords(row-rowOffset, col-colOffset, s, true)) {
-                    				realPlayableWords.add(new Word(row, col, horizontal, s));
-                    				if(s.length()-wordOnBoard.length()==7)
-                        				realPlayableWordsScore.add(50);
-                        			else
-                        				realPlayableWordsScore.add(0);
+                    				if(!lettersInFrameOG.contains("_") || (lettersInFrameOG.contains("_") && !s.contains("E"))) {
+                    					realPlayableWords.add(new Word(row, col, horizontal, s));
+                        				if(s.length()-wordOnBoard.length()==7)
+                            				realPlayableWordsScore.add(50);
+                            			else
+                            				realPlayableWordsScore.add(0);
+                    				}
                     			}
                     		}
                     	}
@@ -486,22 +451,26 @@ public class KetSpoon implements BotAPI {
     							
                     			//if returns true then the subword is added to realPlayableWords
                     			if(validPlay && realSubWords(row-rowOffset, col-colOffset, s, false)) {
-                    				realPlayableWords.add(new Word(row, col, horizontal, s));
-                    				if(s.length()-wordOnBoard.length()==7)
-                        				realPlayableWordsScore.add(50);
-                        			else
-                        				realPlayableWordsScore.add(0);
+                    				if(!lettersInFrameOG.contains("_") || (lettersInFrameOG.contains("_") && !s.contains("E"))) {
+                    					realPlayableWords.add(new Word(row, col, horizontal, s));
+                        				if(s.length()-wordOnBoard.length()==7)
+                            				realPlayableWordsScore.add(50);
+                            			else
+                            				realPlayableWordsScore.add(0);
+                    				}
                     			}
                     		}
                     	}
             		}
             		else {
             			//else the word is playable and added to the array list
-            			realPlayableWords.add(new Word(row, col, horizontal, s));
-            			if(s.length()-wordOnBoard.length()==7)
-            				realPlayableWordsScore.add(50);
-            			else
-            				realPlayableWordsScore.add(0);
+            			if(!lettersInFrameOG.contains("_") || (lettersInFrameOG.contains("_") && !s.contains("E"))) {
+        					realPlayableWords.add(new Word(row, col, horizontal, s));
+            				if(s.length()-wordOnBoard.length()==7)
+                				realPlayableWordsScore.add(50);
+                			else
+                				realPlayableWordsScore.add(0);
+        				}
             		}
             	}
         }
