@@ -65,13 +65,35 @@ public class KetSpoon implements BotAPI {
 			realPlayableWordscores();
 			/*Ensures the highest scoring word is played*/
 			int realWordIndex = realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore));
-			
 			/*
 			 * If blank tile is being played then change it to blank tile and state that it
 			 * is an E at the end of the command
 			 */
 			if (lettersInFrameOG.contains("_") && realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
-				command = "H8 A " + realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_") + " E";
+				int noE = (int) realPlayableWords.get(realWordIndex).getLetters().chars().filter(ch -> ch == 'E').count(); //Stores no. of Es in word
+				int noBlanks = (int) lettersInFrameOG.chars().filter(ch -> ch == '_').count(); //Stores no. of blanks in frame
+				
+				//If only one blank in frame or only one E in the word, then the first E is the blank
+				if(noBlanks==1 || noE==1)
+					command = "H8 A " + realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_") + " E";
+				else
+				{
+					StringBuilder correctForm = new StringBuilder(realPlayableWords.get(realWordIndex).getLetters());
+					int usedBlanks=0; //Stores number of used blanks
+					for (int i=0; i< realPlayableWords.get(realWordIndex).getLetters().length(); i++)
+					{
+						/*Replace first two Es with blanks*/
+						if(correctForm.charAt(i)=='E') 
+						{
+							correctForm.setCharAt(i, '_'); 
+							usedBlanks++;
+						}
+						if(usedBlanks==2)
+							break;
+					}
+					
+					command = "H8 A " + correctForm + " EE"; 
+				}
 			} else
 				command = "H8 A " + realPlayableWords.get(realWordIndex).getLetters();
 		} else {
