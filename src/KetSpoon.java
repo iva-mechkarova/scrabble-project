@@ -150,45 +150,53 @@ public class KetSpoon implements BotAPI {
 
 						if (lettersInFrameOG.contains("_")
 								&& realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
-							boolean useBlank = true;
-							int startRow = row;
-							int startCol = col;
-							if (boardCopy[startRow][startCol].isOccupied()) {
-								if (boardCopy[startRow][startCol].getTile().getLetter() == 'E')
-									useBlank = false;
-
-								if (realPlayableWords.get(realWordIndex).isHorizontal() && useBlank) {
-									while (startCol + 1 <= 14 && boardCopy[startRow][startCol + 1].isOccupied()) {
-										startCol++;
-										if (boardCopy[startRow][startCol].getTile().getLetter() == 'E') {
-											useBlank = false;
-											break;
-										}
-									}
-
-								}
-
-								if (realPlayableWords.get(realWordIndex).isVertical() && useBlank) {
-									while (startRow + 1 <= 14 && boardCopy[startRow + 1][startCol].isOccupied()) {
-										startRow++;
-										if (boardCopy[startRow][startCol].getTile().getLetter() == 'E') {
-											useBlank = false;
-											break;
-										}
-									}
-
+							int startRow = row - rowOffset;
+							int startCol = col - colOffset;
+							String wordToPlay = realPlayableWords.get(realWordIndex).getLetters();
+							String correctForm = "";
+							int wordIndex = 0;
+							int noBlanks = (int) lettersInFrameOG.chars().filter(ch -> ch == '_').count();
+							if (realPlayableWords.get(realWordIndex).isHorizontal()) {
+								while (startCol != col - colOffset + wordToPlay.length()) {
+									if (boardCopy[startRow][startCol].isOccupied())
+										correctForm += boardCopy[startRow][startCol].getTile().getLetter();
+									else if (wordToPlay.charAt(wordIndex) == 'E' && noBlanks != 0) {
+										correctForm += '_';
+										noBlanks--;
+									} else
+										correctForm += wordToPlay.charAt(wordIndex);
+									startCol++;
+									wordIndex++;
 								}
 							}
 
-							if (useBlank) {
-								command = colChar + "" + (row + 1 - rowOffset) + " " + direction + " "
-										+ realPlayableWords.get(realWordIndex).getLetters().replaceFirst("E", "_")
+							if (realPlayableWords.get(realWordIndex).isVertical()) {
+								while (startRow != row - rowOffset + wordToPlay.length()) {
+									if (boardCopy[startRow][startCol].isOccupied())
+										correctForm += boardCopy[startRow][startCol].getTile().getLetter();
+									else if (wordToPlay.charAt(wordIndex) == 'E' && noBlanks != 0) {
+										correctForm += '_';
+										noBlanks--;
+									} else
+										correctForm += wordToPlay.charAt(wordIndex);
+									startRow++;
+									wordIndex++;
+								}
+							}
+
+							int correctFromBlanks = (int) correctForm.chars().filter(ch -> ch == '_').count();
+
+							if (correctFromBlanks == 1) {
+								command = colChar + "" + (row + 1 - rowOffset) + " " + direction + " " + correctForm
 										+ " E";
-							} else {
-								command = colChar + "" + (row + 1 - rowOffset) + " " + direction + " "
-										+ realPlayableWords.get(realWordIndex).getLetters();
-							}
 
+							} else if (correctFromBlanks == 2) {
+								command = colChar + "" + (row + 1 - rowOffset) + " " + direction + " " + correctForm
+										+ " EE";
+
+							} else {
+								command = colChar + "" + (row + 1 - rowOffset) + " " + direction + " " + correctForm;
+							}
 						} else
 							command = colChar + "" + (row + 1 - rowOffset) + " " + direction + " "
 									+ realPlayableWords.get(realWordIndex).getLetters();
