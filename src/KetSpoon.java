@@ -9,7 +9,7 @@ import java.util.List;
 
 public class KetSpoon implements BotAPI {
 
-	// The private API of Bot must not change
+	// The public API of Bot must not change
 	// This is ONLY class that you can edit in the program
 	// Rename Bot to the name of your team. Use camel case.
 	// Bot may not alter the state of the game objects
@@ -63,11 +63,9 @@ public class KetSpoon implements BotAPI {
 		} else if (board.isFirstPlay() && turnCount > 0) { // If first play but name has been set (i.e. turnCount>0)
 			findrealPlayableWords("", myLetter, 7, 7, true);
 			realPlayableWordscores();
-			int realWordIndex = realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore)); // Ensures the
-																											// highest
-																											// scoring
-																											// word is
-																											// played
+			/*Ensures the highest scoring word is played*/
+			int realWordIndex = realPlayableWordsScore.indexOf(Collections.max(realPlayableWordsScore));
+			
 			/*
 			 * If blank tile is being played then change it to blank tile and state that it
 			 * is an E at the end of the command
@@ -147,25 +145,28 @@ public class KetSpoon implements BotAPI {
 						}
 
 						char colChar = (char) (col + 65 - colOffset);
-
+						
+						/*If the word we have a blank tile and we are playing a word with an E, we must figure out if
+						 we should play the blank tile or not*/
 						if (lettersInFrameOG.contains("_")
 								&& realPlayableWords.get(realWordIndex).getLetters().contains("E")) {
-							int startRow = row - rowOffset;
+							int startRow = row - rowOffset; 
 							int startCol = col - colOffset;
-							String wordToPlay = realPlayableWords.get(realWordIndex).getLetters();
-							String correctForm = "";
-							int wordIndex = 0;
-							int noBlanks = (int) lettersInFrameOG.chars().filter(ch -> ch == '_').count();
+							String wordToPlay = realPlayableWords.get(realWordIndex).getLetters(); 
+							String correctForm = ""; //Stores the word string with the necessary blanks (if any)
+							int wordIndex = 0; 
+							int noBlanks = (int) lettersInFrameOG.chars().filter(ch -> ch == '_').count(); //Stores how many blanks we have in our frame
+							
 							if (realPlayableWords.get(realWordIndex).isHorizontal()) {
 								while (startCol != col - colOffset + wordToPlay.length()) {
 									if (boardCopy[startRow][startCol].isOccupied())
-										correctForm += boardCopy[startRow][startCol].getTile().getLetter();
+										correctForm += boardCopy[startRow][startCol].getTile().getLetter(); //If letter on board then add the letter
 									else if (wordToPlay.charAt(wordIndex) == 'E' && noBlanks != 0) {
-										correctForm += '_';
-										noBlanks--;
-									} else
-										correctForm += wordToPlay.charAt(wordIndex);
-									startCol++;
+										correctForm += '_'; //If we are playing an E on an unoccupied square and we have a blank, use it
+										noBlanks--; //Decrement the number of blanks that we have left to play
+									} else //If the letter is not an E or we have no blanks, then just add the letter
+										correctForm += wordToPlay.charAt(wordIndex); 
+									startCol++; 
 									wordIndex++;
 								}
 							}
@@ -173,18 +174,18 @@ public class KetSpoon implements BotAPI {
 							if (realPlayableWords.get(realWordIndex).isVertical()) {
 								while (startRow != row - rowOffset + wordToPlay.length()) {
 									if (boardCopy[startRow][startCol].isOccupied())
-										correctForm += boardCopy[startRow][startCol].getTile().getLetter();
+										correctForm += boardCopy[startRow][startCol].getTile().getLetter(); //If letter on board then add the letter
 									else if (wordToPlay.charAt(wordIndex) == 'E' && noBlanks != 0) {
-										correctForm += '_';
-										noBlanks--;
-									} else
+										correctForm += '_'; //If we are playing an E on an unoccupied square and we have a blank, use it
+										noBlanks--; //Decrement the number of blanks that we have left to play
+									} else //If the letter is not an E or we have no blanks, then just add the letter
 										correctForm += wordToPlay.charAt(wordIndex);
 									startRow++;
 									wordIndex++;
 								}
 							}
 
-							int correctFromBlanks = (int) correctForm.chars().filter(ch -> ch == '_').count();
+							int correctFromBlanks = (int) correctForm.chars().filter(ch -> ch == '_').count(); //Stores the no. of blanks that we are playing
 
 							if (correctFromBlanks == 1) {
 								command = colChar + "" + (row + 1 - rowOffset) + " " + direction + " " + correctForm
@@ -197,7 +198,7 @@ public class KetSpoon implements BotAPI {
 							} else {
 								command = colChar + "" + (row + 1 - rowOffset) + " " + direction + " " + correctForm;
 							}
-						} else
+						} else //If we are not playing a blank tile
 							command = colChar + "" + (row + 1 - rowOffset) + " " + direction + " "
 									+ realPlayableWords.get(realWordIndex).getLetters();
 					}
