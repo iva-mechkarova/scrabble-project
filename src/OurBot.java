@@ -1,5 +1,5 @@
 
-/*Bot for Group 2 (Ketspoon)*/
+/*Bot for Group 2*/
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class KetSpoon implements BotAPI {
+public class OurBot implements BotAPI {
 
 	// The public API of Bot must not change
 	// This is ONLY class that you can edit in the program
@@ -31,7 +31,7 @@ public class KetSpoon implements BotAPI {
 	private Square[][] boardCopy;
 	private ArrayList<Word> wordsOnBoard = new ArrayList<Word>();
 
-	KetSpoon(PlayerAPI me, OpponentAPI opponent, BoardAPI board, UserInterfaceAPI ui, DictionaryAPI dictionary) {
+	OurBot(PlayerAPI me, OpponentAPI opponent, BoardAPI board, UserInterfaceAPI ui, DictionaryAPI dictionary) {
 		this.me = me;
 		this.opponent = opponent;
 		this.board = board;
@@ -54,7 +54,7 @@ public class KetSpoon implements BotAPI {
 		String command = "";
 
 		if (turnCount == 0) { // At beginning of game set name and initialize list of real words (dictionary)
-			command = "NAME KetSpoon" + "";
+			command = "NAME OurBot" + "";
 			try {
 				list = Files.readAllLines(new File("csw.txt").toPath());
 			} catch (IOException e) {

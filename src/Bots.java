@@ -12,24 +12,24 @@ public class Bots {
     Bots(Scrabble scrabble, UserInterface ui, Application.Parameters parameters) {
         List<String> params = parameters.getRaw();
         String[] botNames = new String[Scrabble.NUM_PLAYERS];
-//        if (params.size() < Scrabble.NUM_PLAYERS) {
-            botNames[0] = "KetSpoon";
+        if (params.size() < Scrabble.NUM_PLAYERS) {
+            botNames[0] = "OurBot";
             botNames[1] = "Bot1";
-//        } else {
-//            for (int i = 0; i < Scrabble.NUM_PLAYERS; i++) {
-//                boolean found = false;
-//                for (int j = 0; (j < ALL_BOT_NAMES.length) && !found; j++) {
-//                    if (params.get(i).equals(ALL_BOT_NAMES[j])) {
-//                        found = true;
-//                        botNames[i] = params.get(i);
-//                    }
-//                }
-//                if (!found) {
-//                    System.out.println("Error: Bot name not found");
-//                    System.exit(-1);
-//                }
-//            }
-//        }
+        } else {
+            for (int i = 0; i < Scrabble.NUM_PLAYERS; i++) {
+                boolean found = false;
+                for (int j = 0; (j < ALL_BOT_NAMES.length) && !found; j++) {
+                    if (params.get(i).equals(ALL_BOT_NAMES[j])) {
+                        found = true;
+                        botNames[i] = params.get(i);
+                    }
+                }
+                if (!found) {
+                    System.out.println("Error: Bot name not found");
+                    System.exit(-1);
+                }
+            }
+        }
         for (int i=0; i<Scrabble.NUM_PLAYERS; i++) {
             try {
                 Class<?> botClass = Class.forName(botNames[i]);
