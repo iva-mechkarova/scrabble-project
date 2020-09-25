@@ -1,4 +1,4 @@
- package ketspoon;
+ package scrabble;
 
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;

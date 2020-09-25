@@ -1,4 +1,4 @@
-package ketspoon;
+package scrabble;
 
 
 import javafx.application.Application;
@@ -10,11 +10,8 @@ import javafx.scene.image.Image;
 
 
 
-public class UI extends Application {
+public class Main extends Application {
 	public final Image bg = new Image(getClass().getResourceAsStream("/resources/t.png"));
-	
-	
-	
 	
 	@Override
 	public void start(Stage primaryStage) {

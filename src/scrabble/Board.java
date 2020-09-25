@@ -1,4 +1,4 @@
-package ketspoon;
+package scrabble;
 
 import java.util.ArrayList;
 
@@ -62,17 +62,6 @@ public class Board {
 			}
 		}
 	}
-	
-//	public void displayBoard() {
-//		System.out.println("-------------------------------------------------------------");
-//		for (int i = 0; i < NUMBEROFSQUARES; i++) {
-//			System.out.print("| "+gameBoard.get(i).getSquaresChar()+" ");
-//			if((i+1)%15==0) /* prints a line every 15 squares */
-//				System.out.println("| "+i
-//						/15+"\n-------------------------------------------------------------");
-//		}
-//		System.out.println("  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14 ");
-//	}
 	
 	public int coordinateToIndex(int x,int y) { /* converts a coordinate to array list index*/
 		return (15*x)+y;

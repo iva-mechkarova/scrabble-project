@@ -1,4 +1,4 @@
-package ketspoon;
+package scrabble;
 
 import java.util.ArrayList;
 import java.util.Random;
